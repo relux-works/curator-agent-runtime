@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux.works/curator-agent-runtime/schemas/v1/session-plan-v1.schema.json",
+  "title": "Curator Agent Runtime session plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "epoch_id",
+    "project",
+    "context",
+    "model_sink",
+    "retention",
+    "tools",
+    "host_assurance",
+    "plan_digest"
+  ],
+  "properties": {
+    "schema": { "const": "curator.session-plan/1" },
+    "epoch_id": { "$ref": "#/$defs/identifier" },
+    "parent_epoch_id": {
+      "$ref": "#/$defs/identifier",
+      "description": "Present when this plan was derived by delegation."
+    },
+    "parent_plan_digest": { "$ref": "#/$defs/digest" },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workspace_root", "worktree_id", "skillfile_digest", "closure_digest"],
+      "properties": {
+        "workspace_root": { "type": "string", "minLength": 1 },
+        "worktree_id": { "type": "string", "minLength": 1 },
+        "skillfile_digest": { "$ref": "#/$defs/digest" },
+        "closure_digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bundle_digest", "tiers"],
+      "properties": {
+        "bundle_digest": { "$ref": "#/$defs/digest" },
+        "tiers": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "enum": ["runtime", "skills", "repository"] }
+        }
+      }
+    },
+    "model_sink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "model", "data_classes"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "model": { "type": "string", "minLength": 1 },
+        "data_classes": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "enum": ["public", "repository", "sensitive"] }
+        },
+        "provider_retention": { "type": "string" }
+      }
+    },
+    "retention": { "enum": ["replayable", "private", "ephemeral"] },
+    "tools": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/toolBinding" }
+    },
+    "host_assurance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["backend", "filesystem", "network", "exec"],
+      "properties": {
+        "backend": { "type": "string", "minLength": 1 },
+        "filesystem": { "$ref": "#/$defs/assuranceLevel" },
+        "network": { "$ref": "#/$defs/assuranceLevel" },
+        "exec": { "$ref": "#/$defs/assuranceLevel" }
+      }
+    },
+    "delegation_depth_remaining": { "type": "integer", "minimum": 0 },
+    "plan_digest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "assuranceLevel": { "enum": ["full", "partial", "none"] },
+    "toolBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool_id",
+        "interface_id",
+        "provider_skill",
+        "provider_digest",
+        "entrypoint",
+        "execution_class",
+        "lifecycle",
+        "input_schema_digest",
+        "output_schema_digest",
+        "grant",
+        "confirmation"
+      ],
+      "properties": {
+        "tool_id": { "$ref": "#/$defs/identifier" },
+        "interface_id": {
+          "type": "string",
+          "pattern": "^curator\\.tool/[a-z][a-z0-9-]*@[1-9][0-9]*$"
+        },
+        "provider_skill": { "type": "string", "minLength": 1 },
+        "provider_digest": { "$ref": "#/$defs/digest" },
+        "entrypoint": { "type": "string", "minLength": 1 },
+        "execution_class": { "enum": ["process", "component", "remote"] },
+        "lifecycle": { "enum": ["one-shot", "session-worker"] },
+        "input_schema_digest": { "$ref": "#/$defs/digest" },
+        "output_schema_digest": { "$ref": "#/$defs/digest" },
+        "concurrency": { "enum": ["parallel-safe", "workspace-exclusive"] },
+        "grant": { "$ref": "#/$defs/grant" },
+        "confirmation": { "enum": ["none", "lease-or-ask", "always-ask"] },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "timeout_ms": { "type": "integer", "minimum": 1 },
+            "max_output_bytes": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    },
+    "grant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filesystem", "network", "exec", "secrets", "env_read"],
+      "properties": {
+        "filesystem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["read", "write"],
+          "properties": {
+            "read": { "type": "array", "items": { "type": "string" } },
+            "write": { "type": "array", "items": { "type": "string" } },
+            "deny": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "network": {
+          "oneOf": [
+            { "const": "none" },
+            { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+          ]
+        },
+        "exec": { "type": "array", "items": { "type": "string" } },
+        "secrets": {
+          "oneOf": [
+            { "const": "none" },
+            { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+          ]
+        },
+        "env_read": { "type": "array", "items": { "type": "string" } },
+        "signing": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

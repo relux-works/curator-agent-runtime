@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux.works/curator-agent-runtime/schemas/v1/approval-lease-v1.schema.json",
+  "title": "Curator Agent Runtime approval lease v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "lease_id",
+    "epoch_id",
+    "interface_id",
+    "effect_class",
+    "count_remaining",
+    "expires",
+    "revocable",
+    "granted_at"
+  ],
+  "properties": {
+    "schema": { "const": "curator.approval-lease/1" },
+    "lease_id": { "$ref": "#/$defs/identifier" },
+    "epoch_id": { "$ref": "#/$defs/identifier" },
+    "interface_id": {
+      "type": "string",
+      "pattern": "^curator\\.tool/[a-z][a-z0-9-]*@[1-9][0-9]*$"
+    },
+    "effect_class": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Interface-defined identity of the repeated effect, for example commit:current-repository."
+    },
+    "count_remaining": { "type": "integer", "minimum": 0 },
+    "expires": {
+      "oneOf": [
+        { "const": "epoch_end" },
+        { "type": "string", "format": "date-time" }
+      ]
+    },
+    "revocable": { "type": "boolean" },
+    "granted_at": { "type": "string", "format": "date-time" },
+    "revoked_at": { "type": "string", "format": "date-time" },
+    "parent_lease_id": {
+      "$ref": "#/$defs/identifier",
+      "description": "Present when this lease was attenuated from a parent session."
+    }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" }
+  }
+}

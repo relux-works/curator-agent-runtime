@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux.works/curator-agent-runtime/schemas/v1/execution-receipt-v1.schema.json",
+  "title": "Curator Agent Runtime execution receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "call_id",
+    "epoch_id",
+    "plan_digest",
+    "call_plan_digest",
+    "provider",
+    "enforcement",
+    "input_digest",
+    "outcome",
+    "started_at",
+    "ended_at",
+    "prev_receipt_digest",
+    "receipt_digest"
+  ],
+  "properties": {
+    "schema": { "const": "curator.execution-receipt/1" },
+    "call_id": { "$ref": "#/$defs/identifier" },
+    "epoch_id": { "$ref": "#/$defs/identifier" },
+    "plan_digest": { "$ref": "#/$defs/digest" },
+    "call_plan_digest": { "$ref": "#/$defs/digest" },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["skill", "digest", "execution_class"],
+      "properties": {
+        "skill": { "type": "string", "minLength": 1 },
+        "digest": { "$ref": "#/$defs/digest" },
+        "execution_class": { "enum": ["process", "component", "remote"] }
+      }
+    },
+    "enforcement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["backend", "filesystem", "network", "exec"],
+      "properties": {
+        "backend": { "type": "string", "minLength": 1 },
+        "filesystem": { "enum": ["full", "partial", "none"] },
+        "network": { "enum": ["full", "partial", "none"] },
+        "exec": { "enum": ["full", "partial", "none"] }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outcome"],
+      "properties": {
+        "outcome": { "enum": ["allowed-once", "rejected", "cancelled", "unavailable"] },
+        "lease_id": { "$ref": "#/$defs/identifier" }
+      }
+    },
+    "input_digest": { "$ref": "#/$defs/digest" },
+    "output_digest": { "$ref": "#/$defs/digest" },
+    "observed_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "filesystem_written": { "type": "array", "items": { "type": "string" } },
+        "network_contacted": { "type": "array", "items": { "type": "string" } },
+        "exit_status": { "type": "integer" },
+        "truncated": { "type": "boolean" }
+      }
+    },
+    "outcome": { "enum": ["completed", "failed", "cancelled", "denied", "timeout"] },
+    "started_at": { "type": "string", "format": "date-time" },
+    "ended_at": { "type": "string", "format": "date-time" },
+    "prev_receipt_digest": {
+      "oneOf": [{ "$ref": "#/$defs/digest" }, { "const": "" }]
+    },
+    "receipt_digest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

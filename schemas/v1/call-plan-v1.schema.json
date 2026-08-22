@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux.works/curator-agent-runtime/schemas/v1/call-plan-v1.schema.json",
+  "title": "Curator Agent Runtime call plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "call_id",
+    "epoch_id",
+    "plan_digest",
+    "tool_id",
+    "input_digest",
+    "effects",
+    "precision",
+    "destructive",
+    "reversible",
+    "confirmation"
+  ],
+  "properties": {
+    "schema": { "const": "curator.call-plan/1" },
+    "call_id": { "$ref": "#/$defs/identifier" },
+    "epoch_id": { "$ref": "#/$defs/identifier" },
+    "plan_digest": { "$ref": "#/$defs/digest" },
+    "tool_id": { "$ref": "#/$defs/identifier" },
+    "interface_id": { "type": "string" },
+    "input_digest": { "$ref": "#/$defs/digest" },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filesystem", "network", "credentials", "signing"],
+      "properties": {
+        "filesystem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["read", "write"],
+          "properties": {
+            "read": { "type": "array", "items": { "type": "string" } },
+            "write": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "network": { "type": "array", "items": { "type": "string" } },
+        "credentials": { "type": "array", "items": { "type": "string" } },
+        "signing": { "type": "array", "items": { "type": "string" } },
+        "exec": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "precision": { "enum": ["exact", "bounded", "unknown"] },
+    "destructive": { "type": "boolean" },
+    "reversible": { "type": "boolean" },
+    "sinks": {
+      "type": "array",
+      "items": { "enum": ["model-provider", "external-endpoint", "repository", "human"] }
+    },
+    "confirmation": { "enum": ["none", "lease-or-ask", "always-ask"] },
+    "lease_id": { "$ref": "#/$defs/identifier" }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}
