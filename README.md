@@ -8,7 +8,7 @@
 
 **Authors:** Ivan Oparin
 
-**License:** MIT
+**License:** Apache-2.0
 
 The Curator Agent Runtime is an open protocol for executing an AI coding
 agent whose entire surface of action is compiled ahead of the session from
