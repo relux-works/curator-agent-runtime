@@ -1,0 +1,16 @@
+{
+  "mode": "local",
+  "local": {
+    "board_dir": ".task-board"
+  },
+  "spawn": {
+    "worktree_isolation": {
+      "integration_base_branch": "main",
+      "validation": {
+        "commands": [
+          "git diff-tree --check HEAD"
+        ]
+      }
+    }
+  }
+}
