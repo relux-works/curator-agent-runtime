@@ -1,0 +1,162 @@
+{
+  "retrieved": "2026-09-08",
+  "repositories": [
+    {
+      "full_name": "ultraworkers/claw-code",
+      "archived": false,
+      "updated_at": "2026-09-07T20:40:11Z",
+      "pushed_at": "2026-08-16T06:18:45Z",
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      },
+      "description": "An agent-managed museum exhibit, built in Rust with Gajae-Code / LazyCodex \u2014 developed and maintained with no human intervention.",
+      "sha": "08106b0c3771ef5b4a5aa176acccd460e88b7325"
+    },
+    {
+      "full_name": "mzpatrick0529-mzyh/claw-code",
+      "archived": false,
+      "updated_at": "2026-09-04T02:09:42Z",
+      "pushed_at": "2026-03-31T16:27:16Z",
+      "license": null,
+      "description": "Rewriting Project Claw Code \u2014 Python rewrite of Claude Code agent harness. Forked from instructkr/claw-code.",
+      "sha": "01bf54ad15a894957f1dfb9fbb0d10f92684c856"
+    },
+    {
+      "full_name": "c2b247007/clawc",
+      "archived": false,
+      "updated_at": "2026-04-09T15:08:35Z",
+      "pushed_at": "2026-04-01T13:28:31Z",
+      "license": null,
+      "description": "Claude Code in C++ \u2014 clean-room rebuild of the leaked source code",
+      "sha": "ea4c2616c5b5a3171b5f64841946b26870abcb88"
+    },
+    {
+      "full_name": "shawnchen732/claw-cli-claude-code-source-code-v2.1.88",
+      "archived": false,
+      "updated_at": "2026-04-26T07:35:50Z",
+      "pushed_at": "2026-03-31T16:44:43Z",
+      "license": null,
+      "description": "Claude Code v2.1.88 Source Code \u2014 actively working on a Bun build, toward understanding Claude Code design.",
+      "sha": "6f3ce157cbedd71261cbfe7147417b1187033f6b"
+    },
+    {
+      "full_name": "anthropics/claude-agent-sdk-python",
+      "archived": false,
+      "updated_at": "2026-09-07T20:42:11Z",
+      "pushed_at": "2026-09-06T02:55:10Z",
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      },
+      "description": null,
+      "sha": "efd4d865ef1795daffee3cd24cce45307aed8a51"
+    },
+    {
+      "full_name": "anthropics/claude-code",
+      "archived": false,
+      "updated_at": "2026-09-07T23:03:25Z",
+      "pushed_at": "2026-09-06T02:54:20Z",
+      "license": null,
+      "description": "Claude Code is an agentic coding tool that lives in your terminal, understands your codebase, and helps you code faster by executing routine tasks, explaining complex code, and handling git workflows - all through natural language commands.",
+      "sha": "ab9b2cf7bb9e4f98ff264c07a22e46d83c29c558"
+    }
+  ],
+  "source_snapshots": [
+    {
+      "snapshot": "mzpatrick0529-mzyh__claw-code",
+      "sha": "01bf54ad15a894957f1dfb9fbb0d10f92684c856",
+      "license_files": []
+    },
+    {
+      "snapshot": "anthropics__claude-code",
+      "sha": "ab9b2cf7bb9e4f98ff264c07a22e46d83c29c558",
+      "license_files": [
+        "LICENSE.md"
+      ]
+    },
+    {
+      "snapshot": "ultraworkers__claw-code",
+      "sha": "08106b0c3771ef5b4a5aa176acccd460e88b7325",
+      "license_files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "snapshot": "anthropics__claude-agent-sdk-python",
+      "sha": "efd4d865ef1795daffee3cd24cce45307aed8a51",
+      "license_files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "snapshot": "c2b247007__clawc",
+      "sha": "ea4c2616c5b5a3171b5f64841946b26870abcb88",
+      "license_files": []
+    },
+    {
+      "snapshot": "open-multi-agent__open-multi-agent",
+      "sha": "e678bfb3e7c9313be78303c2c32294417bb58dbb",
+      "license_files": [
+        "LICENSE"
+      ]
+    },
+    {
+      "snapshot": "ducks__claux",
+      "sha": "4bdeb40532c9267e2a9d27e3caac81e21ef63e39",
+      "license_files": []
+    }
+  ],
+  "local_inputs": [
+    {
+      "name": "apiary-docs",
+      "origin": "git@github.com:relux-works/apiary-docs.git",
+      "sha": "e4249a6193c0f2730e7cffaea6b4907c0a7e80a9",
+      "dirty": false
+    },
+    {
+      "name": "curator",
+      "origin": "https://github.com/relux-works/curator.git",
+      "sha": "a66eec88fa4dfb8f3ca098f594f6e48af57a6835",
+      "dirty": true
+    },
+    {
+      "name": "curator-spec",
+      "origin": "https://github.com/relux-works/curator-spec.git",
+      "sha": "87a0d0060bad64ab883d007dcdf35df7485368bf",
+      "dirty": false
+    },
+    {
+      "name": "skill-project-management",
+      "origin": "git@github.com:relux-works/skill-project-management.git",
+      "sha": "074c249df6c316958184dca5da3049a378adfb5a",
+      "dirty": false
+    }
+  ],
+  "additional_repositories": [
+    {
+      "repo": "ducks/claux",
+      "sha": "4bdeb40532c9267e2a9d27e3caac81e21ef63e39",
+      "license": null,
+      "pushed_at": "2026-09-07T21:46:26Z"
+    },
+    {
+      "repo": "open-multi-agent/open-multi-agent",
+      "sha": "e678bfb3e7c9313be78303c2c32294417bb58dbb",
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      },
+      "pushed_at": "2026-09-07T13:57:10Z"
+    }
+  ]
+}

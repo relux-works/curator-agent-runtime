@@ -1,0 +1,9 @@
+{
+  "candidate": "bb8971f8ac409ef826d4cf0f85e0cb84a661bce8",
+  "candidate_report_and_board_equal": true,
+  "exact_object_source_anchors": "37/37",
+  "unchanged_previously_accepted_files": "5/5",
+  "diff_check_exit": 2,
+  "diff_check_output": ".research/260908_claude-lineage.md:216: new blank line at EOF.\n",
+  "scope": "Static document checks only; no third-party code execution"
+}

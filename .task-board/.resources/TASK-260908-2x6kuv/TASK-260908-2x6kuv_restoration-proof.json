@@ -1,0 +1,10 @@
+{
+  "run": "RUN-260908-24e0c7",
+  "target_was_absent": true,
+  "restored_sha256": "58ae4e392b49ce5c675d9639f52d83afc7fde15ed4c75e3ac5619c6eac9fe379",
+  "restored_bytes": 45312,
+  "old_bytes": 45313,
+  "old_sha256": "34bbb61869c0b3cb90a1f2dc80ef2863c18985427603024a005157d3137f78bb",
+  "only_delta": "removed single terminal LF",
+  "checkpoint": "048384311e5b163f4d15ffefe3290493a410208d"
+}

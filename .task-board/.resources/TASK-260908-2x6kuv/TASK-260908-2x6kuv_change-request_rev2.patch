@@ -1,0 +1,659 @@
+diff --git a/.research/260908_claude-lineage.md b/.research/260908_claude-lineage.md
+new file mode 100644
+index 0000000..507c141
+--- /dev/null
++++ b/.research/260908_claude-lineage.md
+@@ -0,0 +1,215 @@
++# Claude Code: происхождение открытых переработок и последствия для Apiary
++
++Дата получения источников: **2026-09-08**, часовой пояс рабочего окружения Asia/Tbilisi. Задача: **TASK-260908-2x6kuv**, родитель STORY-260908-1l3m6n. Метод: первичная документация, метаданные GitHub и статическое чтение конкретных файлов закреплённых ревизий. Сторонний код, install scripts, builds и tests **не выполнялись**. Это исследование архитектуры, а не аттестация безопасности или юридическое заключение.
++
++## Вывод для проектирования
++
++Для Apiary целесообразно независимо реализовать небольшое Go-ядро: цикл модели, типизированные события и вызовы, проверка полномочий, budgets/cancellation, журнал и управляемое сокращение контекста. Worker и orchestrator должны отличаться установленными capabilities и политикой, а не двумя реализациями цикла. Источники ниже показывают полезные механизмы и конкретные ошибки границ; они не дают оснований переносить весь Claude-подобный runtime или считать публичную переработку разрешённым источником proprietary кода.
++
++Особенно значимы три наблюдения: Python fork из исходного lead генерирует диагностический текст вместо настоящего model/tool loop; проверенные C++ модули — migration stubs; текущие Rust Claw и claux имеют исполняемую структуру цикла, но принципиально отличаются наследованием разрешений дочерних агентов. В Claw дочерняя policy создаётся с `DangerFullAccess`, в claux она передаётся от родителя. Наличие отдельной conversation само по себе не означает filesystem/process isolation. [P1] [X1] [X2] [C5] [C6] [L3]
++
++## Границы доказательства и поиск
++
++Интернет-поиск включал `github "claw-code" "instructkr"`, `github Claude Code leaked source rewrite clawc`, запросы о Rust rewrite и multi-agent framework. Проверены все три переданных lead; дополнительно найден авторский материал Jake Goldsborough с прямой ссылкой на `ducks/claux` и социальные заявления об Open Multi-Agent. Обследование целевое, **не исчерпывающее**: число stars, скорость их роста, поисковый ранг и чужие обзоры не используются как доказательства качества, происхождения или сопровождения.
++
++Обозначения: **наблюдение** — прочитанный путь кода/метаданные; **заявление** — слова автора проекта; **вывод** — интерпретация наблюдения; **рекомендация** — самостоятельное решение для Apiary. Проверка `pushed_at` свидетельствует лишь об изменениях репозитория, не о работающем продукте. GitHub `archived` и «архив исходников» — разные понятия.
++
++Для каждой скачанной working tree локальный `git rev-parse HEAD` совпал с зафиксированной ниже ревизией. Использованы свежие shallow clones под `.temp/claude-lineage/`; история до этих heads не аудировалась. Никаких аккаунтов, OAuth-хранилищ, credentials или закрытых источников не открывали. Raw `.md` endpoints официальных docs вернули HTTP 403; они не были обойдены. Чтение соответствующих публичных HTML-страниц через web tool удалось. Поэтому официальные docs — **живые страницы на дату получения**, не документальная версия, криптографически связанная с SDK SHA.
++
++## Таблица provenance и доступности
++
++| Объект | Доступность и закрепление | Что подтверждено | Что не установлено / ограничения повторного использования |
++|---|---|---|---|
++| Официальные [Agent SDK docs](https://code.claude.com/docs/en/agent-sdk/overview) | HTML доступен 2026-09-08; прежний platform URL перенаправляет на code.claude.com | Публичный контракт SDK, loop, permissions, hooks, subagents | Docs могут описывать более новый binary, чем отдельная библиотека; это не открытый исходник внутреннего Claude Code loop |
++| `anthropics/claude-agent-sdk-python` | Доступный исходник; SHA **efd4d865ef1795daffee3cd24cce45307aed8a51** | Python transport/control protocol; LICENSE MIT [S1] [S2] [S3] | MIT у wrapper не переоформляет права на bundled Claude Code binary; условия сервиса отдельно |
++| `anthropics/claude-code` | Публичный repo; SHA **ab9b2cf7bb9e4f98ff264c07a22e46d83c29c558** | `LICENSE.md`: права сохранены Anthropic, использование по Commercial Terms [S4] | Публичность репозитория не равна open-source лицензии runtime; внутренний proprietary loop здесь не реконструировался |
++| `instructkr/claw-code` → `ultraworkers/claw-code` | Redirect проверен; SHA **08106b0c3771ef5b4a5aa176acccd460e88b7325**; `archived=false`, `pushed_at=2026-08-16` | Текущий Rust runtime прочитан; README называет проект agent-managed museum exhibit; корневой LICENSE MIT [C0] [C8] | Историческое clean-room заявление видно в Python fork; независимого аудита цепочки прав нет. Смена имени владельца и GitHub redirect не доказывают каждую стадию истории |
++| `mzpatrick0529-mzyh/claw-code` | Доступен; SHA **01bf54ad15a894957f1dfb9fbb0d10f92684c856**; `pushed_at=2026-03-31` | README прямо заявляет fork от instructkr и Python rewrite после изучения exposed harness [P0]; прочитан QueryEngine [P1] | Заявление clean-room не подтверждено процессными доказательствами. Корневого LICENSE в tracked files нет; GitHub license=null. Не полноценный эквивалент runtime |
++| `c2b247007/clawc` | Доступен; SHA **ea4c2616c5b5a3171b5f64841946b26870abcb88**; `pushed_at=2026-04-01` | Автор заявляет C++ rewrite, вдохновлённый leak, и предупреждает о stubs [X0]; проверенные implementation bodies — stubs [X1]–[X4] | Не доказана работоспособность C++ loop, permission enforcement, hooks или compaction. Корневого LICENSE нет; GitHub license=null |
++| `ducks/claux` | Доступный Rust source; SHA **4bdeb40532c9267e2a9d27e3caac81e21ef63e39**; `pushed_at=2026-09-07` | [Авторский рассказ](https://jakegoldsborough.com/blog/2026/rewriting-claude-code-in-rust-with-claude/) прямо описывает чтение исходника из leak и генерацию Rust; реализация рассмотрена ниже | Это подтверждение **заявленного происхождения**, не экспертиза оригинальности. Cargo.toml указывает MIT [L7], но корневого LICENSE нет, GitHub license=null; недостаточно для беспроблемного заимствования |
++| `open-multi-agent/open-multi-agent` (OMA) | Доступный TypeScript source; SHA **e678bfb3e7c9313be78303c2c32294417bb58dbb**; `pushed_at=2026-09-07`; LICENSE MIT [O6] | Реальные runner, executor, context strategy и task prompt прочитаны [O1]–[O5] | [Социальный пост](https://www.reddit.com/r/LocalLLaMA/comments/1s8xj2e/claude_codes_source_just_leaked_i_extracted_its/) заявляет извлечение архитектуры; связь автора аккаунта с владельцем repo не подтверждена. Прочитанный текущий README не заявляет leak lineage. **Не классифицируем как доказанный descendant** |
++| `shawnchen732/claw-cli-claude-code-source-code-v2.1.88` | [Repo на закреплённой ревизии](https://github.com/shawnchen732/claw-cli-claude-code-source-code-v2.1.88/tree/6f3ce157cbedd71261cbfe7147417b1187033f6b) и API доступны; SHA **6f3ce157cbedd71261cbfe7147417b1187033f6b** | README/description позиционируют snapshot v2.1.88 и попытку Bun build. API: `archived=false`, `pushed_at=2026-03-31`, license=null | Переданный lead «archived» не подтверждается флагом GitHub. Это заявленный архив proprietary snapshot, не доказательство независимой поддерживаемой переработки. Source tree намеренно не клонировалась и не использовалась для технических выводов; не утверждаем её недоступность |
++
++Удалённых/недоступных canonical repositories среди проверенных lead не установлено. Недоступными оказались именно `.md` представления официальных страниц. Отсутствие лицензии, отказ чтения и отсутствие реализации фиксируются раздельно. LazyCodex/Gajae-Code упомянуты текущим Claw README как рекомендуемые автором проекты; эта ссылка сама по себе не подтверждает происхождение от leak, поэтому в таблицу доказанных descendants они не добавлены. OpenClaw, Pi и OpenCode также не объявляются descendants по сходству интерфейсов.
++
++## Официальная поверхность: что действительно можно использовать
++
++**Наблюдение по исходнику.** `SubprocessCLITransport.connect` проверяет CLI, собирает команду и запускает процесс через `anyio.open_process` со stdin/stdout pipes и cwd. `Query._handle_control_request` разбирает `can_use_tool`, вызывает пользовательский callback и сериализует allow/deny; другая ветка dispatch вызывает hook callback. Это проверяемый открытый transport/control слой, а не Python-реализация model loop. В прочитанном callback context `signal=None` с TODO: нельзя обещать полную семантику cancellation из одного общего описания SDK. [S1] [S2]
++
++**Документированный контракт.** [Agent loop](https://code.claude.com/docs/en/agent-sdk/agent-loop) описывает повторение model response → tool execution → tool results; отсутствие tool calls завершает цикл. Есть budgets/max turns и разные result subtypes. Автоматическая compaction заменяет старую историю summary и выдаёт `compact_boundary`; ранние инструкции могут потеряться. Для Go официальный overview предлагает CLI subprocess, тогда как библиотеки представлены Python/TypeScript. Это вариант использовать чужой готовый harness, а не заменить model adapter собственного Go-loop.
++
++[Permissions](https://code.claude.com/docs/en/agent-sdk/permissions) описывает порядок hooks, deny, ask и последующих разрешений: hook allow не отменяет deny/ask. Следствие для Apiary — решение о запуске нельзя свести к названию режима или model-visible списку tools. [Subagents](https://code.claude.com/docs/en/agent-sdk/subagents) документирует отдельный контекст, ограничение tools и возврат результата родителю; это контракт контекста, не универсальная гарантия ОС-изоляции. [Hooks](https://code.claude.com/docs/en/agent-sdk/hooks) различает lifecycle events, в том числе PreCompact, и неодинаковые последствия ошибок/timeout. Для собственного ядра нужен явный тип hook: обязательный policy gate либо необязательный observer.
++
++Эти страницы живые: например, permissions содержит уточнение для Claude Code v2.1.212, а hooks — изменение поведения v2.1.208. Нельзя приписывать эти детали snapshot v2.1.88 или всем версиям SDK.
++
++## Реальные механизмы в inspectable переработках
++
++### Rust Claw: полный путь, но небезопасно переносить defaults
++
++**Наблюдение.** `ConversationRuntime::run_turn` добавляет пользовательское сообщение, считает iterations, вызывает `api_client.stream`, собирает assistant message и ToolUse blocks. Для каждого tool выполняется pre-hook; изменённый input передаётся в `authorize_with_context`; отказ становится tool_result; разрешение ведёт к `tool_executor.execute`; далее вызываются post-success/post-failure hooks. В этом пути tools выполняются последовательно. Post-hook может пометить результат ошибкой, но уже совершённое действие не откатывает. [C1]
++
++**Hooks.** `RuntimeHookRunner::run_command` запускает shell command с JSON stdin и данными события; exit 0 разбирается на allow/deny, exit 2 означает deny, прочие коды — failure. В `run_turn` failure/cancel pre-hook также приводят к отказу. Это реально подключённый gate, а не только перечень поддерживаемых событий. Процесс shell hook сам по себе требует ограниченного окружения и контроля полномочий; проверенный код не доказывает общей sandbox-гарантии. [C4] [C1]
++
++**Compaction.** `compact_session` сохраняет хвост, корректирует границу рядом с tool-result и вставляет summary. `summarize_messages` строит его детерминированно из счётчиков, имён tools, последних запросов, извлечённых путей и сокращённой временной линии; вызова модели в этой функции нет. Это эвристическая компрессия, а не доказанная семантическая сохранность задачи. `run_turn` вызывает auto-compaction до следующего API-вызова, в том числе в последней итерации. Наличие boundary logic не доказывает корректность всех многоблочных provider последовательностей: тесты здесь не запускались. [C2] [C3] [C1]
++
++**Subagents/tasks.** `spawn_agent_job` создаёт Rust thread, ловит panic и сохраняет terminal state. `run_agent_job` строит новый ConversationRuntime/Session и вызывает `run_turn(..., None)`; `allowed_tools_for_subagent` задаёт ограниченный набор по типу. Но `agent_permission_policy` создаёт `DangerFullAccess`, а не получает parent policy. Это конкретный пример потенциального расширения полномочий на delegation boundary; реальную exploitability и все внешние gate-пути мы не проверяли. Thread и новый Session не создают отдельную ОС-среду. `TaskRegistry` хранит task status/heartbeat/output; это другой механизм, чем изолированное исполнение дочернего агента. [C5] [C6] [C9]
++
++**Дополнительная граница.** `PermissionEnforcer::check` в Prompt возвращает Allowed, делегируя решение внешнему interactive flow; другие методы обрабатывают Prompt иначе. Поэтому результат отдельного helper нельзя использовать как доказательство защищённости entrypoint. Лексическая workspace-проверка и классификация shell commands также не заменяют filesystem sandbox. [C7]
++
++**Последствие для Apiary.** Не переносить enum-иерархию permissiveness и child default full access. Подписываемое/версионируемое разрешение дочернего запуска должно быть подмножеством родительского; model transcript не является источником полномочий. Orchestrator tool-skill создаёт дочерний run через Curator sandbox boundary; Go-loop получает уже ограниченный executor.
++
++### claux: единый цикл, transactional compaction и наследование policy
++
++**Наблюдение.** `Engine` использует общий `run_turn` для submit и streaming entrypoints. Dispatch проверяет permission для каждого вызова; смежные read-only + Allow вызовы группируются, mutating/Ask/Deny прерывают такую группу. Cancellation и steering проверяются перед выполнением; непроизошедшим вызовам возвращаются error results. В non-interactive режиме Ask превращается в отказ. Это статически прочитанное поведение, а не измерение throughput. [L1]
++
++**Compaction.** `compact_with_cancel` вызывает `summarize_conversation` через provider с пустым tool list. До замены истории проверяется: stream завершён, нет cancellation, summary непустой, оценка нового контекста меньше прежней. Ошибка сохраняет историю; provider cursor сбрасывается на соответствующих отказах. Сохраняется исходный запрос; continuation зависит от того, будет ли новый пользовательский ввод. Порог сам по себе не гарантирует качество summary, но замена перестаёт быть необратимым усечением по любому ответу модели. [L2]
++
++**Subagent.** `AgentTool::execute` создаёт provider и отдельный Engine, использует `ToolRegistry::without_agent`, получает `permission_policy.checker()`, передаёт trust/sandbox objects и cancellation. Вложенный Agent отсутствует. Отдельный контекст сочетается с общей рабочей директорией; это не отдельный контейнер. Переносимый паттерн — наследование policy и сужение tool registry, а не копирование prompt. [L3]
++
++**Hooks: важное различие.** `fire_hook` исполняет side effects и логирует ошибку; `decide_permission` сначала получает обычное решение, затем интерпретирует `OnPermissionCheck` outputs. `PluginRegistry::execute_decisions` логирует ошибки plugins и не включает их в возвращённые решения; malformed verdict также лишь предупреждает в `decide_permission`. Следовательно, такой hook нельзя без изменения контракта назначить обязательным compliance gate: отказ инфраструктуры может оставить исходное разрешение действующим. Это вывод о прочитанном пути; не утверждение, что любой hook всегда bypasses policy. [L4] [L5] [L8]
++
++**Provider boundary.** `Provider` принимает messages/system/tools и возвращает ProviderStream; `Drop` потока отменяет reader, а `reset_session` отделяет provider continuation cursor от новой conversation. Для Go полезны owner-controlled cancellation и явный сброс provider session после переписывания контекста. Это не повод переносить credential lookup в tools. [L6]
++
++### Python fork и C++ clawc: пределы заявленного паритета
++
++В Python `QueryEngine.submit_message` форматирует prompt, matched commands/tools и число отказов в output, вычисляет usage, записывает prompt и обрезает history; `stream_submit_message` оборачивает это в события. В прочитанном методе нет сетевого model call и рекурсивного выполнения новых tools по model output. `compact_messages_if_needed` оставляет последние N записей, без semantic summary. `ToolPermissionContext.blocks` сопоставляет lower-case names/prefixes. Это полезный scaffolding, но не основание объявлять восстановленную production architecture. Hooks и изоляция исполняемых subagents в этих прочитанных путях не установлены; перечни mirrored modules не считаются реализацией. [P1] [P2]
++
++В `clawc` проверены `src/query.cpp`, `src/permissions.cpp`, `cpp/crates/runtime/src/compact.cpp`, `cpp/crates/runtime/src/hooks.cpp`: исполняемые тела `migration_note_`/`migration_note` возвращают строку о незавершённом переносе; Python/Rust тела вложены в комментарии как reference. Таким образом, для этих **4 из 4 проверенных файлов** продемонстрированы заглушки, а не действующий C++ механизм. Это не измерение доли заглушек во всём repo. Комментарии нельзя засчитать за работающий loop, permissions или hooks; никаких runtime результатов этому проекту не приписываем. [X1] [X2] [X3] [X4]
++
++### OMA: содержательный comparator с неподтверждённой lineage
++
++**Наблюдение.** `AgentRunner.run` получает `toolDefs = resolveTools()` и сохраняет grantedToolNames. `executeToolCall` повторно проверяет имя перед ToolExecutor: даже зарегистрированный, но не выданный агенту tool возвращает ошибку. В executor после schema parse проверяются abort и gate; исключение или malformed gate decision означает error result. Durable approval сравнивается с hash текущего validated invocation; suspend возвращает pending approval вместо исполнения. Это разделение model visibility, runtime admission и human approval полезно независимо от происхождения OMA. Проверка hash не является доказательством доверия к личности reviewer: полный authority backend здесь не аудирован. [O1] [O2] [O3]
++
++**Контекст и задачи.** `compactMessages` оставляет первый user message и последние turn pairs, сокращая старые большие блоки; это rule-based strategy без LLM-вызова в этой функции, наряду с отдельно существующей summarize strategy. `executeQueue` вызывает `buildTaskPrompt`; последний по умолчанию добавляет только результаты explicit dependencies, а полную shared memory — при `memoryScope=all`. Это ограничение информационной видимости, не ОС sandbox. Сам scheduler — отдельный orchestration слой, который Apiary не обязан встраивать в kernel. [O4] [O5]
++
++Никакое из этих наблюдений не доказывает копирование Claude Code. OMA оставлен в отчёте как реально исследованный сравнительный framework, а не как установленный потомок leak. [O0]
++
++## Лицензии, происхождение и entitlement
++
++**Проверенные лицензии.** Корневые MIT LICENSE прочитаны у Claw, OMA и Python Agent SDK. У claux прочитано только `license = "MIT"` в Cargo.toml; отсутствие корневого LICENSE и GitHub license=null сохранены как расхождение сигналов. У Python fork и clawc корневого LICENSE нет. У официального Claude Code LICENSE.md прямо сохраняет права Anthropic. README «clean-room», смена языка, открытый GitHub и MIT файл у третьего лица не доказывают права этого лица на весь исходный материал. Для code reuse потребуются отдельная проверка цепочки прав/зависимостей и выполнение действительных лицензий; этот отчёт не выдаёт такого разрешения. [C8] [O6] [S3] [S4] [L7]
++
++**Независимое проектирование.** Рекомендации ниже сформулированы заново из наблюдаемых границ и публичных контрактов. В deliverable не перенесены исходники leak, proprietary prompts, credentials или большие выдержки из лицензий. Перед разработкой следует использовать этот prose-контракт и собственные тесты, а не port snapshot; это способ ограничить заимствование выражения, не юридическая гарантия отсутствия спора.
++
++**Подписка не равна API entitlement.** [Официальный overview SDK](https://code.claude.com/docs/en/agent-sdk/overview) требует API-key methods для сторонних продуктов, если нет отдельного разрешения на claude.ai login/rate limits. [Legal and compliance](https://code.claude.com/docs/en/legal-and-compliance) отдельно допускает пользовательский вход в неизменённый Claude Code, в том числе размещённый платформой, при соблюдении условий: binary не модифицируется, встроенные способы входа не ограничиваются, использование оплачивает сам пользователь, платформа не посредничает в его credentials/usage. Для собственного Go harness это **не** разрешение применять subscription token в самодельном HTTP adapter. API key или поддерживаемый cloud-provider credential — другой разрешённый канал. Конкретные тарифы, лимиты и доступность моделей в аккаунте здесь не проверялись.
++
++## Предлагаемые границы Apiary и отвергнутые варианты
++
++Все строки ниже — **рекомендации**, не описание уже существующего Apiary runtime.
++
++| Решение | Конкретный контракт | Основание / отвергнутая альтернатива |
++|---|---|---|
++| Один Go kernel для двух профилей | Run/session IDs, model event stream, bounded loop, typed tool call/result, policy decision, cancellation и durable journal | Не создавать два цикла с различающейся headless semantics; claux показывает смысл общего dispatch [L1] |
++| Worker: один центральный typed tool-skill | Операция с закрытой схемой и установленным Curator executor; capability на run/операцию/ресурс. При необходимости signing — отдельный узкий вызов, привязанный к digest и разрешённому действию | Не прятать произвольный shell/eval внутри «одного инструмента»: малое число имён не означает малые полномочия [O1] [C7] |
++| Orchestrator: тот же kernel | Curator устанавливает project-management, communication и sandbox tool-skills; task DAG и routing принадлежат этим расширениям | Не помещать scheduler/team registry/MCP clients во внутреннюю модель ядра только ради Claude-паритета [C9] [O5] |
++| Admission перед каждым side effect | Parse → scope/policy → required gate → execute → journal result; скрытие tool schema дополняется проверкой перед execute | Не считать tool list достаточной защитой; OMA проверяет granted set повторно [O2] |
++| Дочерний запуск | Child policy ≤ parent policy; отдельные run IDs, transcript, budgets и capability envelope; sandbox задаётся Curator | Не переносить Claw default DangerFullAccess и не считать thread/new Session sandbox [C5] [C6] [L3] |
++| Обязательные gates и observers разделены | Gate timeout/error/malformed output = отказ; observer failure = отдельное диагностическое событие | Не назначать best-effort hook охранным барьером [L4] [L5] |
++| Compaction как транзакция | Сохранить исходный журнал; проверить завершение summary, непустоту, уменьшение context estimate и целостность tool-call/result; только затем заменить view | Не обрезать историю просто по N turns; не повышать summary до источника policy/доказательств [P1] [L2] [C2] |
++| Providers вне tool-skills | Provider adapter принимает normalized request и закрытую host-side credential reference; model-visible tool не читает и не выбирает credentials | Не превращать API/OAuth bootstrap в вызов модели. Provider cursor и cancellation принадлежат runtime/adapter [L6] |
++| MCP только out-of-process | Curator-installed wrapper владеет MCP session/transport; kernel видит типизированный capability interface и ограниченный result | Не встраивать MCP registry/protocol и provider login в минимальный kernel. SDK показывает практичность процессной границы [S1], но не диктует MCP форму Apiary |
++| Официальный Claude Code — отдельная интеграция | При необходимости запуск неизменённого binary как внешнего harness с явно обозначенными terms | Не называть binary subprocess «model provider» своего loop и не выдавать subscription за универсальный API доступ |
++
++**Предлагаемые проверки при реализации** (здесь не выполнялись): неизвестный/невыданный tool; изменённый input после approval; gate timeout/exception; child запрос capability шире parent; отмена во время tool и provider stream; crash до/после записи result; summary stream без completion; summary без сокращения; orphan tool_result; повторное исполнение irreversible tool после resume. Обязательные изменения runtime должны сопровождаться отрицательными tests через реальный entrypoint. Этот research не содержит runtime delta и не подменяет такие tests.
++
++## Журнал исследования, локальный контекст и открытые вопросы
++
++- 2026-09-08: подтверждён redirect instructkr → ultraworkers; текущая museum-позиция расходится со старыми описаниями Python-first. Не смешивать эти состояния.
++- 2026-09-08: исправлено предположение lead об archived snapshot: API сообщает archived=false. Содержательно это всё равно заявленный source snapshot, не доказанная независимая переработка.
++- 2026-09-08: подтверждены stubs в четырёх C++ файлах; benchmark/build claims из README не использовались как результаты проверки.
++- 2026-09-08: выявлены различия child permissions Claw/claux и best-effort permission-hook ошибок claux; записаны как архитектурные риски с ограничением статической проверки.
++- 2026-09-08: официальные `.md` fetch получили 403; публичный HTML прочитан, обходов не предпринималось. Не выдаём непрочитанный markdown snapshot за закреплённую документацию.
++
++Локальные siblings читались только для origin/HEAD/dirty inventory, не изменялись. Эти HEAD не заявляются текущим remote main; свежие remote snapshots siblings не требовались, поскольку их содержимое не служит доказательством внешней lineage или нормативных требований. Целевые ограничения Apiary взяты из задания, не приписаны этим репозиториям.
++
++| Repo | Origin | HEAD | Working tree |
++|---|---|---|---|
++| apiary-docs | git@github.com:relux-works/apiary-docs.git | `e4249a6193c0f2730e7cffaea6b4907c0a7e80a9` | clean |
++| curator | https://github.com/relux-works/curator.git | `a66eec88fa4dfb8f3ca098f594f6e48af57a6835` | dirty; сохранён без изменений |
++| curator-spec | https://github.com/relux-works/curator-spec.git | `87a0d0060bad64ab883d007dcdf35df7485368bf` | clean |
++| skill-project-management | git@github.com:relux-works/skill-project-management.git | `074c249df6c316958184dca5da3049a378adfb5a` | clean |
++
++Открыто для отдельной проверки перед code reuse: права на отдельные файлы переработок и их источники; лицензирование claux при отсутствии LICENSE; документально подтверждённая lineage OMA; семантическая сохранность compaction; реальная containment/credential isolation каждого runtime. Эти вопросы **не блокируют независимую реализацию предложенного минимального контракта**, но блокируют вывод «можно без проверки скопировать runtime».
++
++## Проверка deliverable и воспроизводимость
++
++Все clone-команды завершились exit 0; их logs и `repositories.json`, `snapshot-pins.json`, `local-inputs.json` находятся в `.temp/claude-lineage/`. Изначальный поиск отсутствующих skill directories через `rg` завершился exit 2 (часть каталогов отсутствует); это не отсутствие всех skills: указанный role skill прочитан по абсолютному пути. Процесс получения metadata/markdown завершился exit 0, но **все пять markdown HTTP fetch отказали с 403** — это обработанные ошибки, а не успешная загрузка.
++
++Отдельная проверка документа `python3 .temp/claude-lineage/verify_report.py` проверяет разрешение ссылок на закреплённые локально исходники, существование line anchors и SHA; это структурная проверка, не автоматическая оценка истинности текста. `git diff --check -- .research/260908_claude-lineage.md` проверяет формат diff. Результаты этих команд и ограничения переданы в task-scoped handoff resource. Чужие тесты не запускались; benchmark, security guarantee и юридическая чистота не заявлены.
++
++## Закреплённые ссылки на прочитанный код
++
++Ниже каждый идентификатор ведёт на exact commit и начальную строку соответствующего прочитанного блока. Полные пути и symbol names описаны в тексте; локальные clones — вспомогательная воспроизводимость, GitHub permalinks — переносимая evidence surface.
++
++[C0]: https://github.com/ultraworkers/claw-code/blob/08106b0c3771ef5b4a5aa176acccd460e88b7325/README.md#L69
++
++[C1]: https://github.com/ultraworkers/claw-code/blob/08106b0c3771ef5b4a5aa176acccd460e88b7325/rust/crates/runtime/src/conversation.rs#L325
++
++[C2]: https://github.com/ultraworkers/claw-code/blob/08106b0c3771ef5b4a5aa176acccd460e88b7325/rust/crates/runtime/src/compact.rs#L96
++
++[C3]: https://github.com/ultraworkers/claw-code/blob/08106b0c3771ef5b4a5aa176acccd460e88b7325/rust/crates/runtime/src/compact.rs#L203
++
++[C4]: https://github.com/ultraworkers/claw-code/blob/08106b0c3771ef5b4a5aa176acccd460e88b7325/rust/crates/runtime/src/hooks.rs#L421
++
++[C5]: https://github.com/ultraworkers/claw-code/blob/08106b0c3771ef5b4a5aa176acccd460e88b7325/rust/crates/tools/src/lib.rs#L4175
++
++[C6]: https://github.com/ultraworkers/claw-code/blob/08106b0c3771ef5b4a5aa176acccd460e88b7325/rust/crates/tools/src/lib.rs#L4338
++
++[C7]: https://github.com/ultraworkers/claw-code/blob/08106b0c3771ef5b4a5aa176acccd460e88b7325/rust/crates/runtime/src/permission_enforcer.rs#L27
++
++[C8]: https://github.com/ultraworkers/claw-code/blob/08106b0c3771ef5b4a5aa176acccd460e88b7325/LICENSE#L1
++
++[C9]: https://github.com/ultraworkers/claw-code/blob/08106b0c3771ef5b4a5aa176acccd460e88b7325/rust/crates/runtime/src/task_registry.rs#L125
++
++[P0]: https://github.com/mzpatrick0529-mzyh/claw-code/blob/01bf54ad15a894957f1dfb9fbb0d10f92684c856/README.md#L16
++
++[P1]: https://github.com/mzpatrick0529-mzyh/claw-code/blob/01bf54ad15a894957f1dfb9fbb0d10f92684c856/src/query_engine.py#L61
++
++[P2]: https://github.com/mzpatrick0529-mzyh/claw-code/blob/01bf54ad15a894957f1dfb9fbb0d10f92684c856/src/permissions.py#L7
++
++[X0]: https://github.com/c2b247007/clawc/blob/ea4c2616c5b5a3171b5f64841946b26870abcb88/README.md#L9
++
++[X1]: https://github.com/c2b247007/clawc/blob/ea4c2616c5b5a3171b5f64841946b26870abcb88/src/query.cpp#L1
++
++[X2]: https://github.com/c2b247007/clawc/blob/ea4c2616c5b5a3171b5f64841946b26870abcb88/src/permissions.cpp#L1
++
++[X3]: https://github.com/c2b247007/clawc/blob/ea4c2616c5b5a3171b5f64841946b26870abcb88/cpp/crates/runtime/src/compact.cpp#L1
++
++[X4]: https://github.com/c2b247007/clawc/blob/ea4c2616c5b5a3171b5f64841946b26870abcb88/cpp/crates/runtime/src/hooks.cpp#L1
++
++[L1]: https://github.com/ducks/claux/blob/4bdeb40532c9267e2a9d27e3caac81e21ef63e39/src/query.rs#L1730
++
++[L2]: https://github.com/ducks/claux/blob/4bdeb40532c9267e2a9d27e3caac81e21ef63e39/src/query.rs#L849
++
++[L3]: https://github.com/ducks/claux/blob/4bdeb40532c9267e2a9d27e3caac81e21ef63e39/src/tools/agent.rs#L125
++
++[L4]: https://github.com/ducks/claux/blob/4bdeb40532c9267e2a9d27e3caac81e21ef63e39/src/query.rs#L1900
++
++[L5]: https://github.com/ducks/claux/blob/4bdeb40532c9267e2a9d27e3caac81e21ef63e39/src/plugin.rs#L181
++
++[L6]: https://github.com/ducks/claux/blob/4bdeb40532c9267e2a9d27e3caac81e21ef63e39/src/api/provider.rs#L9
++
++[L7]: https://github.com/ducks/claux/blob/4bdeb40532c9267e2a9d27e3caac81e21ef63e39/Cargo.toml#L1
++
++[L8]: https://github.com/ducks/claux/blob/4bdeb40532c9267e2a9d27e3caac81e21ef63e39/src/query.rs#L405
++
++[O0]: https://github.com/open-multi-agent/open-multi-agent/blob/e678bfb3e7c9313be78303c2c32294417bb58dbb/README.md#L40
++
++[O1]: https://github.com/open-multi-agent/open-multi-agent/blob/e678bfb3e7c9313be78303c2c32294417bb58dbb/packages/core/src/agent/runner.ts#L1113
++
++[O2]: https://github.com/open-multi-agent/open-multi-agent/blob/e678bfb3e7c9313be78303c2c32294417bb58dbb/packages/core/src/agent/runner.ts#L1816
++
++[O3]: https://github.com/open-multi-agent/open-multi-agent/blob/e678bfb3e7c9313be78303c2c32294417bb58dbb/packages/core/src/tool/executor.ts#L198
++
++[O4]: https://github.com/open-multi-agent/open-multi-agent/blob/e678bfb3e7c9313be78303c2c32294417bb58dbb/packages/core/src/agent/runner.ts#L2037
++
++[O5]: https://github.com/open-multi-agent/open-multi-agent/blob/e678bfb3e7c9313be78303c2c32294417bb58dbb/packages/core/src/orchestrator/task-execution.ts#L1789
++
++[O6]: https://github.com/open-multi-agent/open-multi-agent/blob/e678bfb3e7c9313be78303c2c32294417bb58dbb/LICENSE#L1
++
++[S1]: https://github.com/anthropics/claude-agent-sdk-python/blob/efd4d865ef1795daffee3cd24cce45307aed8a51/src/claude_agent_sdk/_internal/transport/subprocess_cli.py#L787
++
++[S2]: https://github.com/anthropics/claude-agent-sdk-python/blob/efd4d865ef1795daffee3cd24cce45307aed8a51/src/claude_agent_sdk/_internal/query.py#L469
++
++[S3]: https://github.com/anthropics/claude-agent-sdk-python/blob/efd4d865ef1795daffee3cd24cce45307aed8a51/LICENSE#L1
++
++[S4]: https://github.com/anthropics/claude-code/blob/ab9b2cf7bb9e4f98ff264c07a22e46d83c29c558/LICENSE.md#L1
+diff --git a/.research/260908_codex-pi.md b/.research/260908_codex-pi.md
+new file mode 100644
+index 0000000..b94bc11
+--- /dev/null
++++ b/.research/260908_codex-pi.md
+@@ -0,0 +1,344 @@
++# Codex и Pi: исходная архитектура и решения для Apiary
++
++Задача: `TASK-260908-1v88g1`, история `STORY-260908-1l3m6n`. Дата получения: **08.09.2026, Asia/Tbilisi** (07.09.2026 около 22:20–22:40 UTC). Статус документа: исследование для review, не изменение нормативного протокола.
++
++## 1. Главный результат
++
++**Рекомендация:** Apiary нужен один небольшой Go-oriented kernel с явными состояниями turn, provider response и tool invocation. Из Pi следует взять отделение истории приложения от запроса модели, компактный цикл и ясные очереди steering/follow-up. Из Codex — привязку dispatch к снимку объявленных tools, разделение approval и sandbox, аккуратное завершение уже начатых effects при ошибках стрима. Из нового Pi harness — журналируемые намерения, восстановление с неизвестным исходом и запрет произвольного replay. Не следует переносить в kernel ни четыре встроенных coding-tools Pi, ни продуктовую поверхность Codex, ни same-process extension API с доступом к конфигурации провайдера.
++
++Это не сравнение «маленький Pi против большого Codex» по README. На текущей ревизии Pi существуют **classic Agent/AgentSession и отдельный durable AgentHarness**. В classic SDK фабрика `createAgentSession()` создаёт `new Agent(...)`; наличие нового harness не доказывает, что classic CLI получил его гарантии [P2]. Новый harness содержит реальный автомат восстановления [P12–P16], но `Harness.watchSession()` ещё бросает `SliceNotImplemented` [P15].
++
++Критическая развилка: валидный JSON аргументов ещё не означает завершённый ответ модели. Pi classic проверяет terminal stop reason до dispatch; Codex может запустить tool по завершению отдельного output item, до завершения всего ответа [P1, C2, C3]. Поэтому «повторить запрос после сетевой ошибки» не эквивалентно «повторить всё действие».
++
++## 2. Метод и реестр снимков
++
++Обозначения: **Наблюдение** — прочитанный production-код или первичный документ; **Вывод** — следствие с указанными границами; **Решение** — предлагаемое правило Apiary, не утверждение о существующей реализации. Исследование статическое: зависимости не устанавливались, исходный код, OAuth flows и тесты клонированных проектов не запускались. Из наличия теста не выводится его успешность.
++
++| Источник | Запрошенный адрес и каноническая идентичность | Ревизия |
++|---|---|---|
++| Codex | `https://github.com/openai/codex`, GitHub repository id `965415649`, `main` | `8e694e955ae02ca737230a5468c55d5847074072` |
++| Pi | запрос `https://github.com/badlogic/pi-mono`; GitHub API вернул `earendil-works/pi`, repository id `1035029907`, `main` | `b2602be77cb7b0de45dd616407fd210daa48aa75` |
++
++Оба снимка получены свежим `git clone --depth 1`; последующий `git ls-remote origin refs/heads/main` совпал с локальным HEAD. Это актуальность в момент получения, не обещание о будущей вершине `main`. Каталоги `.temp/TASK-260908-1v88g1/codex` и `pi-mono` — изолированные read-only по использованию снимки. Метаданные identity, remote SHA, команды и результаты сохранены рядом. Полная история коммитов не загружалась; происхождение каждого отдельного решения по git blame не устанавливалось.
++
++Канонический перенос Pi подтверждается не только redirect: Mario Zechner в [публикации от 08.04.2026](https://mariozechner.at/posts/2026-04-08-ive-sold-out/) прямо называет переход `badlogic/pi-mono` → `earendil-works/pi`. Названия npm-пакетов в анонсе нельзя автоматически считать актуальными: прочитанный код уже импортирует `@earendil-works/pi-ai`.
++
++### Локальные read-only входы
++
++| Репозиторий | origin | HEAD при осмотре | Рабочее дерево |
++|---|---|---|---|
++| curator-agent-runtime | `git@github.com:relux-works/curator-agent-runtime.git` | `da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f` | основной checkout: untracked `.task-board/`; назначенный worktree исходно чист |
++| apiary-docs | `git@github.com:relux-works/apiary-docs.git` | `b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7` | чист |
++| curator | `https://github.com/relux-works/curator.git` | `a66eec88fa4dfb8f3ca098f594f6e48af57a6835` | многочисленные чужие изменения `.task-board/`, сохранены |
++| curator-spec | `https://github.com/relux-works/curator-spec.git` | `87a0d0060bad64ab883d007dcdf35df7485368bf` | чист |
++| skill-project-management | `git@github.com:relux-works/skill-project-management.git` | `14e2483be64c817a76a19ac8dd5608e717e56285` | чист |
++
++Это ledger origin/HEAD/dirty state, а не заявление о глубоком аудите всех siblings. Архитектурные входы данной работы — задание и прочитанные `docs/architecture.md`, `decisions/0002-tools-are-skills.md`, `decisions/0005-epochs-and-attenuation.md` в назначенном worktree. Нормативные документы не редактировались. Решения ниже уточняют исследовательскую рекомендацию: существующее описание M0 с shell не переносится автоматически в требуемый worker-профиль с одним typed tool-skill.
++
++## 3. Реальные end-to-end пути
++
++### 3.1 Codex: от ввода до следующего sampling
++
++**Наблюдение.** `session/handlers.rs::submission_loop` получает `Submission`, различает `Op::TurnInput`, `Interrupt`, `RecoverTurn`, `SuspendTurnAndShutdown`, shutdown и другие операции. TurnInput передаётся в `turn_input::handle`, а ответ о принятии возвращается через отдельный reply channel [C1]. Это control plane, а не текстовая команда внутри prompt.
++
++`session/turn.rs::run_turn` обслуживает несколько запросов модели в одном пользовательском turn. Между запросами он извлекает pending input, вызывает hooks и записывает входы, получает `StepContext`. Снимок используется совместно для контекста, объявленных tool specs и dispatch. После compaction и в начале turn drain очереди намеренно откладывается, чтобы сохранить порядок продолжения [C2].
++
++`build_prompt` собирает `input`, `base_instructions`, `tool_router.model_visible_specs()`, output schema. `run_sampling_request` создаёт `ToolCallRuntime` и `ModelClientSession`-связанный запрос. `try_run_sampling_request` читает stream events; `OutputItemAdded`/deltas обслуживают промежуточное представление, `OutputItemDone` обрабатывает завершённый item, `Completed` фиксирует terminal response и usage. Конец транспорта без `response.completed` — ошибка, а не успешный конец turn [C2, C6].
++
++Для tool item `stream_events_utils::handle_output_item_done` строит `ToolCall`, записывает item и создаёт future dispatch. `ToolCallRuntime::handle_tool_call_with_source` запускает Tokio task, ждёт readiness и parallel gate, затем `ToolRouter` передаёт `ToolInvocation` в registry. `drain_in_flight` записывает результаты в историю; следующий sampling видит call/result [C3–C5].
++
++**Вывод.** Здесь нужны минимум три идентичности: пользовательский turn, запрос модели и invocation. UI-item id не заменяет effect id. Событие «tool показан» не должно служить подтверждением исполнения.
++
++**Решение Apiary.** Одна goroutine-владелец session state, явные команды `Start`, `Steer(expectedTurnID)`, `Cancel`, `Resume`. Сетевые и tool workers возвращают коррелированные события; никакие callbacks не изменяют authority напрямую. Вызов закрепляется за `epochID + planDigest + requestID + callID + toolBindingDigest`.
++
++### 3.2 Pi classic: минимальный цикл с полноценными границами
++
++**Наблюдение.** `createAgentSession()` связывает model runtime, resource loader, settings, session manager и `Agent`. Восстановленные сообщения помещаются в `agent.state.messages` [P2]. `Agent.prompt()` запрещает второй конкурентный prompt; предлагает `steer()`/`followUp()`. `runWithLifecycle` устанавливает AbortController и running state, вызывает `runAgentLoop`, обрабатывает исключения и только в `finally` очищает activeRun [P3].
++
++`runAgentLoop` добавляет prompts и испускает `agent_start → turn_start → message_start/end`. Внутренний `runLoop` берёт steering; перед очередным запросом вызывает `prepareNextTurn`; `streamAssistantResponse` применяет `transformContext`, затем `convertToLlm`, разрешает auth для provider и передаёт `Context` в stream function. Полученный terminal message сохраняется в текущем контексте [P1].
++
++После ответа: `error/aborted` прекращают цикл без tool dispatch; `length` превращает все tool calls в ошибки исполнения без запуска. Иначе `prepareToolCall`: поиск имени → prepareArguments → schema validation → beforeToolCall → проверка abort → execute → afterToolCall → tool result. После batch появляются `turn_end`, затем новый steering или follow-up. Follow-up извлекается во внешнем цикле, когда агент иначе остановился бы [P1].
++
++**Существенная деталь.** В этой ревизии steering опрашивается между model/tool turns, а не после каждого отдельного sequential tool. Нельзя приписывать ему «немедленно остановить следующий tool» из старых обзоров. AbortSignal проверяется отдельно; отмена кооперативна для произвольного tool callback.
++
++`Agent.processEvents` сначала меняет state, затем ждёт listeners. `agent_end` ещё не означает idle: awaited обработчики должны завершиться до `finishRun`. Но `AgentSession._handleAgentEvent` уведомляет extensions и listeners **до** `SessionManager.appendMessage`. Публичная нотификация поэтому не является квитанцией durable append [P3, P4].
++
++**Решение Apiary.** Взять краткость и разделение observer/control, но ввести явные `observed`, `committed`, `settled` состояния. Подтверждение принятого steering выдавать после append inbox record; очереди сохранять с ID сообщений, а не только текстом.
++
++### 3.3 Pi durable harness: отдельный путь, не гарантия classic CLI
++
++**Наблюдение.** `Harness` управляет именованными lanes. `lane()` создаёт или восстанавливает lane через `session.mutate`; `Lane.prompt()` вызывает `driveRunRequest`, а установленный drive запускает `driveOperation`. Автомат различает `starting`, `checkpoint`, `assistant.ready`, `assistant.effect_pending`, `assistant.retry_wait`, `tools`, deferred и summary states. Отсутствие продвижения состояния — invariant error [P12, P15, P16].
++
++`publishResponse` атомарно классифицирует terminal response, записывает assistant entry, usage и новый operation state. Ошибка не становится tool batch; retry ограничен policy; overflow имеет отдельное восстановление. `recoverAssistantGeneration` восстанавливает только committed prefix frames и явно сообщает, что более новый live output мог быть утрачен, а внешний исход неизвестен [P13].
++
++`publishToolIntent` переводит call в `effect_pending` до effect; `publishToolOutcome` фиксирует исход. `recoverToolInvocation` повторяет действие только если **и сохранённый call, и текущий tool** помечены `replay: safe`, и нет отмены. Иначе создаёт interrupted result с неизвестным внешним исходом [P14]. Это не exactly-once: внешняя система может выполнить эффект до аварии и до записи результата.
++
++`MutationLine` сериализует read-modify-write одной Session. `JsonlStorage.commit` сериализует append транзакций; сначала append, затем изменение materialized state. Чтение v4 отвергает повреждённую полную строку, незавершённый хвост обрабатывает отдельно [P17]. Это не доказательство межпроцессного fencing или fsync каждого эффекта. `watchSession()` не реализован [P15].
++
++**Решение Apiary.** Adopt автомат intent/effect/outcome и honest unknown. Change `replay: safe`: метка должна принадлежать проверенному Curator binding, а не произвольному runtime extension. Для неидемпотентных операций нужны idempotency key или reconciliation endpoint; без них recovery останавливает повтор этого эффекта и сообщает unknown.
++
++## 4. Сессии, steering, cancellation и concurrency
++
++| Вопрос | Codex | Pi classic / durable | Последствие для Apiary |
++|---|---|---|---|
++| Конкурентный ввод | control channel и active-turn routing; steer проверяет ожидаемый turn [C1] | classic prompt отказывает при activeRun, отдельные очереди; durable inbox в lane [P3, P16] | `expectedTurnID`, durable acceptance ID, независимый control channel |
++| Когда применяется конфигурация | request-scoped StepContext [C2, C4] | classic `prepareNextTurn` обновляет model/tools/system prompt; durable lane/config state [P4, P15] | immutable epoch и отдельный request snapshot |
++| Параллельные tools | read-lock для разрешённых parallel; write-lock для остальных [C4] | classic один sequential tool делает batch sequential, иначе Promise.all; результаты возвращаются в исходном порядке [P1] | по умолчанию sequential; concurrency class задаёт trusted binding |
++| Отмена | CancellationToken, child tasks, abort-on-drop, terminal-outcome race handling [C4] | AbortController; callback может игнорировать signal; durable cancellation marker и reconciliation [P3, P16] | deadline и остановка процесса принадлежат broker; cancel не равен rollback |
++| Завершение | `Completed`, завершение turn и tool results — разные события [C2] | `agent_end` до idle, message notification до persistence [P3, P4] | отдельное durable settled событие |
++| Возобновление | rollout history + специальный RecoverTurn/suspend [C1, C8, C9] | classic reconstruct tree; durable operation-state recovery [P5, P12] | restore разговора отдельно от возобновления незавершённых effects |
++
++**Граница доказательства.** `RwLock` Codex — gate для данного ToolCallRuntime, не глобальная блокировка файлов разных sessions. `Promise.all` Pi сохраняет порядок массива результатов, но не порядок внешних effects. Эти механизмы не доказывают изоляцию двух агентов, редактирующих один workspace. В Apiary broker должен выдавать конфликтные leases или запрещать конкурентные mutations для одной capability scope; file locking и workspace policy остаются обязательными независимо от языка kernel.
++
++## 5. Tools и schema: типы не дают полномочий
++
++**Codex, наблюдение.** `ToolRouter` хранит finalized план с model-visible specs и executable registry. `ToolCall` различает payload kinds и сохраняет call id; registry отвергает неизвестное имя и несовместимый payload kind [C5]. Вызов идёт с исходным StepContext, даже когда исполняется позже [C4]. Это полезнее mutable map, которую можно заменить между объявлением schema и execute.
++
++Registry не следует считать универсальным JSON Schema firewall: в прочитанном dispatch проверяются имя/kind и hooks; параметры конкретных tools разбираются своими handlers. Прочитанный `handlers/mod.rs::parse_arguments<T>` использует `serde_json::from_str`, что само по себе не означает выполнение всей объявленной JSON Schema [C16]. Provider-side schema generation и host-side validation — разные обязанности. Нельзя переносить в Apiary утверждение «раз модель получила schema, malformed arguments невозможны».
++
++**Pi, наблюдение.** `prepareToolCall` действительно вызывает `validateToolArguments` перед execute. Валидатор клонирует arguments, нормализует optional null, выполняет преобразования и проверку TypeBox/JSON Schema [P1, P6]. Это runtime validation с coercion, а не строгая byte-for-byte интерпретация исходного JSON. Unknown tool и отказ beforeToolCall возвращаются как error result.
++
++**Оговорка F1: вызов валидатора не гарантирует отказ.** В [`validateToolArguments`, строки 317–332](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/utils/validation.ts#L317) есть ранний `return validator.Check(coerced) ? coerced : args`. Точные предусловия этой ветки: предыдущие операции clone/normalization/`Value.Convert`/compile не бросили исключение; у schema нет собственного symbol `TypeBox.Kind`; `coerceWithJsonSchema` вернул значение, для которого `coerced !== args`; исходное и преобразованное значения не являются одновременно non-null objects. Если затем `validator.Check(coerced)` возвращает false, возвращается `args`, минуя общий `Check(args)` и общий throw. Для scalar это исходное клонированное значение. Ветка object→object вместо этого копирует свойства и продолжает общую проверку; нельзя переносить scalar-вывод на неё.
++
++**Статический контрсценарий, не воспроизведение.** Plain root schema `{type:"number", minimum:10}`, вход `"7"`: [`coercePrimitiveByType` и `coerceWithJsonSchema`](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/utils/validation.ts#L62) допускают преобразование в 7, после чего при false от constraint check ранний выход возвращает `"7"`. Проверена структура control flow; поведение зависимостей в исполнении не проверялось. Допуск scalar-root schemas конкретными model providers **не установлен**; сетевой exploit не доказан. Custom/untyped SDK input или root replacement через `prepareArguments` — рассматриваемые host-side пути, а не доказанный штатный provider response.
++
++**Связь с production.** [`prepareToolCallArguments` / `prepareToolCall`](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/agent-loop.ts#L593) допускают замену arguments callback-ом (TypeScript cast не проверяет root в runtime), вызывают валидатор и сохраняют его результат в `prepared.args` без повторной schema-проверки. При отсутствии блокировки `beforeToolCall`, отмены или другого исключения [`executePreparedToolCall`](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/agent-loop.ts#L677) передаёт это значение в `tool.execute`. Callers подготовки присутствуют в обеих ветках: [`executeToolCallsSequential`:450](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/agent-loop.ts#L450) и [`executeToolCallsParallel`:505](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/agent-loop.ts#L505). Прочитанный [`createToolCallWithPlainSchema`](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/test/validation.test.ts#L7) оборачивает проверяемое значение в object property; это не проверка раннего scalar return. Отсутствие аналогичного теста во всём репозитории не утверждается.
++
++**Вывод.** Coercion удобен для tolerant coding-agent, но меняет предмет approval: человек может одобрить исходные аргументы, а tool получить другие. `afterToolCall` способен менять content, details и isError; это расширение представления, не независимая проверка факта исполнения [P1].
++
++**Решение Apiary.** Versioned portable schema subset. В M0 installer допускает только object-root schemas из этого subset; execution boundary проверяет object root входа и результата любого prepare/normalization. Любое нормализованное значение проходит полную host-side schema-проверку до dispatch и вычисления digest/approval; невалидный результат даёт typed refusal, без fallback к исходным args. Если позже понадобятся scalar-root tools, допуск требует явного расширения контракта с той же fail-closed проверкой. Отклонены копирование раннего fallback Pi и использование provider admission либо TypeScript cast как доказательства host validation. Reject неизвестные поля/типы на authority boundary; нормализация — только явная, детерминированная и до вычисления digest/approval. Receipt связывает исходный call, canonical arguments digest и фактический binding. Model-visible error — отдельная проекция receipt, которую tool не может переписать как success. Не помещать секреты и полные raw arguments в diagnostic автоматически: Pi validation error включает полученные arguments [P6], Codex dispatch логирует payload preview [C3]. Это наблюдение о logging surface, не утверждение об утечке в данном запуске.
++
++## 6. Контекст, compaction, cache и непрерывность reasoning
++
++### 6.1 Журнал и prompt — разные представления
++
++Pi classic хранит append-only дерево `id/parentId`; branch меняет leaf, а `buildSessionContext()` строит путь и преобразует entries. Compaction entry хранит summary и `firstKeptEntryId`, сохраняя исходные ветви в файле [P5]. Codex `History` отдельно формирует `for_prompt`, нормализует call/output pairs и заменяет compacted active history; rollout recorder отвечает за записи на диск [C7, C8].
++
++**Решение:** append-only относится к каноническим событиям, а не к вечному неизменному prompt. В Apiary должны сосуществовать transcript/event log, execution receipts и provider projection. Summary не имеет права удалять receipt или выдавать его за новый authority grant. Ветка разговора не отменяет уже совершённые внешние эффекты.
++
++### 6.2 Compaction
++
++Pi classic `estimateContextTokens` опирается на последнюю usage и оценку хвоста; `shouldCompact` сравнивает её с `contextWindow - reserveTokens`. Это оценка, не фактический tokenizer count. `AgentSession._compactBeforeNextAssistantResponse` вызывается через next-turn refresh [P4, P10]. Manual compaction отдельно abort-ит текущую операцию; extension может вмешиваться в summary [P4].
++
++Codex имеет local summary path и remote path. Local path удаляет старейший history item при context overflow во время compaction и устанавливает replacement history; порядок initial context зависит от pre-turn/mid-turn режима [C10]. Remote path устанавливает нормализованную provider history; в коде прямо указано, что legacy `/responses/compact` не сохраняет harness metadata исходных envelopes, в отличие от compaction-trigger/v2 [C11].
++
++**Решение:** kernel хранит ссылки `sourceRange → summaryArtifact`, модель/adapter version и context generation. Authority instructions и pending invocation references восстанавливаются из trusted epoch state, а не из summary. Compaction должна быть отменяемой, иметь отдельный budget и не смешиваться с обычным ответом пользователя. Remote opaque compaction допустима как provider-specific artifact; универсальный текстовый summary нужен для осознанного перехода к другому provider, но не эквивалентен latent state.
++
++### 6.3 Cache: исправление устаревшего первичного описания
++
++Официальная статья Michael Bolin [Unrolling the Codex agent loop](https://openai.com/index/unrolling-the-codex-agent-loop/) объясняет важность стабильного prefix, порядка tools и append-only обновлений контекста. Однако её фраза о том, что Codex не использует `previous_response_id`, **не описывает исследованную ревизию**. `ModelClientSession::get_incremental_items` проверяет совпадение request properties и полного prefix; WebSocket path строит continuation с previous response [C6].
++
++Codex `build_responses_request` задаёт `store:false`, `prompt_cache_key`, запрос encrypted reasoning и provider-специфические возможности [C6]. Pi Codex adapter тоже содержит cache/session identity, WebSocket reuse, fallback и специальные retry для потерянного continuation. После начала message stream транспортный fallback не является безусловным: ветка `websocketStarted` возвращает ошибку [P9].
++
++**Решение:** cache — оптимизация adapter, не authority и не источник истины. Сначала корректный full replay; incremental replay только при точном совпадении adapter/model/account scope, конфигурации и prefix. Не обещать ZDR или отсутствие серверного состояния только по `store:false`: entitlement, retention и транспортные гарантии проверяются отдельно. Не переносить provider response id в универсальный session id.
++
++### 6.4 Opaque reasoning нельзя свести к строке
++
++| Provider representation | Прочитанный механизм Pi/Codex | Решение Apiary |
++|---|---|---|
++| OpenAI Responses reasoning | Pi сериализует reasoning item в `thinkingSignature`, восстанавливает его в request; backfill Azure encrypted content может происходить только из terminal response [P8]. Codex запрашивает `reasoning.encrypted_content` [C6] | хранить typed opaque block с происхождением и допустимой областью replay; не исполнять/пересказывать как инструкцию |
++| Anthropic thinking/redacted thinking | сохраняются signature deltas и redacted payload; при отсутствии signature обычный thinking может стать plain text [P8] | редактирование signed block запрещено; отображаемый текст и replay representation раздельны |
++| Google thought signature | signature привязана к block/part; same-provider/model проверка, не переносить/не сливать между parts [P8] | не flatten messages до `role + text`; сохранять порядок частей и привязку tool call |
++| Cross-model/provider | `transformMessages` убирает несовместимые signatures/redacted thinking, обычный thinking переводит в text, нормализует call ids [P7] | переход явно lossy; adapter выдаёт migration report; не обещать бесшовную эквивалентность |
++
++Pi также вставляет synthetic error results для orphan tool calls и исключает errored/aborted assistant messages из provider replay [P7]. Это исправление wire-формы, не доказательство «tool не выполнился». Apiary должен сохранять в журнале `unknown` и показывать provider допустимую проекцию без вымышленного результата.
++
++## 7. Ошибки стрима после arguments: точный разбор
++
++| Сценарий | Pi classic | Codex | Выбор Apiary |
++|---|---|---|---|
++| Пришли partial arguments, затем error | terminal error останавливает run до dispatch [P1] | незавершённый item не dispatch-ится через OutputItemDone; stream failure возвращается [C2] | partial preview не исполняется |
++| Tool item завершён, весь ответ затем оборвался | classic ждёт terminal message, поэтому error запрещает все calls [P1] | item уже записан, dispatch мог начаться; `drain_in_flight` выполняется до возврата outcome [C2–C4] | в M0 ждать успешный terminal response; streaming dispatch отложить |
++| JSON валиден, но ответ оборван лимитом | все calls при `length` получают error без execute [P1] | поведение зависит от завершённости item/Responses event; общего Pi-подобного запрета на весь batch в исследованном участке не установлено | reject truncated batch независимо от schema validity |
++| Error после начала tool | tool error/cancellation отдельно от provider error | результаты начатых tools попадают в историю; retry строит prompt из текущей истории [C2] | журнал intent/outcome, reconcile, не повторять effect автоматически |
++| Crash после внешнего effect, до receipt | classic JSONL не даёт exactly-once | rollout сам по себе не доказывает exactly-once | explicit unknown; retry только с проверяемой idempotency/reconciliation |
++
++В Pi прочитан отрицательный тест `should not execute tool calls from a length-truncated assistant message`: аргумент `{value:"hel"}` валиден по schema, но assertion требует пустой список executed [P18]. Тест не запускался. Это хороший пример narrow negative: проверяется полнота сообщения, а не только наличие JSON parser.
++
++В Codex прочитан `continue_after_stream_error`: новый turn принимается после ошибки первого [C12]. Он **не доказывает** отсутствие двойного effect после tool arguments: это другая проверка. Кроме того, комментарий говорит о retry=0, а fixture задаёт retries=1; в оценке приоритет отдан исполняемым значениям, не комментарию.
++
++**Цена выбора M0:** ожидание terminal response может увеличить latency tool start. Измерений в этой работе нет. Выгода — меньший state space и отсутствие speculative effects из неуспешного response. Позднее streaming dispatch возможен только с отдельным proof gate для complete item и журналом, который корректно переживает late stream failure.
++
++## 8. Providers, auth и реальные entitlement boundaries
++
++**Наблюдение.** В Codex `ModelProvider` владеет capabilities и provider-specific auth recovery; `ResolvedProviderAuth` отделён от model-visible tools. AuthManager-backed provider проверяет account identity при обновлении credentials [C13]. В Pi `ModelRuntime` разрешает provider/model/auth и готовит вызов `provider.streamSimple`; `openaiCodexProvider()` использует отдельный protocol adapter и OAuth metadata. Anthropic provider отдельно описывает API-key и OAuth auth [P11].
++
++**Решение:** в Go kernel контракт provider включает `Capabilities`, `Stream`, `ProjectHistory`, `ClassifyError`; credentials разрешает доверенный broker/provider host. Tool-skill получает только свою capability, а не subscription token. Provider catalog и tool registry — два разных installed inventories. Любое изменение billing lane, account или provider identity — событие control plane. Подмена model-visible tool списка для выбора provider запрещена.
++
++### Что подтверждено и что неизвестно
++
++1. [OpenAI Authentication](https://learn.chatgpt.com/docs/auth) различает ChatGPT subscription sign-in и API-key usage billing; workspace permissions и retention зависят от пути. Это не одна переносимая учётная запись с одинаковыми правами на все endpoints.
++2. Pi docs утверждает Plus/Pro support для Codex и ссылается на [Codex for OSS](https://developers.openai.com/community/codex-for-oss). Открытая официальная страница действительно называет Pi среди предпочитаемых пользователями tools. Это подтверждает поддержку экосистемы, но не устанавливает универсальное право любого Apiary deployment пользоваться произвольным subscription backend или обходить лимиты.
++3. Pi `docs/providers.md` прямо указывает: Claude Pro/Max third-party harness traffic использует metered extra usage [P19]. Это первичный документ Pi о его интеграции, но не контракт Anthropic для всех клиентов.
++4. Официальная [Claude Agent SDK plan page](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan) содержит обновление 15 июня о приостановке изменений и сохранении subscription limits для Agent SDK, `claude -p` и связанных third-party apps. Нельзя распространить это на прямой Pi Messages adapter: поверхности различаются. Точное покрытие прямого Apiary OAuth клиента этими условиями **не установлено**.
++
++**Следствие:** M0 не должен обещать «все подписки работают как бесплатный API». Поддерживать официально доступный API-key путь; subscription adapter включать только при подтверждённых для него условиях, явной billing policy и штатном login. 401/403/entitlement/usage-limit — типизированные состояния; не маскировать под transport retry. Не копировать токены из чужих runtime homes, не имитировать identity другого продукта, не переключать account для обхода квот. В исследовании не было account-access операций.
++
++## 9. Approvals, sandbox и extensions
++
++**Codex.** `ToolOrchestrator::run` вычисляет approval requirement, различает Skip/Forbidden/NeedsApproval, затем выбирает sandbox и запускает попытку. Attachment-owned network policy нельзя обойти escalated sandbox permissions; retry/escalation зависит от policy, не просто от ошибки процесса [C14]. Это essential complexity: разрешение операции и техническое ограничение процесса решают разные задачи. Официальная [документация approvals](https://learn.chatgpt.com/docs/agent-approvals-security) отдельно описывает эти механизмы и OS-specific enforcement.
++
++Но не вся сложность Codex нужна Apiary. В `app-server::thread_extensions` устанавливаются queue, history notes, goals, guardian, memories, MCP, web search, image generation и skills providers [C15]. В stream loop присутствуют plan-mode presentation, reasoning summaries, model warnings и telemetry [C2]. Это объяснимая продуктовая композиция; она не должна становиться обязательным ядром worker.
++
++**Pi classic.** Extensions загружаются через `jiti.import` в процессе host; они регистрируют tools, переключают active tools/model/providers и получают hooks для контекста, provider request и headers [P2, P20]. `emitToolCall` умеет block, но тот же доверенный extension-код обладает обычными Node capabilities. Проверка tool_call не изолирует extension от файловой системы и сети.
++
++Прочитанный sandbox example переопределяет bash через sandbox-runtime; конфигурация project имеет приоритет над global, есть выключатель sandbox [P21]. Это полезный пример композиции, но **не** доказательство confinement всего процесса Pi или каждого custom tool. In-process extension может не пользоваться переопределённым bash вообще.
++
++**Решение Apiary.** Curator устанавливает подписанные/проверенные manifests и out-of-process providers; kernel не импортирует third-party код. Sandboxing — механизм broker/OS, а model-visible sandbox tool-skill orchestrator лишь запрашивает разрешённые операции. Наличие такого skill не должно позволять менять ограничения текущей эпохи. MCP существует только внутри отдельного установленного wrapper: translate schema/results, enforce call limits и expose фиксированный approved interface. Server `tools/list_changed` не расширяет authority автоматически.
++
++## 10. Persistence/resume: честная граница
++
++Classic Pi `_persist` откладывает создание нового session file до assistant entry; уже опубликованный user input в таком режиме ещё не durable. `parseSessionEntryLine` при невалидном JSON возвращает null, и reader пропускает строку [P5]. Удобство восстановления partial log нельзя выдавать за строгий audit ledger. Новый JsonlStorage v4 отличает torn tail от malformed complete transaction [P17].
++
++Codex rollout имеет очередь pending items, persist/flush/shutdown, повторное открытие writer и повтор записи при ошибке [C8]. Прочитанное поведение поддерживает recovery writer, но само по себе не устанавливает физическую durability или транзакционность с внешним effect.
++
++`suspend_turn_and_shutdown` сначала flush-ит историю, перепроверяет active turn, отменяет task и закрывает producers/writer до объявления thread stop. При этом код прямо очищает pending input и interactive waiters; проверка live descendants — snapshot, а не seal от конкурентного spawn [C9]. Это конкретная граница поддерживаемого suspend, не универсальный перенос работающей сессии.
++
++**Решение:** Apiary resume содержит две фазы: восстановить канонический журнал и заново получить execution ownership с fencing generation. Затем reconcile `intent/effect_pending`; только после этого принимать новые mutations. Event acknowledgement требует определённого durable commit; corrupt middle log — отказ/quarantine, а не отсутствие записи. UI transcript export можно делать tolerant, authority ledger — нельзя. Межпроцессный writer fencing не заменяется одной Go mutex.
++
++## 11. Pattern / anti-pattern: принять, изменить, отклонить
++
++| Механизм | Решение | Причина и конкретное действие |
++|---|---|---|
++| Pi `AgentMessage → convertToLlm` [P1] | Принять | один boundary между каноническими событиями и provider payload |
++| Pi steering/follow-up queues [P1, P3] | Изменить | durable inbox с message ID, expectedTurnID и подтверждением append |
++| Codex StepContext [C2, C4] | Принять | specs и dispatch используют один immutable request snapshot |
++| Pi prepareArguments/coercion [P6] | Изменить | разрешать только явную нормализацию до authority digest; иначе strict reject |
++| Pi same-process extensions [P20] | Отклонить | функции hooks не являются security boundary; только out-of-process tool-skills |
++| Tools и provider registration в одном API [P20] | Отклонить | credential/control plane отделить от model-visible capability plane |
++| Codex approval → sandbox → attempt [C14] | Принять | policy decision перед OS execution, fail closed на отказе |
++| Pi bash sandbox override [P21] | Изменить | enforcement обязателен для каждого effect provider, не только bash wrapper |
++| Codex dispatch до response terminal [C2] | Отложить | M0 ждёт terminal; позднее только отдельная измеренная оптимизация |
++| Pi `length` negative gate [P1, P18] | Принять | валидный усечённый аргумент всё равно не исполнять |
++| Durable Pi effect_pending/replay [P14] | Изменить | replay-safe принадлежит pinned binding + receipt/reconciliation contract |
++| Append-only tree и compacted projection [P5, C7] | Принять | история сохраняет provenance; projection может меняться |
++| Silent malformed-line skip [P5] | Отклонить | corruption отличается от отсутствия, authority journal должен отказаться |
++| Opaque signatures [P7, P8, C6] | Принять | сохранять origin/adapter scope, part order и sealed payload |
++| Cross-provider flatten reasoning [P7] | Изменить | явный lossy transition, не обещание эквивалентного продолжения |
++| WS cache/previous_response_id [C6, P9] | Отложить | корректный full replay сначала; prefix/account проверка потом |
++| Codex UI, memories, guardian и hosted tools [C15] | Вынести | профили/Curator tool-skills или presentation, не обязательный kernel |
++| Batch parallel default [P1] | Изменить | sequential default и binding-scoped concurrency с лимитом |
++| Synthetic orphan result [P7] | Изменить | допустимая wire projection с явным unknown, никогда success receipt |
++
++## 12. Один kernel, два профиля
++
++**Worker:** один центральный typed tool-skill из Curator plan; опционально отдельная узкая операция signing. Центральный skill может иметь discriminated union операций, но не поле `command: arbitrary string` как скрытый универсальный shell. Signing принимает конкретный artifact digest и purpose, проверяет scope, возвращает ограниченную квитанцию; не отдаёт ключ и не подписывает произвольный authority grant.
++
++**Orchestrator:** тот же kernel и тот же journal/provider abstraction; Curator устанавливает project-management, communication и sandbox tool-skills. Планирует и отправляет сообщения через эти интерфейсы. Специфика board, Slack, MCP, sandbox manager не появляется в turn reducer. Делегирование получает только подмножество parent grants и бюджета.
++
++**Минимальные Go-пакеты, рекомендация, не код:** `session` (reducer, inbox, lifecycle), `history` (canonical entries и projections), `model` (adapter/capabilities/opaque artifacts), `invocation` (typed proposals и result correlation), `journal` (commit/recovery). Broker/installer остаются доверенным execution/control plane за отдельным интерфейсом. Не делать универсальную «plugin interface», которая одновременно получает модели, credentials, process spawn и tool registry.
++
++Смена epoch: остановить admission новых invocations → дождаться/reconcile старые → скомпилировать/проверить новый plan → записать old/new digests и нужное approval → активировать. Разговор сохраняется; tool result старой эпохи не становится разрешением новой. Это согласуется с прочитанным Decision 0005, но конкретная реализация остаётся за последующей архитектурной задачей.
++
++Универсальные схемы (предложения для Apiary): [границы kernel и профилей](../diagrams/research/codex-pi/kernel.svg), [допуск effect и recovery](../diagrams/research/codex-pi/recovery.svg). Исходники PlantUML расположены рядом; отдельная схема для каждой цели, без UI/provider branding.
++
++## 13. Проверки будущей реализации и границы исследования
++
++Следующие проверки **не запускались** и являются acceptance-предложениями для реализации:
++
++| Вход/сбой | Проверяемое отрицательное свойство |
++|---|---|
++| Plain scalar schema `{type:"number", minimum:10}` на установке | M0 installer отказывает до регистрации tool |
++| Object-root schema, scalar input или scalar root replacement через prepareArguments | отказ до dispatch в sequential и parallel batch |
++| Разрешённая нормализация `{value:"7"}` → `{value:7}` при `minimum:10` | constraint refusal, effect count = 0; нет fallback к исходному значению |
++| Если scalar-root когда-либо разрешён: `"7"` → 7 при `minimum:10`, напрямую и через prepareArguments | обе batch-ветки отказывают до execute; контроль `"12"` → 12 отделяет constraint failure от запрета любой coercion |
++| Валидные arguments + terminal error/length | effect count = 0 |
++| Tool binding заменён после model request | dispatch со старым plan не использует новый provider |
++| Steering на старый turn | явный отказ, без скрытого нового turn |
++| Crash после effect, до receipt | unknown/reconcile, не безусловный replay |
++| Malformed complete JSONL row | отказ чтения, не восстановление как «пусто» |
++| Torn tail | восстановление только валидного prefix с отмеченной потерей |
++| Extension просит provider credential | нет такого model-visible capability |
++| Cache prefix/account mismatch | full replay или typed refusal, не чужой continuation |
++| Изменение opaque signature/part order | adapter reject либо явный lossy migration |
++| Cancel одновременно с terminal tool result | один settled outcome, без fabricated rollback |
++| Два процесса получают одну session | fencing отвергает устаревшего writer |
++| MCP tools/list_changed | не расширяет epoch без plan transition |
++
++Измеренное runtime test coverage: **не измерялось**. Выполнен статический cross-check 12/12 исследовательских тем: session/turn, events/steering, cancellation, tools/schema, context, compaction/cache, opaque state, providers/auth, approval/sandbox, extensions/config, persistence/resume, concurrency. Это coverage списка вопросов, не доля кода и не гарантия безопасности. Часть source paths прочитана выборочными диапазонами, а не целиком. Особенно не доказаны: все platform sandbox adapters, cross-process durability, account-specific entitlement, все providers, поведение каждого UI/SDK и отсутствие bypass во всём репозитории.
++
++Внешние источники mutable; date+URL сохранены. OpenAI blog был прочитан через web tool, повторное получение через urllib вернуло HTTP 403 — локальной raw-копии этого blog нет. Это ошибка второго канала чтения, не отсутствие статьи. Устаревший `core/src/codex.rs` и старый shell handler path не найдены; чтение продолжено по реально существующим `session/*` и registry. Начальная board query `task()` отвергнута, исправлена на `get()`. Эти recovery не скрыты как успешные проверки.
++
++## 14. Индекс прочитанных исходников
++
++Все ссылки ниже закреплены на SHA из ledger. Идентификаторы в тексте обозначают конкретные файлы и symbols, а не README-обобщения.
++
++| ID | Файл и permalink | Symbol / прочитанная область |
++|---|---|---|
++| C1 | [codex-rs/core/src/session/handlers.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/session/handlers.rs#L529) | `submission_loop; turn_input.rs::steer (отдельная ссылка C1b)` |
++| C1b | [codex-rs/core/src/session/turn_input.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/session/turn_input.rs#L424) | `steer / steer_input` |
++| C2 | [codex-rs/core/src/session/turn.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/session/turn.rs#L163) | `run_turn; build_prompt:1393; run_sampling_request:1420; try_run_sampling_request:2280; drain_in_flight:2232` |
++| C3 | [codex-rs/core/src/stream_events_utils.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/stream_events_utils.rs#L290) | `handle_output_item_done` |
++| C4 | [codex-rs/core/src/tools/parallel.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/tools/parallel.rs#L116) | `ToolCallRuntime::handle_tool_call_with_source` |
++| C5 | [codex-rs/core/src/tools/router.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/tools/router.rs#L246) | `ToolRouter::build_tool_call / dispatch_tool_call_with_code_mode_result_inner` |
++| C5b | [codex-rs/core/src/tools/registry.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/tools/registry.rs#L495) | `ToolRegistry::dispatch_any_with_terminal_outcome` |
++| C6 | [codex-rs/core/src/client.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/client.rs#L891) | `build_responses_request; get_incremental_items:1335; stream_responses_websocket:1725` |
++| C7 | [codex-rs/core/src/context_manager/history.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/context_manager/history.rs#L327) | `History::record_items / for_prompt / replace_compacted / normalize_history` |
++| C8 | [codex-rs/rollout/src/recorder.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/rollout/src/recorder.rs#L970) | `RolloutRecorder::record_canonical_items / persist / flush / write_pending_with_recovery:1727` |
++| C9 | [codex-rs/core/src/session/turn_suspension.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/session/turn_suspension.rs#L13) | `suspend_turn_and_shutdown` |
++| C10 | [codex-rs/core/src/compact.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/compact.rs#L248) | `run_compact_task_inner_impl` |
++| C11 | [codex-rs/core/src/compact_remote.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/compact_remote.rs#L195) | `remote compaction install; process_compacted_history` |
++| C12 | [codex-rs/core/tests/suite/stream_error_allows_next_turn.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/tests/suite/stream_error_allows_next_turn.rs#L22) | `continue_after_stream_error (прочитан, не запущен)` |
++| C13 | [codex-rs/model-provider/src/provider.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/model-provider/src/provider.rs#L147) | `ModelProvider / ProviderCapabilities` |
++| C13b | [codex-rs/model-provider/src/auth.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/model-provider/src/auth.rs#L125) | `AuthManagerAuthProvider::is_expected_auth / current_auth` |
++| C14 | [codex-rs/core/src/tools/orchestrator.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/tools/orchestrator.rs#L121) | `ToolOrchestrator::run` |
++| C16 | [codex-rs/core/src/tools/handlers/mod.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/tools/handlers/mod.rs#L85) | `parse_arguments<T>` |
++| C15 | [codex-rs/app-server/src/extensions.rs](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/app-server/src/extensions.rs#L57) | `thread_extensions` |
++| P1 | [packages/agent/src/agent-loop.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/agent-loop.ts#L159) | `runLoop; streamAssistantResponse; prepareToolCall; executeToolCallsSequential/Parallel; failToolCallsFromTruncatedMessage` |
++| P2 | [packages/coding-agent/src/core/sdk.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/coding-agent/src/core/sdk.ts#L306) | `createAgentSession` |
++| P3 | [packages/agent/src/agent.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/agent.ts#L283) | `Agent::steer / followUp / prompt / runWithLifecycle:486 / processEvents:544` |
++| P4 | [packages/coding-agent/src/core/agent-session.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/coding-agent/src/core/agent-session.ts#L542) | `_compactBeforeNextAssistantResponse / _installAgentNextTurnRefresh / _handleAgentEvent:643 / compact:1946` |
++| P5 | [packages/coding-agent/src/core/session-manager.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/coding-agent/src/core/session-manager.ts#L461) | `buildSessionContext / parseSessionEntryLine:501 / _persist:1029 / branch:1374` |
++| P6 | [packages/ai/src/utils/validation.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/utils/validation.ts#L313) | `validateToolArguments` |
++| P7 | [packages/ai/src/api/transform-messages.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/api/transform-messages.ts#L70) | `transformMessages` |
++| P8 | [packages/ai/src/api/openai-responses-shared.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/api/openai-responses-shared.ts#L138) | `convertResponsesMessages; processResponsesStream / backfillReasoningSignatures:533` |
++| P8b | [packages/ai/src/api/anthropic-messages.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/api/anthropic-messages.ts#L1280) | `thinking/redacted_thinking replay; signature_delta:703` |
++| P8c | [packages/ai/src/api/google-shared.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/api/google-shared.ts#L56) | `thought-signature semantics / resolveThoughtSignature` |
++| P9 | [packages/ai/src/api/openai-codex-responses.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/api/openai-codex-responses.ts#L311) | `stream transport retry/fallback; build request:523; websocket session:1143` |
++| P10 | [packages/coding-agent/src/core/compaction/compaction.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/coding-agent/src/core/compaction/compaction.ts#L202) | `estimateContextTokens / shouldCompact / findCutPoint / completeSummarization` |
++| P11 | [packages/coding-agent/src/core/model-runtime.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/coding-agent/src/core/model-runtime.ts#L588) | `ModelRuntime provider resolution / streamSimple:636` |
++| P11b | [packages/ai/src/providers/openai-codex.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/providers/openai-codex.ts#L7) | `openaiCodexProvider` |
++| P11c | [packages/ai/src/providers/anthropic.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/providers/anthropic.ts#L49) | `anthropicProvider` |
++| P12 | [packages/agent/src/harness/runtime/drive.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/harness/runtime/drive.ts#L28) | `driveOperation` |
++| P13 | [packages/agent/src/harness/runtime/drive/response.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/harness/runtime/drive/response.ts#L177) | `publishResponse` |
++| P13b | [packages/agent/src/harness/runtime/drive/recovery.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/harness/runtime/drive/recovery.ts#L51) | `recoverAssistantGeneration` |
++| P14 | [packages/agent/src/harness/runtime/drive/tools.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/harness/runtime/drive/tools.ts#L187) | `publishToolIntent; prepareToolInvocation:436; recoverToolInvocation:515` |
++| P15 | [packages/agent/src/harness/runtime/harness.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/harness/runtime/harness.ts#L29) | `Harness / lane / watchSession:305` |
++| P16 | [packages/agent/src/harness/runtime/lane.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/harness/runtime/lane.ts#L1005) | `requestOperationAbort / requestAbort / prompt:1130; driveOperation call:976` |
++| P17 | [packages/agent/src/harness/session/jsonl/storage.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/harness/session/jsonl/storage.ts#L180) | `JsonlStorage open / commit / applyCommit` |
++| P17b | [packages/agent/src/harness/session/mutation-line.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/harness/session/mutation-line.ts#L2) | `MutationLine` |
++| P18 | [packages/agent/test/agent-loop.test.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/test/agent-loop.test.ts#L371) | `should not execute tool calls from a length-truncated assistant message` |
++| P19 | [packages/coding-agent/docs/providers.md](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/coding-agent/docs/providers.md#L15) | `Subscriptions / Claude Pro/Max / custom providers` |
++| P20 | [packages/coding-agent/src/core/extensions/loader.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/coding-agent/src/core/extensions/loader.ts#L488) | `loadExtensionModule; registerTool:287 / registerProvider:430` |
++| P20b | [packages/coding-agent/src/core/extensions/runner.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/coding-agent/src/core/extensions/runner.ts#L982) | `emitToolCall; bind runtime provider actions:394` |
++| P21 | [packages/coding-agent/examples/extensions/sandbox/index.ts](https://github.com/earendil-works/pi/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/coding-agent/examples/extensions/sandbox/index.ts#L1) | `sandbox example / loadConfig` |
++
++## 15. Logbook исследования
++
++- 08.09.2026, revision 2: по F1 уточнён scalar early-return в Pi validation и обе production batch-ветки; предложен fail-closed object-root admission и отрицательные сценарии без исполнения upstream. Четыре файла схем перенесены побайтово в корневой `diagrams/research/codex-pi/`; остальные выводы и source snapshots сохранены.
++
++- 08.09.2026: подтверждён canonical rename Pi, устранено предположение о неизменности старого repository name.
++- 08.09.2026: разделены classic SDK и новый durable harness; `watchSession` ещё не реализован. Нельзя рекламировать весь Pi как единый durable kernel.
++- 08.09.2026: зафиксирована несовместимость исторической статьи Codex с текущим WebSocket continuation path.
++- 08.09.2026: late stream failure после tool item требует сохранения effects; выбрано более простое admission после terminal response для Apiary M0.
++- 08.09.2026: выявлены silent JSONL skip в classic Pi и потеря process-local pending inputs при Codex suspend; отклонено их использование как модели строгого authority ledger.
++- 08.09.2026: subscription authentication отделена от entitlement/billing; документы Pi и Anthropic Agent SDK относятся к разным интеграционным поверхностям. Автоматический перенос условий запрещён.
++
++Отдельного доступного logbook CLI/MCP в сессии не обнаружено; этот раздел — task-scoped logbook, копия ключевых событий передаётся через board notes. Ни один нормативный документ и чужой файл не изменён.
++
++## 16. Выполненная проверка артефактов
++
++Следующая таблица сохраняет evidence revision 1; rendering в revision 2 не повторялся, поскольку содержимое четырёх diagram files не изменено. Старые пути в командах — исторические пути запуска, текущие артефакты находятся в `diagrams/research/codex-pi/`. Все validation-команды запущены отдельно, без pipe/tee. Исходники внешних проектов не исполнялись.
++
++| Команда | Реальный exit code | Что проверено / ограничение |
++|---|---:|---|
++| `python3 .temp/TASK-260908-1v88g1/verify_report.py` | 0 | пути и line anchors, SHA pins, чистота snapshots, XML и относительные ссылки; не semantic proof |
++| `plantuml -tsvg .research/260908_codex-pi-diagrams/kernel.puml .research/260908_codex-pi-diagrams/recovery.puml` | 0 | обе SVG схемы отрендерены |
++| `plantuml -tpng ... -o ../../.temp/TASK-260908-1v88g1/diagram-preview` | 0 | PNG preview для визуальной проверки |
++| `git diff --check` | 0 | tracked diff без whitespace errors; новые untracked документы этой командой не покрываются |
++
++Обе схемы просмотрены визуально: русские подписи читаются, стрелки и условные блоки не обрезаны. Исходники и SVG — deliverables, PNG preview — scratch. Численная проверка source paths/anchors записана в `report-verification-02.log`; каждый проверенный путь ссылается на существующий файл, но авторитетность смыслового вывода остаётся предметом review. Snapshot ledger и логи входят в task-scoped evidence bundle, полные клоны остаются в `.temp`.
++
++### Узкая перепроверка revision 2
++
++Самостоятельно повторены `python3 .temp/TASK-260908-1v88g1/verify_report.py` (exit 0: 47/47 прежних anchors, 2/2 pinned HEAD и clean snapshots, 2/2 SVG XML и relocated links), `python3 .temp/TASK-260908-1v88g1/rev2/check_delta.py` (exit 0: 4/4 неизменных SHA-256 схем, отсутствие старого каталога, 7/7 новых F1 anchors, 3/3 текстовых deliverables без trailing whitespace) и `git diff --check` (exit 0, untracked файлы не покрывает). Это проверки целостности артефактов, не семантическое доказательство и не запуск отрицательных runtime-тестов. Rendering и визуальная проверка приняты из evidence revision 1; исходники схем и SVG побайтово сохранены. Логи revision 2 и обновлённый checker включены в evidence bundle. Новое web-исследование не проводилось; прежние source snapshots и ledger сохранены.
+diff --git a/diagrams/research/codex-pi/kernel.puml b/diagrams/research/codex-pi/kernel.puml
+new file mode 100644
+index 0000000..29c0b82
+--- /dev/null
++++ b/diagrams/research/codex-pi/kernel.puml
+@@ -0,0 +1,27 @@
++@startuml
++!theme plain
++left to right direction
++title Apiary: одно ядро и два профиля полномочий
++rectangle "Curator\nУстановка и проверка плана" as curator
++rectangle "Общее ядро\nСессия • очередь • проекция истории" as kernel
++database "Канонический журнал\nСобытия и квитанции" as log
++rectangle "Доверенный broker\nПроверка эпохи и допуск effects" as broker
++rectangle "Адаптер модели\nОтдельный auth-контур" as model
++rectangle "Skills профиля Worker\nОдин typed tool-skill\nОпционально узкий signing" as worker
++rectangle "Skills профиля Orchestrator\nProject-management\nCommunication • Sandbox" as orchestrator
++rectangle "Отдельный MCP wrapper\nТолько установленный интерфейс" as mcp
++curator --> broker : Неизменяемый план эпохи
++broker --> kernel : Объявленные schemas
++kernel --> model : Проекция контекста
++model --> kernel : Ответ и opaque state
++kernel --> broker : Типизированный запрос
++broker --> log : Intent / outcome
++kernel --> log : События разговора
++broker --> worker : Ограниченный процесс
++broker --> orchestrator : Ограниченный процесс
++orchestrator --> mcp : При наличии grant
++note bottom of model
++Credentials не передаются tool-skills.
++Модель не меняет полномочия эпохи.
++end note
++@enduml
+diff --git a/diagrams/research/codex-pi/kernel.svg b/diagrams/research/codex-pi/kernel.svg
+new file mode 100644
+index 0000000..08fe495
+--- /dev/null
++++ b/diagrams/research/codex-pi/kernel.svg
+@@ -0,0 +1 @@
++<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="DESCRIPTION" height="347px" preserveAspectRatio="none" style="width:2202px;height:347px;background:#FFFFFF;" version="1.1" viewBox="0 0 2202 347" width="2202px" zoomAndPan="magnify"><?plantuml 1.2026.6?><defs/><g><g class="title" data-source-line="3"><text fill="#000000" font-family="Verdana" font-size="22" font-weight="700" lengthAdjust="spacing" textLength="588.1025" x="806.4025" y="37.1182">Apiary: &#1086;&#1076;&#1085;&#1086; &#1103;&#1076;&#1088;&#1086; &#1080; &#1076;&#1074;&#1072; &#1087;&#1088;&#1086;&#1092;&#1080;&#1083;&#1103; &#1087;&#1086;&#1083;&#1085;&#1086;&#1084;&#1086;&#1095;&#1080;&#1081;</text></g><!--entity curator--><g class="entity" data-qualified-name="curator" data-source-line="4" id="ent0001"><rect fill="#FFFFFF" height="54.0293" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="229.1797" x="525.85" y="219.2373"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="53.0059" x="535.85" y="243.3125">Curator</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="209.1797" x="535.85" y="260.3271">&#1059;&#1089;&#1090;&#1072;&#1085;&#1086;&#1074;&#1082;&#1072; &#1080; &#1087;&#1088;&#1086;&#1074;&#1077;&#1088;&#1082;&#1072; &#1087;&#1083;&#1072;&#1085;&#1072;</text></g><!--entity kernel--><g class="entity" data-qualified-name="kernel" data-source-line="5" id="ent0002"><rect fill="#FFFFFF" height="54.0293" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="297.0537" x="491.91" y="105.2373"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="87.9648" x="501.91" y="129.3125">&#1054;&#1073;&#1097;&#1077;&#1077; &#1103;&#1076;&#1088;&#1086;</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="277.0537" x="501.91" y="146.3271">&#1057;&#1077;&#1089;&#1089;&#1080;&#1103; &#8226; &#1086;&#1095;&#1077;&#1088;&#1077;&#1076;&#1100; &#8226; &#1087;&#1088;&#1086;&#1077;&#1082;&#1094;&#1080;&#1103; &#1080;&#1089;&#1090;&#1086;&#1088;&#1080;&#1080;</text></g><!--entity log--><g class="entity" data-qualified-name="log" data-source-line="6" id="ent0003"><path d="M1527.87,68.7373 C1527.87,58.7373 1619.3851,58.7373 1619.3851,58.7373 C1619.3851,58.7373 1710.9003,58.7373 1710.9003,68.7373 L1710.9003,111.7666 C1710.9003,121.7666 1619.3851,121.7666 1619.3851,121.7666 C1619.3851,121.7666 1527.87,121.7666 1527.87,111.7666 L1527.87,68.7373" fill="#FFFFFF" style="stroke:#000000;stroke-width:1;"/><path d="M1527.87,68.7373 C1527.87,78.7373 1619.3851,78.7373 1619.3851,78.7373 C1619.3851,78.7373 1710.9003,78.7373 1710.9003,68.7373" fill="none" style="stroke:#000000;stroke-width:1;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="163.0303" x="1537.87" y="96.8125">&#1050;&#1072;&#1085;&#1086;&#1085;&#1080;&#1095;&#1077;&#1089;&#1082;&#1080;&#1081; &#1078;&#1091;&#1088;&#1085;&#1072;&#1083;</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="157.8965" x="1537.87" y="113.8271">&#1057;&#1086;&#1073;&#1099;&#1090;&#1080;&#1103; &#1080; &#1082;&#1074;&#1080;&#1090;&#1072;&#1085;&#1094;&#1080;&#1080;</text></g><!--entity broker--><g class="entity" data-qualified-name="broker" data-source-line="7" id="ent0004"><rect fill="#FFFFFF" height="54.0293" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="257.5898" x="1031.96" y="163.2373"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="141.3057" x="1041.96" y="187.3125">&#1044;&#1086;&#1074;&#1077;&#1088;&#1077;&#1085;&#1085;&#1099;&#1081; broker</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="237.5898" x="1041.96" y="204.3271">&#1055;&#1088;&#1086;&#1074;&#1077;&#1088;&#1082;&#1072; &#1101;&#1087;&#1086;&#1093;&#1080; &#1080; &#1076;&#1086;&#1087;&#1091;&#1089;&#1082; effects</text></g><!--entity model--><g class="entity" data-qualified-name="model" data-source-line="8" id="ent0005"><rect fill="#FFFFFF" height="54.0293" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="193.2705" x="53.32" y="105.2373"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="117.4688" x="63.32" y="129.3125">&#1040;&#1076;&#1072;&#1087;&#1090;&#1077;&#1088; &#1084;&#1086;&#1076;&#1077;&#1083;&#1080;</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="173.2705" x="63.32" y="146.3271">&#1054;&#1090;&#1076;&#1077;&#1083;&#1100;&#1085;&#1099;&#1081; auth-&#1082;&#1086;&#1085;&#1090;&#1091;&#1088;</text></g><!--entity worker--><g class="entity" data-qualified-name="worker" data-source-line="9" id="ent0006"><rect fill="#FFFFFF" height="71.0439" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="219.6709" x="1509.55" y="156.7373"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="161.3896" x="1519.55" y="180.8125">Skills &#1087;&#1088;&#1086;&#1092;&#1080;&#1083;&#1103; Worker</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="146.8496" x="1519.55" y="197.8271">&#1054;&#1076;&#1080;&#1085; typed tool-skill</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="199.6709" x="1519.55" y="214.8418">&#1054;&#1087;&#1094;&#1080;&#1086;&#1085;&#1072;&#1083;&#1100;&#1085;&#1086; &#1091;&#1079;&#1082;&#1080;&#1081; signing</text></g><!--entity orchestrator--><g class="entity" data-qualified-name="orchestrator" data-source-line="10" id="ent0007"><rect fill="#FFFFFF" height="71.0439" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="219.1445" x="1509.82" y="262.7373"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="199.1445" x="1519.82" y="286.8125">Skills &#1087;&#1088;&#1086;&#1092;&#1080;&#1083;&#1103; Orchestrator</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="147.9297" x="1519.82" y="303.8271">Project-management</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="188.0293" x="1519.82" y="320.8418">Communication &#8226; Sandbox</text></g><!--entity mcp--><g class="entity" data-qualified-name="mcp" data-source-line="11" id="ent0008"><rect fill="#FFFFFF" height="54.0293" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="270.6875" x="1918.22" y="271.2373"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="178.1514" x="1928.22" y="295.3125">&#1054;&#1090;&#1076;&#1077;&#1083;&#1100;&#1085;&#1099;&#1081; MCP wrapper</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="250.6875" x="1928.22" y="312.3271">&#1058;&#1086;&#1083;&#1100;&#1082;&#1086; &#1091;&#1089;&#1090;&#1072;&#1085;&#1086;&#1074;&#1083;&#1077;&#1085;&#1085;&#1099;&#1081; &#1080;&#1085;&#1090;&#1077;&#1088;&#1092;&#1077;&#1081;&#1089;</text></g><g class="entity" data-qualified-name="GMN19" data-source-line="23" id="ent0020"><path d="M11,194.4573 L11,236.0559 A0,0 0 0 0 11,236.0559 L288.9087,236.0559 A0,0 0 0 0 288.9087,236.0559 L288.9087,204.4573 L278.9087,194.4573 L153.95,194.4573 L149.95,159.3473 L145.95,194.4573 L11,194.4573 A0,0 0 0 0 11,194.4573" fill="#FFFFFF" style="stroke:#000000;stroke-width:1;"/><path d="M278.9087,194.4573 L278.9087,204.4573 L288.9087,204.4573 L278.9087,194.4573" fill="#FFFFFF" style="stroke:#000000;stroke-width:1;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="249.9136" x="17" y="212.5271">Credentials &#1085;&#1077; &#1087;&#1077;&#1088;&#1077;&#1076;&#1072;&#1102;&#1090;&#1089;&#1103; tool-skills.</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="256.9087" x="17" y="228.3264">&#1052;&#1086;&#1076;&#1077;&#1083;&#1100; &#1085;&#1077; &#1084;&#1077;&#1085;&#1103;&#1077;&#1090; &#1087;&#1086;&#1083;&#1085;&#1086;&#1084;&#1086;&#1095;&#1080;&#1103; &#1101;&#1087;&#1086;&#1093;&#1080;.</text></g><!--link curator to broker--><g class="link" data-entity-1="ent0001" data-entity-2="ent0004" data-link-type="dependency" data-source-line="12" id="lnk9"><path d="M755.22,257.9773 C826.64,262.6873 920.35,264.0173 1001.96,249.2573 C1036.07,243.0873 1067.8016,231.927 1097.0016,219.637" fill="none" id="curator-to-broker" style="stroke:#000000;stroke-width:1;"/><polygon fill="#000000" points="1101.61,217.6973,1091.7631,217.5019,1097.0016,219.637,1094.8665,224.8754,1101.61,217.6973" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="181.854" x="819.96" y="246.3271">&#1053;&#1077;&#1080;&#1079;&#1084;&#1077;&#1085;&#1103;&#1077;&#1084;&#1099;&#1081; &#1087;&#1083;&#1072;&#1085; &#1101;&#1087;&#1086;&#1093;&#1080;</text></g><!--link broker to kernel--><g class="link" data-entity-1="ent0004" data-entity-2="ent0002" data-link-type="dependency" data-source-line="13" id="lnk10"><path d="M1031.51,201.1573 C967.29,204.0473 888.58,203.7073 818.96,192.2573 C780.44,185.9173 743.6915,174.1196 710.5615,161.4796" fill="none" id="broker-to-kernel" style="stroke:#000000;stroke-width:1;"/><polygon fill="#000000" points="705.89,159.6973,712.8729,166.6427,710.5615,161.4796,715.7246,159.1682,705.89,159.6973" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="153.8354" x="833.96" y="189.3271">&#1054;&#1073;&#1098;&#1103;&#1074;&#1083;&#1077;&#1085;&#1085;&#1099;&#1077; schemas</text></g><!--link kernel to broker--><g class="link" data-entity-1="ent0002" data-entity-2="ent0004" data-link-type="dependency" data-source-line="16" id="lnk13"><path d="M789.26,147.8373 C854.49,154.8173 932.06,163.2673 1001.96,171.2573 C1011.69,172.3673 1016.7942,172.9534 1026.9142,174.1434" fill="none" id="kernel-to-broker" style="stroke:#000000;stroke-width:1;"/><polygon fill="#000000" points="1031.88,174.7273,1023.4087,169.7036,1026.9142,174.1434,1022.4744,177.6489,1031.88,174.7273" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="165.2358" x="827.96" y="148.7071">&#1058;&#1080;&#1087;&#1080;&#1079;&#1080;&#1088;&#1086;&#1074;&#1072;&#1085;&#1085;&#1099;&#1081; &#1079;&#1072;&#1087;&#1088;&#1086;&#1089;</text></g><!--link kernel to model--><g class="link" data-entity-1="ent0002" data-entity-2="ent0005" data-link-type="dependency" data-source-line="14" id="lnk11"><path d="M500.69,159.7073 C487.62,161.5573 474.54,163.1273 461.91,164.2573 C398.61,169.9173 382.18,170.2273 318.91,164.2573 C295.41,162.0373 275.2358,159.0213 251.7858,154.6613" fill="none" id="kernel-to-model" style="stroke:#000000;stroke-width:1;"/><polygon fill="#000000" points="246.87,153.7473,254.9872,159.3251,251.7858,154.6613,256.4495,151.4599,246.87,153.7473" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="137.2173" x="321.91" y="161.3271">&#1055;&#1088;&#1086;&#1077;&#1082;&#1094;&#1080;&#1103; &#1082;&#1086;&#1085;&#1090;&#1077;&#1082;&#1089;&#1090;&#1072;</text></g><!--link model to kernel--><g class="link" data-entity-1="ent0005" data-entity-2="ent0002" data-link-type="dependency" data-source-line="15" id="lnk12"><path d="M246.88,132.2573 C316.62,132.2573 407.32,132.2573 486.78,132.2573" fill="none" id="model-to-kernel" style="stroke:#000000;stroke-width:1;"/><polygon fill="#000000" points="491.78,132.2573,482.78,128.2573,486.78,132.2573,482.78,136.2573,491.78,132.2573" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="141.0767" x="319.91" y="129.3271">&#1054;&#1090;&#1074;&#1077;&#1090; &#1080; opaque state</text></g><!--link broker to log--><g class="link" data-entity-1="ent0004" data-entity-2="ent0003" data-link-type="dependency" data-source-line="17" id="lnk14"><path d="M1289.75,171.6673 C1348.03,162.1873 1417.66,149.4473 1479.55,134.2573 C1495.15,130.4273 1506.7657,127.2501 1522.6057,122.4401" fill="none" id="broker-to-log" style="stroke:#000000;stroke-width:1;"/><polygon fill="#000000" points="1527.39,120.9873,1517.616,119.7749,1522.6057,122.4401,1519.9405,127.4298,1527.39,120.9873" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="111.249" x="1344.05" y="131.3271">Intent / outcome</text></g><!--link kernel to log--><g class="link" data-entity-1="ent0002" data-entity-2="ent0003" data-link-type="dependency" data-source-line="18" id="lnk15"><path d="M789.28,125.8973 C994.25,117.0873 1353.5446,101.6421 1522.5846,94.3721" fill="none" id="kernel-to-log" style="stroke:#000000;stroke-width:1;"/><polygon fill="#000000" points="1527.58,94.1573,1518.4164,90.5477,1522.5846,94.3721,1518.7602,98.5403,1527.58,94.1573" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="130.6855" x="1095.76" y="102.1071">&#1057;&#1086;&#1073;&#1099;&#1090;&#1080;&#1103; &#1088;&#1072;&#1079;&#1075;&#1086;&#1074;&#1086;&#1088;&#1072;</text></g><!--link broker to worker--><g class="link" data-entity-1="ent0004" data-entity-2="ent0006" data-link-type="dependency" data-source-line="19" id="lnk16"><path d="M1289.64,192.8973 C1299.76,193.0373 1309.83,193.1673 1319.55,193.2573 C1390.66,193.9273 1408.44,193.5073 1479.55,193.2573 C1489.19,193.2173 1494.2101,193.2072 1504.2501,193.1472" fill="none" id="broker-to-worker" style="stroke:#000000;stroke-width:1;"/><polygon fill="#000000" points="1509.25,193.1173,1500.2263,189.1712,1504.2501,193.1472,1500.2741,197.171,1509.25,193.1173" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="158.5581" x="1320.55" y="190.3271">&#1054;&#1075;&#1088;&#1072;&#1085;&#1080;&#1095;&#1077;&#1085;&#1085;&#1099;&#1081; &#1087;&#1088;&#1086;&#1094;&#1077;&#1089;&#1089;</text></g><!--link broker to orchestrator--><g class="link" data-entity-1="ent0004" data-entity-2="ent0007" data-link-type="dependency" data-source-line="20" id="lnk17"><path d="M1277.87,217.7173 C1349.08,234.5573 1434.8043,254.8364 1504.6443,271.3564" fill="none" id="broker-to-orchestrator" style="stroke:#000000;stroke-width:1;"/><polygon fill="#000000" points="1509.51,272.5073,1501.6724,266.543,1504.6443,271.3564,1499.8309,274.3282,1509.51,272.5073" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="158.5581" x="1320.55" y="225.3371">&#1054;&#1075;&#1088;&#1072;&#1085;&#1080;&#1095;&#1077;&#1085;&#1085;&#1099;&#1081; &#1087;&#1088;&#1086;&#1094;&#1077;&#1089;&#1089;</text></g><!--link orchestrator to mcp--><g class="link" data-entity-1="ent0007" data-entity-2="ent0008" data-link-type="dependency" data-source-line="21" id="lnk18"><path d="M1729.44,298.2573 C1786.71,298.2573 1852.39,298.2573 1913.03,298.2573" fill="none" id="orchestrator-to-mcp" style="stroke:#000000;stroke-width:1;"/><polygon fill="#000000" points="1918.03,298.2573,1909.03,294.2573,1913.03,298.2573,1909.03,302.2573,1918.03,298.2573" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="127.1309" x="1760.22" y="295.3271">&#1055;&#1088;&#1080; &#1085;&#1072;&#1083;&#1080;&#1095;&#1080;&#1080; grant</text></g><?plantuml-src bLInSjD04Etr5KTwXvw26SOL1KDcKj2aETkoBIBT2Uay8LtiG1X881HK32H3-06HH4I9O_iNxdw1B-7jtSMMdOAXIQpLxjlTj-_fWUg7ISZIc4SYYCEkOagoBEhr5Uj4MTXMaHI1YbGSiYTfnBFTHqnFzQMUw2apn_hIxE67hXX2vxfWUaO1yqPNUcoEyOZaCINhMuJV8NmT42eNFI2kDGSPLpBR4lgd6PgHBcpgkRuXgCgZuRd4VnkR0OsIYZN6SzPsvNL4VQ9_cVUwrELyFA3_0CBG37M5cVxidJ4x2u6MI3bo8TUhr3VcmERX3uqqHRZIbUst7MOYZ8CELxp5S-hsrOyyGJOX3Z4cTcJwjzb78GRLOzj_Yh4E0UUG6TBEyTjkJFryWrZsbfRvCj--1DR470AwbKdC0T3J5NBCHwBRl2LuUv0fTjgdaLZOxG8rjprS_LARpqWka3mYB4QdGg04rHNQd21idyoHdu0FLB-1bbZRZ6XFYvl83hYfmMvkHt6ShqhYXSpS-2T0hVI4gTqqx41rCcxaL65VpImfKqSWDIQvxUihJsyUzKGaUhRlZWNyT-FdMRiVvieBRYEJBr7HIBZWFJX0g2tHb4ao456Ra-YjA3QvwBJaQzj7rkgN5NUFe6VD3RQJyJIrYvwH1_3knkwmfFDnxQv4Xhi0HYxrjHawMjjfu7NE6et7_dmCDloEh0gKt188n5xgMmVaJL8JHE2h2C29c038AXzGM9-ZP3dMJ7WU-3mgiQUbYjDLZtWHs91TB72vAutmXdGw8c7AbByQX2nNN8Nr9el5ph3MpAvMUOaN2vQkh5BfiCFwLd0EIfyAXKkoXqmEL5icI_WkOyMA02e0UM6xaDMBEgYJbgFgmgPwdo_6SQCSkEzBlROkb_z0M2gptBVJE-PXQki7Yu1F1kjbNAX0I1MobbHA9anslG-RMTW15H4d8qnmLZ3gFtYwC9_Wso7MNxWkNm_qjplVuvFeQkRIejFT-vOJVtE9hGUXw32QvIy0?></g></svg>
+\ No newline at end of file
+diff --git a/diagrams/research/codex-pi/recovery.puml b/diagrams/research/codex-pi/recovery.puml
+new file mode 100644
+index 0000000..fd195b2
+--- /dev/null
++++ b/diagrams/research/codex-pi/recovery.puml
+@@ -0,0 +1,33 @@
++@startuml
++!theme plain
++title Apiary: допуск эффекта и восстановление после сбоя
++participant "Адаптер модели" as model
++participant "Ядро" as core
++participant "Broker" as broker
++database "Журнал" as journal
++participant "Tool provider" as tool
++model -> core : Частичные arguments
++note right of core : Только preview
++model -> core : Terminal response
++alt error / aborted / length
++ core -> journal : Ответ не допущен к effects
++else Успешный полный ответ
++ core -> broker : Call + epoch + plan digest
++ broker -> broker : Schema + grant + approval + sandbox
++ broker -> journal : Зафиксировать intent
++ journal --> broker : Commit acknowledgement
++ broker -> tool : Effect с invocation ID
++ alt Исход получен
++  tool --> broker : Результат
++  broker -> journal : Зафиксировать outcome
++  broker --> core : Settled receipt
++ else Crash до квитанции
++  broker -> journal : Восстановить effect_pending
++  broker -> tool : Reconcile, если предусмотрено
++  note over broker,tool
++  Без доказуемого исхода — unknown.
++  Повтор только по проверенному replay-контракту.
++  end note
++ end
++end
++@enduml
+diff --git a/diagrams/research/codex-pi/recovery.svg b/diagrams/research/codex-pi/recovery.svg
+new file mode 100644
+index 0000000..a3be8c1
+--- /dev/null
++++ b/diagrams/research/codex-pi/recovery.svg
+@@ -0,0 +1 @@
++<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="786px" preserveAspectRatio="none" style="width:924px;height:786px;background:#FFFFFF;" version="1.1" viewBox="0 0 924 786" width="924px" zoomAndPan="magnify"><?plantuml 1.2026.6?><defs/><g><g class="title" data-source-line="2"><text fill="#000000" font-family="Verdana" font-size="22" font-weight="700" lengthAdjust="spacing" textLength="687.833" x="117.5266" y="37.1182">Apiary: &#1076;&#1086;&#1087;&#1091;&#1089;&#1082; &#1101;&#1092;&#1092;&#1077;&#1082;&#1090;&#1072; &#1080; &#1074;&#1086;&#1089;&#1089;&#1090;&#1072;&#1085;&#1086;&#1074;&#1083;&#1077;&#1085;&#1080;&#1077; &#1087;&#1086;&#1089;&#1083;&#1077; &#1089;&#1073;&#1086;&#1103;</text></g><rect fill="#FFFFFF" height="472.7271" style="stroke:#000000;stroke-width:1;" width="706.2881" x="202.5981" y="228.1499"/><rect fill="#FFFFFF" height="425.1284" style="stroke:none;stroke-width:1;" width="706.2881" x="202.5981" y="275.7485"/><rect fill="#FFFFFF" height="233.7632" style="stroke:#000000;stroke-width:1;" width="686.2881" x="212.5981" y="460.1138"/><rect fill="#FFFFFF" height="126.5659" style="stroke:none;stroke-width:1;" width="686.2881" x="212.5981" y="567.311"/><g class="participant-lifeline" data-entity-uid="part1" data-qualified-name="model" data-source-line="3" id="part1-lifeline"><g><title>....... ......</title><rect fill="#000000" fill-opacity="0.00000" height="602.125" width="8" x="79.7344" y="115.752"/><line style="stroke:#000000;stroke-width:1;stroke-dasharray:5,5;" x1="83" x2="83" y1="115.752" y2="717.877"/></g></g><g class="participant-lifeline" data-entity-uid="part2" data-qualified-name="core" data-source-line="4" id="part2-lifeline"><g><title>....</title><rect fill="#000000" fill-opacity="0.00000" height="602.125" width="8" x="251.5015" y="115.752"/><line style="stroke:#000000;stroke-width:1;stroke-dasharray:5,5;" x1="254.5981" x2="254.5981" y1="115.752" y2="717.877"/></g></g><g class="participant-lifeline" data-entity-uid="part3" data-qualified-name="broker" data-source-line="5" id="part3-lifeline"><g><title>Broker</title><rect fill="#000000" fill-opacity="0.00000" height="602.125" width="8" x="449.4907" y="115.752"/><line style="stroke:#000000;stroke-width:1;stroke-dasharray:5,5;" x1="453.1563" x2="453.1563" y1="115.752" y2="717.877"/></g></g><g class="participant-lifeline" data-entity-uid="part4" data-qualified-name="journal" data-source-line="6" id="part4-lifeline"><g><title>......</title><rect fill="#000000" fill-opacity="0.00000" height="602.125" width="8" x="720.8184" y="115.752"/><line style="stroke:#000000;stroke-width:1;stroke-dasharray:5,5;" x1="724.4937" x2="724.4937" y1="115.752" y2="717.877"/></g></g><g class="participant-lifeline" data-entity-uid="part5" data-qualified-name="tool" data-source-line="7" id="part5-lifeline"><g><title>Tool provider</title><rect fill="#000000" fill-opacity="0.00000" height="602.125" width="8" x="823.5146" y="115.752"/><line style="stroke:#000000;stroke-width:1;stroke-dasharray:5,5;" x1="827.1431" x2="827.1431" y1="115.752" y2="717.877"/></g></g><g class="participant participant-head" data-entity-uid="part1" data-qualified-name="model" data-source-line="3" id="part1-head"><rect fill="#FFFFFF" height="27.0146" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="127.4688" x="20" y="82.7373"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="117.4688" x="25" y="101.8125">&#1040;&#1076;&#1072;&#1087;&#1090;&#1077;&#1088; &#1084;&#1086;&#1076;&#1077;&#1083;&#1080;</text></g><g class="participant participant-tail" data-entity-uid="part1" data-qualified-name="model" data-source-line="3" id="part1-tail"><rect fill="#FFFFFF" height="27.0146" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="127.4688" x="20" y="721.877"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="117.4688" x="25" y="740.9521">&#1040;&#1076;&#1072;&#1087;&#1090;&#1077;&#1088; &#1084;&#1086;&#1076;&#1077;&#1083;&#1080;</text></g><g class="participant participant-head" data-entity-uid="part2" data-qualified-name="core" data-source-line="4" id="part2-head"><rect fill="#FFFFFF" height="27.0146" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="45.8066" x="232.5981" y="82.7373"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="35.8066" x="237.5981" y="101.8125">&#1071;&#1076;&#1088;&#1086;</text></g><g class="participant participant-tail" data-entity-uid="part2" data-qualified-name="core" data-source-line="4" id="part2-tail"><rect fill="#FFFFFF" height="27.0146" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="45.8066" x="232.5981" y="721.877"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="35.8066" x="237.5981" y="740.9521">&#1071;&#1076;&#1088;&#1086;</text></g><g class="participant participant-head" data-entity-uid="part3" data-qualified-name="broker" data-source-line="5" id="part3-head"><rect fill="#FFFFFF" height="27.0146" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="56.6689" x="425.1563" y="82.7373"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="46.6689" x="430.1563" y="101.8125">Broker</text></g><g class="participant participant-tail" data-entity-uid="part3" data-qualified-name="broker" data-source-line="5" id="part3-tail"><rect fill="#FFFFFF" height="27.0146" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="56.6689" x="425.1563" y="721.877"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="46.6689" x="430.1563" y="740.9521">Broker</text></g><g class="participant participant-head" data-entity-uid="part4" data-qualified-name="journal" data-source-line="6" id="part4-head"><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="56.6494" x="693.4937" y="112.8125">&#1046;&#1091;&#1088;&#1085;&#1072;&#1083;</text><path d="M706.8184,62.7373 C706.8184,52.7373 724.8184,52.7373 724.8184,52.7373 C724.8184,52.7373 742.8184,52.7373 742.8184,62.7373 L742.8184,88.7373 C742.8184,98.7373 724.8184,98.7373 724.8184,98.7373 C724.8184,98.7373 706.8184,98.7373 706.8184,88.7373 L706.8184,62.7373" fill="#FFFFFF" style="stroke:#000000;stroke-width:1;"/><path d="M706.8184,62.7373 C706.8184,72.7373 724.8184,72.7373 724.8184,72.7373 C724.8184,72.7373 742.8184,72.7373 742.8184,62.7373" fill="none" style="stroke:#000000;stroke-width:1;"/></g><g class="participant participant-tail" data-entity-uid="part4" data-qualified-name="journal" data-source-line="6" id="part4-tail"><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="56.6494" x="693.4937" y="730.9521">&#1046;&#1091;&#1088;&#1085;&#1072;&#1083;</text><path d="M706.8184,743.8916 C706.8184,733.8916 724.8184,733.8916 724.8184,733.8916 C724.8184,733.8916 742.8184,733.8916 742.8184,743.8916 L742.8184,769.8916 C742.8184,779.8916 724.8184,779.8916 724.8184,779.8916 C724.8184,779.8916 706.8184,779.8916 706.8184,769.8916 L706.8184,743.8916" fill="#FFFFFF" style="stroke:#000000;stroke-width:1;"/><path d="M706.8184,743.8916 C706.8184,753.8916 724.8184,753.8916 724.8184,753.8916 C724.8184,753.8916 742.8184,753.8916 742.8184,743.8916" fill="none" style="stroke:#000000;stroke-width:1;"/></g><g class="participant participant-head" data-entity-uid="part5" data-qualified-name="tool" data-source-line="7" id="part5-head"><rect fill="#FFFFFF" height="27.0146" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="102.7432" x="776.1431" y="82.7373"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="92.7432" x="781.1431" y="101.8125">Tool provider</text></g><g class="participant participant-tail" data-entity-uid="part5" data-qualified-name="tool" data-source-line="7" id="part5-tail"><rect fill="#FFFFFF" height="27.0146" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1;" width="102.7432" x="776.1431" y="721.877"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="92.7432" x="781.1431" y="740.9521">Tool provider</text></g><g class="message" data-entity-1="part1" data-entity-2="part2" data-source-line="8" id="msg1"><polygon fill="#000000" points="243.5015,143.5513,253.5015,147.5513,243.5015,151.5513,247.5015,147.5513" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><line style="stroke:#000000;stroke-width:1;" x1="83.7344" x2="249.5015" y1="147.5513" y2="147.5513"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="147.7671" x="90.7344" y="142.8218">&#1063;&#1072;&#1089;&#1090;&#1080;&#1095;&#1085;&#1099;&#1077; arguments</text></g><path d="M260,160.5513 L260,185.5513 L383,185.5513 L383,170.5513 L373,160.5513 L260,160.5513" fill="#FFFFFF" style="stroke:#000000;stroke-width:1;"/><path d="M373,160.5513 L373,170.5513 L383,170.5513 L373,160.5513" fill="#FFFFFF" style="stroke:#000000;stroke-width:1;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="102.5781" x="266" y="178.6211">&#1058;&#1086;&#1083;&#1100;&#1082;&#1086; preview</text><g class="message" data-entity-1="part1" data-entity-2="part2" data-source-line="10" id="msg2"><polygon fill="#000000" points="243.5015,209.1499,253.5015,213.1499,243.5015,217.1499,247.5015,213.1499" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><line style="stroke:#000000;stroke-width:1;" x1="83.7344" x2="249.5015" y1="213.1499" y2="213.1499"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="120.4849" x="90.7344" y="208.4204">Terminal response</text></g><path d="M202.5981,228.1499 L266.6475,228.1499 L266.6475,235.9492 L256.6475,245.9492 L202.5981,245.9492 L202.5981,228.1499" fill="#FFFFFF" style="stroke:#000000;stroke-width:1;"/><rect fill="none" height="472.7271" style="stroke:#000000;stroke-width:1;" width="706.2881" x="202.5981" y="228.1499"/><text fill="#000000" font-family="Verdana" font-size="13" font-weight="700" lengthAdjust="spacing" textLength="19.0493" x="217.5981" y="242.2197">alt</text><text fill="#000000" font-family="Verdana" font-size="11" font-weight="700" lengthAdjust="spacing" textLength="160.9287" x="281.6475" y="241.209">[error / aborted / length]</text><g class="message" data-entity-1="part2" data-entity-2="part4" data-source-line="12" id="msg3"><polygon fill="#000000" points="712.8184,263.7485,722.8184,267.7485,712.8184,271.7485,716.8184,267.7485" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><line style="stroke:#000000;stroke-width:1;" x1="255.5015" x2="718.8184" y1="267.7485" y2="267.7485"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="183.4219" x="262.5015" y="263.019">&#1054;&#1090;&#1074;&#1077;&#1090; &#1085;&#1077; &#1076;&#1086;&#1087;&#1091;&#1097;&#1077;&#1085; &#1082; effects</text></g><line style="stroke:#000000;stroke-width:1;stroke-dasharray:2,2;" x1="202.5981" x2="908.8862" y1="276.7485" y2="276.7485"/><text fill="#000000" font-family="Verdana" font-size="11" font-weight="700" lengthAdjust="spacing" textLength="170.0542" x="207.5981" y="287.8076">[&#1059;&#1089;&#1087;&#1077;&#1096;&#1085;&#1099;&#1081; &#1087;&#1086;&#1083;&#1085;&#1099;&#1081; &#1086;&#1090;&#1074;&#1077;&#1090;]</text><g class="message" data-entity-1="part2" data-entity-2="part3" data-source-line="14" id="msg4"><polygon fill="#000000" points="441.4907,308.9165,451.4907,312.9165,441.4907,316.9165,445.4907,312.9165" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><line style="stroke:#000000;stroke-width:1;" x1="255.5015" x2="447.4907" y1="312.9165" y2="312.9165"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="173.9893" x="262.5015" y="308.187">Call + epoch + plan digest</text></g><g class="message" data-entity-1="part3" data-entity-2="part3" data-source-line="15" id="msg5"><line style="stroke:#000000;stroke-width:1;" x1="453.4907" x2="495.4907" y1="342.7158" y2="342.7158"/><line style="stroke:#000000;stroke-width:1;" x1="495.4907" x2="495.4907" y1="342.7158" y2="355.7158"/><line style="stroke:#000000;stroke-width:1;" x1="454.4907" x2="495.4907" y1="355.7158" y2="355.7158"/><polygon fill="#000000" points="464.4907,351.7158,454.4907,355.7158,464.4907,359.7158,460.4907,355.7158" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="257.3276" x="460.4907" y="337.9863">Schema + grant + approval + sandbox</text></g><g class="message" data-entity-1="part3" data-entity-2="part4" data-source-line="16" id="msg6"><polygon fill="#000000" points="712.8184,381.5151,722.8184,385.5151,712.8184,389.5151,716.8184,385.5151" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><line style="stroke:#000000;stroke-width:1;" x1="453.4907" x2="718.8184" y1="385.5151" y2="385.5151"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="146.0024" x="460.4907" y="380.7856">&#1047;&#1072;&#1092;&#1080;&#1082;&#1089;&#1080;&#1088;&#1086;&#1074;&#1072;&#1090;&#1100; intent</text></g><g class="message" data-entity-1="part4" data-entity-2="part3" data-source-line="17" id="msg7"><polygon fill="#000000" points="464.4907,411.3145,454.4907,415.3145,464.4907,419.3145,460.4907,415.3145" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><line style="stroke:#000000;stroke-width:1;stroke-dasharray:2,2;" x1="458.4907" x2="723.8184" y1="415.3145" y2="415.3145"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="173.5386" x="470.4907" y="410.585">Commit acknowledgement</text></g><g class="message" data-entity-1="part3" data-entity-2="part5" data-source-line="18" id="msg8"><polygon fill="#000000" points="815.5146,441.1138,825.5146,445.1138,815.5146,449.1138,819.5146,445.1138" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><line style="stroke:#000000;stroke-width:1;" x1="453.4907" x2="821.5146" y1="445.1138" y2="445.1138"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="139.9087" x="460.4907" y="440.3843">Effect &#1089; invocation ID</text></g><path d="M212.5981,460.1138 L276.6475,460.1138 L276.6475,467.9131 L266.6475,477.9131 L212.5981,477.9131 L212.5981,460.1138" fill="#FFFFFF" style="stroke:#000000;stroke-width:1;"/><rect fill="none" height="233.7632" style="stroke:#000000;stroke-width:1;" width="686.2881" x="212.5981" y="460.1138"/><text fill="#000000" font-family="Verdana" font-size="13" font-weight="700" lengthAdjust="spacing" textLength="19.0493" x="227.5981" y="474.1836">alt</text><text fill="#000000" font-family="Verdana" font-size="11" font-weight="700" lengthAdjust="spacing" textLength="107.293" x="291.6475" y="473.1729">[&#1048;&#1089;&#1093;&#1086;&#1076; &#1087;&#1086;&#1083;&#1091;&#1095;&#1077;&#1085;]</text><g class="message" data-entity-1="part5" data-entity-2="part3" data-source-line="20" id="msg9"><polygon fill="#000000" points="464.4907,495.7124,454.4907,499.7124,464.4907,503.7124,460.4907,499.7124" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><line style="stroke:#000000;stroke-width:1;stroke-dasharray:2,2;" x1="458.4907" x2="826.5146" y1="499.7124" y2="499.7124"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="66.2886" x="470.4907" y="494.9829">&#1056;&#1077;&#1079;&#1091;&#1083;&#1100;&#1090;&#1072;&#1090;</text></g><g class="message" data-entity-1="part3" data-entity-2="part4" data-source-line="21" id="msg10"><polygon fill="#000000" points="712.8184,525.5117,722.8184,529.5117,712.8184,533.5117,716.8184,529.5117" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><line style="stroke:#000000;stroke-width:1;" x1="453.4907" x2="718.8184" y1="529.5117" y2="529.5117"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="164.2837" x="460.4907" y="524.7822">&#1047;&#1072;&#1092;&#1080;&#1082;&#1089;&#1080;&#1088;&#1086;&#1074;&#1072;&#1090;&#1100; outcome</text></g><g class="message" data-entity-1="part3" data-entity-2="part2" data-source-line="22" id="msg11"><polygon fill="#000000" points="266.5015,555.311,256.5015,559.311,266.5015,563.311,262.5015,559.311" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><line style="stroke:#000000;stroke-width:1;stroke-dasharray:2,2;" x1="260.5015" x2="452.4907" y1="559.311" y2="559.311"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="95.4561" x="272.5015" y="554.5815">Settled receipt</text></g><line style="stroke:#000000;stroke-width:1;stroke-dasharray:2,2;" x1="212.5981" x2="898.8862" y1="568.311" y2="568.311"/><text fill="#000000" font-family="Verdana" font-size="11" font-weight="700" lengthAdjust="spacing" textLength="137.5376" x="217.5981" y="579.3701">[Crash &#1076;&#1086; &#1082;&#1074;&#1080;&#1090;&#1072;&#1085;&#1094;&#1080;&#1080;]</text><g class="message" data-entity-1="part3" data-entity-2="part4" data-source-line="24" id="msg12"><polygon fill="#000000" points="712.8184,600.479,722.8184,604.479,712.8184,608.479,716.8184,604.479" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><line style="stroke:#000000;stroke-width:1;" x1="453.4907" x2="718.8184" y1="604.479" y2="604.479"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="192.4673" x="460.4907" y="599.7495">&#1042;&#1086;&#1089;&#1089;&#1090;&#1072;&#1085;&#1086;&#1074;&#1080;&#1090;&#1100; effect_pending</text></g><g class="message" data-entity-1="part3" data-entity-2="part5" data-source-line="25" id="msg13"><polygon fill="#000000" points="815.5146,630.2783,825.5146,634.2783,815.5146,638.2783,819.5146,634.2783" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/><line style="stroke:#000000;stroke-width:1;" x1="453.4907" x2="821.5146" y1="634.2783" y2="634.2783"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="208.5269" x="460.4907" y="629.5488">Reconcile, &#1077;&#1089;&#1083;&#1080; &#1087;&#1088;&#1077;&#1076;&#1091;&#1089;&#1084;&#1086;&#1090;&#1088;&#1077;&#1085;&#1086;</text></g><path d="M406,647.2783 L406,688.2783 L874,688.2783 L874,657.2783 L864,647.2783 L406,647.2783" fill="#FFFFFF" style="stroke:#000000;stroke-width:1;"/><path d="M864,647.2783 L864,657.2783 L874,657.2783 L864,647.2783" fill="#FFFFFF" style="stroke:#000000;stroke-width:1;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="250.0342" x="464.0435" y="665.3481">&#1041;&#1077;&#1079; &#1076;&#1086;&#1082;&#1072;&#1079;&#1091;&#1077;&#1084;&#1086;&#1075;&#1086; &#1080;&#1089;&#1093;&#1086;&#1076;&#1072; &#8212; unknown.</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="343.6431" x="464.0435" y="681.1475">&#1055;&#1086;&#1074;&#1090;&#1086;&#1088; &#1090;&#1086;&#1083;&#1100;&#1082;&#1086; &#1087;&#1086; &#1087;&#1088;&#1086;&#1074;&#1077;&#1088;&#1077;&#1085;&#1085;&#1086;&#1084;&#1091; replay-&#1082;&#1086;&#1085;&#1090;&#1088;&#1072;&#1082;&#1090;&#1091;.</text><?plantuml-src bLHDRzD04BtxLmozjeKx1oGe7BZItj76tYQczgwrtgJqbYQ5WYZYGmWu0O83Hq9fX4dQv2_i_WL-2M_MQPCKSK1LPJixy-RDUpDxnRPaBgd8HAeYczfCqiqY5MRlEhaJDt5Jt_VxRaJ-kJ_m1sxeHhxd1kGgSiTkulVnXsztXj1ZDyRvcQlSaDoK3_a7mkCxFbv4XJ0sZTD2A4ihxYNW1u3lkQ7laZi5m0dInwvQ8L5IhXEPNKhvvavyrqt2UQoDN3w-PVIEDE6m4LwZH5ZH4AL4wbkqqGMtWHk7Y0UwRPIuL61BwumAepjfCWEo-2KAL6ZzHgX9qEMh6uIsAt_eplmpz2XCivrBPSj8QIl9fCsM9RrzaV4PtOtzaHkv2Gh8JYft_uBTaYPFmOcCB0kjIXc9p98qHXkwHgAXZPK9tZAfchOLrMb8dxN2PJw0r37qx15Q7SuDVCg-45oKszio1akPGHNt1TPC4VuaTF4hc0O3PX-JSx1vgLfNLDeGMKQh90iTj_34z2XAqgOiRNGUj1Y-6MF810ARXeLU9L6mp88nIg6IXdwucBVGqJj8VO296e5gnUQ3qi3t_16boaBmw29uVOcVplFKaeXtbDxDPDAKUGYUrs1d4NWd288P1Lv7nyAcMj7Tsn6nzkuzR7x4WpcJ1b8UifGHrVbBDTqd7FtqVJQQTuA5-z-cTDl6EfSBYVFvs9GMsvbWF6AP5cWccBXXHDaAJiDVu5JrElh7mA_-HU3rNvjRXVBrUDmlf4fIrLpAdkbrJyPQnMacrmYZmGkEYs2A7eROJRufJdbkmZU0WH3sGNS0KcEjXPKYSgzOhNf4Hw31mWt3BV23MwdEbSTTyxlxXjgAdLHNEVCZCmRt2UuDVbni5fjKivc4oQrPS8EdlW_TCAPxwnm9VPZZW2yptsTGT1oeHlmMuVyF?></g></svg>
+\ No newline at end of file

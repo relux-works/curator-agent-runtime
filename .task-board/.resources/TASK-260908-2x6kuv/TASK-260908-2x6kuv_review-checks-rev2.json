@@ -1,0 +1,49 @@
+{
+  "base": "ef98d6d4a79bc2ed09a3e82fb73a4019f0b81807",
+  "candidate": "684c00b4432eac12199a60a68901a4b14fde5912",
+  "prior_candidate": "bb8971f8ac409ef826d4cf0f85e0cb84a661bce8",
+  "head": "048384311e5b163f4d15ffefe3290493a410208d",
+  "before_bytes": 45313,
+  "after_bytes": 45312,
+  "sha256": "58ae4e392b49ce5c675d9639f52d83afc7fde15ed4c75e3ac5619c6eac9fe379",
+  "only_removed_byte": "0a at offset 45312",
+  "siblings_equal": [
+    ".research/260908_codex-pi.md",
+    "diagrams/research/codex-pi/kernel.puml",
+    "diagrams/research/codex-pi/kernel.svg",
+    "diagrams/research/codex-pi/recovery.puml",
+    "diagrams/research/codex-pi/recovery.svg"
+  ],
+  "checks": [
+    {
+      "command": "git diff-tree --check HEAD",
+      "exit": 0,
+      "stdout": "048384311e5b163f4d15ffefe3290493a410208d\n",
+      "stderr": ""
+    },
+    {
+      "command": "git diff --check HEAD",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "python3 -c 'import os, subprocess, sys\npaths = subprocess.check_output([\"git\", \"ls-files\", \"--others\", \"--exclude-standard\", \"-z\"]).split(b\"\\0\")\nfailed = False\nfor raw in paths:\n    if not raw or raw.startswith(b\".task-board/\"):\n        continue\n    path = os.fsdecode(raw)\n    result = subprocess.run([\"git\", \"diff\", \"--no-index\", \"--check\", \"--\", \"/dev/null\", path], capture_output=True)\n    if result.returncode not in (0, 1) or result.stdout or result.stderr:\n        failed = True\n        print(path, \"exit\", result.returncode)\n        sys.stdout.buffer.write(result.stdout)\n        sys.stderr.buffer.write(result.stderr)\nsys.exit(1 if failed else 0)\n'",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "git diff --check ef98d6d4a79bc2ed09a3e82fb73a4019f0b81807 684c00b4432eac12199a60a68901a4b14fde5912",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "git diff --check ef98d6d4a79bc2ed09a3e82fb73a4019f0b81807 bb8971f8ac409ef826d4cf0f85e0cb84a661bce8",
+      "exit": 2,
+      "stdout": ".research/260908_claude-lineage.md:216: new blank line at EOF.\n",
+      "stderr": ""
+    }
+  ]
+}

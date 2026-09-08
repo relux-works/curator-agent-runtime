@@ -1,0 +1,20 @@
+[
+  {
+    "command": "git diff-tree --check HEAD",
+    "exit_code": 0,
+    "stdout": "048384311e5b163f4d15ffefe3290493a410208d\n",
+    "stderr": ""
+  },
+  {
+    "command": "git diff --check HEAD",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": "python3 -c 'import os, subprocess, sys\npaths = subprocess.check_output([\"git\", \"ls-files\", \"--others\", \"--exclude-standard\", \"-z\"]).split(b\"\\0\")\nfailed = False\nfor raw in paths:\n    if not raw or raw.startswith(b\".task-board/\"):\n        continue\n    path = os.fsdecode(raw)\n    result = subprocess.run([\"git\", \"diff\", \"--no-index\", \"--check\", \"--\", \"/dev/null\", path], capture_output=True)\n    if result.returncode not in (0, 1) or result.stdout or result.stderr:\n        failed = True\n        print(path, \"exit\", result.returncode)\n        sys.stdout.buffer.write(result.stdout)\n        sys.stderr.buffer.write(result.stderr)\nsys.exit(1 if failed else 0)\n'",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]
