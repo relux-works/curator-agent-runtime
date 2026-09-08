@@ -59,7 +59,7 @@
     const node = D.overview.nodes.find(function (n) { return n.id === state.node; }) || D.overview.nodes[0];
     const slot = document.getElementById('module-inspector');
     if (!slot) return;
-    slot.innerHTML = '<div><span class="eyebrow">Выбранный компонент</span><h3>' + E(node.title) + '</h3>' + badge(node.owner, node.kind === 'authority' ? 'blue' : '') + '</div><div><p>' + E(node.summary) + '</p>' + source(node.source,'Подробнее о компоненте') + '<div class="inspector-details"><div><div class="meta-label">Состояние</div><p>' + E(node.state) + '</p></div><div><div class="meta-label">Граница полномочий</div><p>' + E(node.boundary) + '</p></div></div><span class="mono section-note">' + E(node.ports) + '</span></div>';
+    slot.innerHTML = '<div><span class="eyebrow">Выбранный компонент</span><h3>' + E(node.id === 'tool' && state.profile === 'orchestrator' ? 'Tool-skills' : node.title) + '</h3>' + badge(node.owner, node.kind === 'authority' ? 'blue' : '') + '</div><div><p>' + E(node.summary) + '</p>' + source(node.source,'Подробнее о компоненте') + '<div class="inspector-details"><div><div class="meta-label">Состояние</div><p>' + E(node.state) + '</p></div><div><div class="meta-label">Граница полномочий</div><p>' + E(node.boundary) + '</p></div></div><span class="mono section-note">' + E(node.ports) + '</span></div>';
     main.querySelectorAll('[data-node]').forEach(function (button) { const active = button.dataset.node === state.node; button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active)); });
     main.querySelectorAll('path.edge').forEach(function (path) { path.classList.toggle('active', path.dataset.edgeA === state.node || path.dataset.edgeB === state.node); });
   }
