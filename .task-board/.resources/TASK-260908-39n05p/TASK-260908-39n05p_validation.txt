@@ -1,0 +1,7 @@
+verify_report.py exit code: 0
+Source anchors and SHA-256: 23/23
+Fetched document hashes: 28/28
+Research documents: 3/3; relative links, reference labels, Russian text, bounded key-pattern scan passed
+NOT TESTED: runtime behavior, account grants, prices, credential refresh, sandbox isolation; key-pattern scan is not an exhaustive secret audit
+
+git diff --check exit code: 0 (tracked diff only; untracked whitespace checked separately)

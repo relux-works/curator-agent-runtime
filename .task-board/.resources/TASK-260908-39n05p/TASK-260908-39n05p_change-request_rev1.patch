@@ -1,0 +1,822 @@
+diff --git a/.research/260908_apiary-curator-contracts.md b/.research/260908_apiary-curator-contracts.md
+new file mode 100644
+index 0000000..bf3e8f5
+--- /dev/null
++++ b/.research/260908_apiary-curator-contracts.md
+@@ -0,0 +1,233 @@
++# Apiary и Curator: источники, контракты и границы общего runtime
++
++Дата получения источников: 8 сентября 2026 года. Задача: TASK-260908-31st2v. Статус документа: исследование для архитектурного review; нормативные документы и реализации не изменялись.
++
++## 1. Основной вывод
++
++Один минимальный Go-oriented runtime для worker и orchestrator оправдан как **общий механизм исполнения запечатанного плана**, но не как объединение всех существующих подсистем в один доверенный процесс. Сохранить модель «все model-visible tools приходят из skills»; отделить её от служебного транспорта ноды, model-provider adapter и владельца sandbox. Worker получает один типизированный вход в центральную среду и, при необходимости, отдельную узкую подпись. Orchestrator получает установленные Curator tool-skills управления задачами, коммуникации и управления sandbox; эти skills предлагают операции, а авторизацию эффектов проверяет authority service Apiary.
++
++Это рекомендация, а не описание уже работающего продукта. В runtime-репозитории представлены draft-протоколы, ADR и четыре схемы; README прямо резервирует транспорт, проверку идентичности provider, mediation сети, signing и protected authority root. [README.md:63](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/README.md#L63)
++
++Критические несовпадения:
++
++1. Curator closure/build/install существуют, но произвольный typed model-tool contract и его per-call enforcement не следуют из установленного CLI shim.
++2. Текущий Curator отказывает для `script-worker-v1`; production verified provider не поставляется. Наличие схемы и injectable test seam не подтверждает native enforcement.
++3. Apiary требует review неизменяемого интеграционного кандидата; task-board допускает непересекающийся reparent с сохранением acceptance и повторными проверками. Для Apiary этот перенос следует отклонить.
++4. «Демон с бинарями внутри skill» из книги несовместим с текущим Curator assurance: trusted host provider устанавливает оператор отдельно от skill.
++5. Subscription capacity не является универсальным API entitlement. Provider authentication не должна входить в model-visible skills.
++
++## 2. Происхождение и границы доказательств
++
++| ID | Репозиторий | Прочитанная свежая ревизия |
++|---|---|---|
++| A | apiary-docs | `b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7` |
++| C | curator | `2d0901444ecfe3c11c424c561c66c66b4bb5ddd1` |
++| S | curator-spec | `87a0d0060bad64ab883d007dcdf35df7485368bf` |
++| P | skill-project-management | `ebdf21a2dbe44892296c91a9401d87abc612f87f` |
++| R | curator-agent-runtime | `da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f` |
++
++Все четыре sibling-репозитория клонированы непосредственно с `https://github.com/relux-works/<repo>.git` с `--depth 1 --no-tags` в `.temp/TASK-260908-31st2v/`; runtime также проверен отдельным свежим clone. Runtime snapshot совпал с HEAD рабочего дерева. Это фиксация полученного HEAD, не криптографическая проверка подписей source commits и не утверждение, что main не изменится позже.
++
++Локальная ориентация до clone: Apiary `b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7` и curator-spec `87a0d0060bad64ab883d007dcdf35df7485368bf` были чистыми; Curator имел HEAD `a66eec88fa4dfb8f3ca098f594f6e48af57a6835` и чужие изменения в `.task-board`; project-management был чистым на `14e2483be64c817a76a19ac8dd5608e717e56285`. Поэтому выводы о текущей реализации основаны на свежих snapshots C и P, а не на sibling working trees. Их содержимое не менялось.
++
++**Наблюдение** ниже означает непосредственно прочитанный текст или code path. **Вывод** означает следствие сопоставления. **Предложение** означает новое проектное решение. Проверены source-level связи вызовов, но код snapshots, тестовые suites и исполняемая модель Apiary не запускались. Нельзя считать это runtime penetration test или conformance certification.
++
++Прочитан текущий `paper/paper.tex`, весь текст книги `book/ch01.tex`–`ch13.tex`, front, appendix и состав `main.tex`. Архивы не использованы как актуальная редакция. README объявляет работу 3.1 и книгу 0.2. [README.md:11](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/README.md#L11)
++
++Для Curator прочитаны релевантные участки core, assurance, environments, registry и реализация перечисленных далее production paths. Это не полный аудит всех 7202 строк этих протоколов/manager profile, всего репозитория или всех платформ. Для runtime прочитаны протоколы, пять ADR, architecture, threat model и схемы. Для project-management — router, CR lifecycle, релевантные участки tracked-spawn/query contracts и указанные реализации. Утверждения книги об `ax` не подтверждены здесь чтением отдельного ax source; не считать их установленной lineage реализации.
++
++## 3. Термины и инварианты Apiary
++
++В текущей работе эпоха уже определена как срок аренды оркестратора с оговоркой о других значениях. План отвечает «что разрешено», контракт — «что должно быть получено и как принимается». [Работа: термины](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L85)
++
++| Термин | Смысл источника | Рекомендуемое отдельное имя |
++|---|---|---|
++| Эпоха оркестратора | Срок аренды прикладной роли | `orchestrator_term` + fencing token |
++| Эпоха runtime | Жизнь одного immutable session plan | `plan_epoch_id`, `plan_digest` |
++| Аренда сессии | Владение логической сессией в менеджере | `session_owner_epoch`; не использовать как term Apiary |
++| Версия задачи | Версия критериев, scope, профиля проверок | `task_contract_revision`, `task_contract_digest` |
++| Ревизия R / кандидат I | Предложение worker / состояние над M | `revision_oid`, `candidate_oid`, `base_oid` |
++| Sandbox generation | Новая инкарнация sandbox после закрытия/восстановления | Новое поле `sandbox_generation`; не путать с задачей |
++| Provider session | Нативный conversation/thread ID | `provider_session_id`; не authority |
++| Fragment Curator | Параметры managed environment для launcher | `launch_fragment_digest`; не session-plan digest |
++
++### 3.1 Десять исходных инвариантов
++
++Все I1–I10 непосредственно перечислены в [paper/paper.tex:137](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L137).
++
++| Инвариант | Точное требование по смыслу | Последствие для runtime / Apiary |
++|---|---|---|
++| I1 | Эффект только по совершённой актуальной авторизации с совпадающим plan digest | Проверка assignment/QC и fencing на стороне среды перед запуском, не только при join |
++| I2 | Цель → capability → задача → ревизия только сужаются; изменение критериев авторизуется новой версией | Разделить authority attenuation и версионирование acceptance contract |
++| I3 | Атомарно M → I; approval и attestations адресованы I и текущим контракту/политике | CAS на executor; любое изменение I инвалидирует review |
++| I4 | Консенсус проверяет детерминированные предикаты, не суждение модели | LLM reviewer выдаёт подписанное суждение вне validator state machine |
++| I5 | Независимые producer/reviewer/check initiator по объявленной политике; нет автоматического ослабления; порядок фиксации случайности | Планировщик не подменяет отсутствие подходящих участников self-review |
++| I6 | Ключи worker остаются у владельца; project secrets только у runner | Разные credential domains; shell не получает ни один из них |
++| I7 | Журнал — authority; сессия — кэш; старая аренда отвергается с сохранением расхождения | Cold recovery возможен без transcript; native session ID не даёт прав |
++| I8 | Одна core-node останавливает, QC возобновляет; durable high-water защищает от rollback | Stop доставляется вне очереди модели; replay старого snapshot не открывает sandbox |
++| I9 | Полнота confinement сообщается честно; required full отказывает на partial | Не преобразовывать portable evidence в verified/full |
++| I10 | Проверяемое происхождение вызовов среды и результатов, receipt chain | Не обещать доказанную полноту внутренних действий недоверенного worker |
++
++L0 доверяет одной core-node и среде; L1 требует majority signatures, но доверяет sequencer для единственности истории; L2 вводит BFT с `n ≥ 3f+1`, QC `2f+1`. Переход L1→L2 — не одна замена числа подписей: меняется ordering/consensus, что видно в таблице самой работы. [paper/paper.tex:99](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L99)
++
++### 3.2 Центральная среда и свидетельства
++
++Наблюдение: логически одна authority environment может иметь исполнительные реплики; только одно место продвигает main. Sandbox — snapshot плюс OS policy; worktree отдельно не является границей. Защищённые тесты, CI, правила и manifests read-only для обычной задачи; доступ к devices, signing и publication — именованные runner operations. Write scope удерживается до integration/cancel, не до окончания команды. [paper/paper.tex:152](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L152) [paper/paper.tex:197](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L197)
++
++Receipt среды удостоверяет подписанное свидетельство среды; независимость машины устанавливается отдельным verifier, а не третьим worker, запускающим проверки на той же машине. Аттестация привязана к `(contract revision, I, verification policy version, environment digest)` и имеет исход `passed / failed / unknown` по смыслу текста. Ни timeout, ни недоступность проверки не равны passed. [paper/paper.tex:180](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L180) [paper/paper.tex:305](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L305)
++
++Работа сообщает 1090 достижимых состояний bounded-модели с четырьмя правилами `cas/epoch/contract/bind`. Это **опубликованный результат авторов, не наш прогон**; модель не покрывает весь distributed protocol, sandbox, криптографию, качество review или всех возможных исполнений. [paper/paper.tex:317](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L317)
++
++### 3.3 Идентичности
++
++Наблюдение: identity key владельца, certified short-lived node keys и внешние двусторонние proofs — разные сущности. Resolver возвращает fingerprints и evidence; совпадение evidence hash у t валидаторов в окне превращается в запись. Revocation не должна смешиваться с unavailable resolver: работа сохраняет историческое наблюдение, даже если provider позже недоступен. [paper/paper.tex:285](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L285)
++
++Предложение: resolver result имеет `observed-present / observed-absent / unavailable`, время, policy digest, нормализованный evidence digest и источник. Только наблюдённое отсутствие может инициировать отзыв; сетевой сбой оставляет unknown и действует по freshness policy. QC удостоверяет согласованность наблюдения, не честность владельца и не абсолютную независимость двух аккаунтов. Node signing key, worker model credential, execution-daemon identity и project signing key имеют разные purpose/namespace/audience. Не использовать краткий key ID как единственную identity: сверять полный ключ и его действующую цепочку.
++
++## 4. Что реально делает Curator
++
++### 4.1 Resolve → build → install → запуск команды
++
++| Этап | Прочитанный production path | Что установлено |
++|---|---|---|
++| CLI install | [cmd/curator/main.go:576](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/cmd/curator/main.go#L576) | preflight assurance до install; передача BuildAuthority и operator-selected acquisition dependencies |
++| Closure | [internal/closure/closure.go:151](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/closure/closure.go#L151); `resolveNode`, `unify`, `topologicalOrder` в том же файле | Snapshot exact commit; один name → один source/commit; конфликты и cycles отказывают; порядок provider-first |
++| Activation | [internal/closure/closure.go:64](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/closure/closure.go#L64) | `full/runtime/context` — активация контекста и команд по edges, не runtime security grant |
++| Install pipeline | [internal/install/install.go:368](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/install/install.go#L368) и [internal/install/install.go:526](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/install/install.go#L526) | Validation узлов, collisions, registry policy; private staging; публикация под manager-home mutation lock |
++| Go build | [internal/godriver/build.go:137](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/godriver/build.go#L137) | Frozen-source/toolchain rechecks, native probe, manager-owned worker, фиксированные list/build, проверка artifact; built output не запускается |
++| Script publication | [internal/runtimestore/scripts.go:37](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/runtimestore/scripts.go#L37) | Проверка runtime roots, активных script paths и staging replacement; это не per-call broker |
++| CLI invocation | [internal/runtimestore/runtimestore.go:161](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/runtimestore/runtimestore.go#L161) | Shim делает `exec` фиксированного runtime path с аргументами; сам по себе не строит typed call plan |
++| Enforced script | [internal/scriptpolicy/scriptpolicy.go:85](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/scriptpolicy/scriptpolicy.go#L85); [internal/install/targets.go:278](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/install/targets.go#L278) | Любой command с execution policy получает `script_execution_policy_unsupported`; downgrade запрещён |
++| Verified selection | [cmd/curator/assurance.go:17](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/cmd/curator/assurance.go#L17); [internal/closureexec/assurance.go:211](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/closureexec/assurance.go#L211) | Production provider отсутствует; требование verified не превращается в portable |
++
++Спецификация capabilities явно говорит: для command без enforced policy это **audit surface**, а не runtime sandbox. `filesystem` в Curator — `repo`, `home-config` либо paths; runtime draft уже использует read/write/deny object. Значит, фраза runtime «uses capability vocabulary» ещё требует нормативной трансляции и правил subset; структурного тождества нет. [protocol/core.md:1083](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/core.md#L1083) [schemas/v1/session-plan-v1.schema.json:118](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/schemas/v1/session-plan-v1.schema.json#L118)
++
++Curator build execution защищает изготовление artifact, а будущий runtime broker — **исполнение** artifact. Build receipt не доказывает, что последующий shim соблюдает network/filesystem grant. Portable control inventory честно отделяет controlled PATH от запрета запуска по absolute path, offline environment от kernel network denial, redirected temp от ограничения всех descendant writes. [protocol/core.md:416](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/core.md#L416)
++
++### 4.2 Profiles, fragments и MCP
++
++Наблюдение: `envprofile.Resolve` проверяет managed home и lock, без repair не выдаёт fragment при stale state; `buildFragment` добавляет только registry-defined env/channel descriptors, bounded MCP env names и проверяет boundary. [internal/envprofile/managed.go:1568](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/envprofile/managed.go#L1568) [internal/envprofile/managed.go:1460](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/envprofile/managed.go#L1460)
++
++`launch-env-fragment-v1` содержит profile lock SHA, precedence, managed paths, optional system-prompt/MCP descriptors; это inert launch input. Curator не начинает model loop. `curator run` диспетчеризуется на отдельный `curator-run`; комментарий production `umbrella.go` прямо говорит, что launcher и session provider не поставляются в этом репозитории. Их фактическую реализацию в другом repo данное исследование не подтверждает. При этом ADR0013 имеет статус **Proposed, draft for review**; его сведения о внешних ax/launcher PR являются ссылочной историей, не доказательством уже поставленного launch path. Нормативный environments §10 и фактический umbrella dispatch следует читать отдельно. [Статус ADR0013](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/decisions/0013-execution-ownership-and-launch-plans.md#L3) [protocol/environments.md:2025](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/environments.md#L2025) [cmd/curator/umbrella.go:30](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/cmd/curator/umbrella.go#L30)
++
++MCP declaration package с `agent-mcp.json` уже существует в spec: stdio command — bare executable name, разрешаемое vendor tool через PATH, HTTP endpoint — HTTPS; env содержит **имена**, не значения. Manager не устанавливает и не запускает MCP server. Поэтому pin декларации с `npx -y ...` не означает pin server executable или его динамического `tools/list`. [protocol/environments.md:412](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/environments.md#L412)
++
++Вывод: будущий Curator-installed **wrapper skill** — отдельный объект от существующего MCP declaration package. Wrapper должен быть собран закрытым driver или поставлен по отдельно версионированной artifact policy; на broker-стороне имеет обычный typed tool interface. Внутри своего отдельного процесса он переводит вызов в MCP, проверяет pinned catalog/schema/server identity, ограничивает output и отражает unknown effects. MCP SDK, server discovery, resources/prompts и notifications не попадают в runtime core автоматически. Изменившийся server catalog требует нового плана, а не молчаливого расширения tools.
++
++### 4.3 Assurance и упаковка
++
++Verified Curator требует ровно шесть упорядоченных established capabilities, свежий nonce и receipt, identity provider binary и typed permit. Все шесть относятся к build boundary, включая **полный запрет сети** и **private-build-root-only writes**. Это не готовый интерфейс удалённого task sandbox с разрешённым egress и workspace writes. [protocol/assurance.md:19](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/assurance.md#L19)
++
++В production C `resolveCLIProvider` возвращает nil; Darwin `NewOSBoundary` отказывает, потому что sandbox-exec не даёт требуемый lossless event stream. Это узко доказанная недоступность данного встроенного пути, не утверждение, что Darwin вообще не умеет confinement. [internal/closureexec/boundary_darwin.go:9](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/closureexec/boundary_darwin.go#L9)
++
++Спецификация запрещает включать trusted provider executables/libraries/compiled artifacts в skills; installation/update host provider — operator actions. **Рекомендуем сохранить запрет для authority/enforcement host**, а клиент remote-exec поставлять как исходный skill с build command. Демон проекта устанавливается владельцем среды из отдельно подписанного distribution, его digest и identity входят в project manifest. Если требуется universal binary package format, это новый Curator contract с собственными правилами trust и migration, не исключение флагом. [protocol/assurance.md:149](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/assurance.md#L149)
++
++## 5. Project-management: полезная реализация, не authority протокола
++
++| Поверхность | Реально прочитанный контракт | Ограничение для Apiary |
++|---|---|---|
++| Task CRUD/статусы/resources | [pkg/board/query/mutations.go:19](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/pkg/board/query/mutations.go#L19) | DSL регистрирует create/update/status/assign/link/checklist/resources; generic `m` нельзя выдать недоверенному worker целиком |
++| Занятие Story workspace | [tools/board-cli/internal/worktree/lease.go:21](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/internal/worktree/lease.go#L21) | Lease несёт story/run/PID/acquired_at; это local exclusion, а не QC-bound orchestrator fencing |
++| Проверка жизни holder | [tools/board-cli/internal/worktree/lease.go:288](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/internal/worktree/lease.go#L288) | Unknown не считается terminal; malformed record не означает отсутствие lease |
++| CR snapshot | [tools/board-cli/internal/changerequest/snapshot.go:69](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/internal/changerequest/snapshot.go#L69) | Alternate index захватывает candidate tree, исключает board subtree, фиксирует real-index tree для CAS; не task contract |
++| CR версии | [tools/board-cli/internal/changerequest/record.go:71](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/internal/changerequest/record.go#L71) | Base/tree/diff/reviewer/validation связываются с revision; критерии задачи не становятся из-за этого versioned Apiary contract |
++| Review | [tools/board-cli/cmd/change_request.go:225](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/cmd/change_request.go#L225) и [tools/board-cli/cmd/change_request.go:445](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/cmd/change_request.go#L445) | Caller — tracked reviewer, привязанный к element/revision; live checklist и outcome evidence; не доказательство независимого владельца/семейства модели |
++| Acceptance | [tools/board-cli/internal/changerequest/accept.go:64](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/internal/changerequest/accept.go#L64) | CAS revision, producer binding, reviewed base provenance; accepted ведёт к integrating, а не означает delivery |
++| Integration | [tools/board-cli/cmd/worktree_integrate.go:194](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/cmd/worktree_integrate.go#L194) | Только local authoritative board; validation config и ownership checks; remote board не поддерживается этим путём |
++| Reparent | [tools/board-cli/internal/integration/reparent.go:37](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/internal/integration/reparent.go#L37) | Changed-path non-overlap допускает tree merge; это слабее Apiary exact-candidate review |
++| Goal | [pkg/board/board_goal_v2.go:164](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/pkg/board/board_goal_v2.go#L164) и [pkg/board/board_goal_v2.go:764](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/pkg/board/board_goal_v2.go#L764) | Immutable revisions и owner-head CAS, native reflection с pending states; это user intent, не QC capability |
++
++**Claim не один объект.** В прочитанном CRUD registration нет отдельного универсального task `claim` mutation. Есть workspace ownership/lease, provider-limit probe claim в `SelectUnderLimits` и claim доказательства при публикации context. Не выдавать их за один распределённый assignment API. Production selection caller: [tools/board-cli/cmd/spawn_limits.go:393](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/cmd/spawn_limits.go#L393); функция [tools/board-cli/internal/spawn/limit_selection.go:678](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/internal/spawn/limit_selection.go#L678) при refused claim убирает группу и не считает ошибку доступностью. В `publish_context` предъявляется claim Session Manager, а не создаётся самим caller. [pkg/board/query/context_registry.go:407](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/pkg/board/query/context_registry.go#L407)
++
++Transition lease специально **не объявлен unforgeable**: комментарий называет caller token availability-механизмом, а security gate — независимым classifier. Без registered callback проверка no-op; документ объясняет remote-board случай. Это допустимая локальная граница, которую нельзя экспортировать как Apiary authorization. [pkg/board/transition_lease.go:53](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/pkg/board/transition_lease.go#L53)
++
++Goal v2 отделяет `parent/primary` от `run/RUN-*`, CAS сравнивает expected previous revision и previous ref. Сбой native reflection не маркируется applied; есть `pending-unbound` и `pending-ack`, а head commit failure вызывает rollback binding. Сохранить эту разницу при адаптации. Изменение goal не меняет task acceptance contract и не выдаёт новую capability. [pkg/board/board_goal_v2.go:764](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/pkg/board/board_goal_v2.go#L764) [references/querying.md:504](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/references/querying.md#L504)
++
++Предложение: стабильный протокол Apiary определяет TaskContract/Assignment/Revision/Review/Attestation/IntegrationIntent независимо от task-board paths, CLI syntax, role filenames и statuses. Task-board adapter материализует эти записи для локальной команды и UI. Запись в README/progress не становится authority, пока её каноническая версия не авторизована журналом. Existing state импортируется как legacy evidence с provenance, без выдачи старым reviews нового QC или node identity.
++
++## 6. Предлагаемый typed tool-skill contract
++
++Все структуры этого раздела — **новый проектный контракт**, кроме явно процитированных основ runtime v0.1.
++
++### 6.1 Descriptor и компиляция
++
++Для каждого exported operation фиксировать: `interface_id + major`, input/output schemas и их digests, closed errors, cancellation/concurrency/idempotency semantics, effect-extractor identity+digest, precision, execution class, provider artifact digest/entrypoint, lifecycle, limits и required assurance. Документировать path resolution, symlink policy, encoding, output bounds. Это развивает уже нормативный tool-interface, а не заменяет его именем CLI команды. [protocol/tool-interface.md:45](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/tool-interface.md#L45) [protocol/tool-interface.md:60](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/tool-interface.md#L60)
++
++Установка: discovery находит предложение по package identity; resolve закрывает dependency graph; audit проверяет pinned content; closed driver строит client artifact; compiler связывает operation/interface/provider и **пересекает** skill envelope, operator policy, parent delegation, task assignment и host assurance. Activation происходит только при открытии утверждённой epoch. Ни trigger из SKILL.md, ни discovery, ни installation сами по себе не дают execution rights.
++
++Отзыв: немедленный deny новых вызовов по broker revocation state/Apiary stop, cancel или reconcile уже начатых; immutable старый plan сохраняется для аудита. Новый состав активных bindings появляется только в новой epoch. Revocation freshness проверяется на execution boundary; старый cache hit не возвращает отозванные права.
++
++Каноникализацию нельзя оставлять словом «canonical». Registry CCJ-1 исключает нецелые числа, отрицательный ноль, дубликаты ключей и unsafe integers; portable tool schema v0.1 допускает `number`. Для hashing input/call/plan надо отдельно закрепить domain-separated canonical encoding: либо ограничить числовой домен интерфейсов, либо определить совместимую каноническую форму без потери точности. Registry Ed25519 envelope и git SSH signature также не взаимозаменяемы. [CCJ-1](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/registry.md#L8)
++
++### 6.2 Один central tool без универсальной власти
++
++Model-visible tool `central` может быть одним discriminator-based интерфейсом с закрытыми операциями: `exec.start`, `exec.poll`, `exec.cancel`, `artifact.read`, `revision.propose`. Каждая ветвь имеет свою input schema и effect mapping. `runner.sign`, `publish`, `main.cas`, `task.contract.update`, `assign` в worker catalog отсутствуют. Это пример проектирования, не существующие имена API.
++
++На wire broker сам добавляет session/epoch/plan/task/assignment/sandbox-generation identity, operation ID, deadline и nonce; модель не поставляет authority token, actor identity или target project. Типизированность `exec.start` не превращает произвольный shell в exact-effect operation: shell имеет `precision=unknown`, ограниченный **task sandbox ceiling**, без host-shell или runner credential path. Опасность не число tools, а union их реально доступных effects. Нельзя прятать shell под безобидным central label.
++
++У worker отдельный service transport выполняет join, heartbeat, назначение, receipt delivery, submission и stop. Он не является дополнительным tool модели и не допускает произвольных model-controlled admin сообщений. Модель может предложить revision; broker связывает его с assignment и средой, подписывает допустимый domain-separated envelope. Именно отдельный node protocol уже показан в книге. [book/ch11.tex:55](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/book/ch11.tex#L55)
++
++### 6.3 Orchestrator profile и attenuation
++
++У orchestrator установлен project-management skill с ограниченными командами proposal/read/schedule; communication skill с адресатами/типами сообщений/объёмами; sandbox skill с prepare/status/cancel **по совершённым assignments**. Свободный shell среды, project signing и прямой main write не следуют из этой роли. Это сохраняет ограничение Apiary «оркестратор действует записями». [paper/paper.tex:221](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L221)
++
++Конфликт с runtime v0.1: literal delegated tool subset не позволяет orchestrator, имеющему только task-management tools, породить worker с `central`, отсутствующим в model catalog родителя. Рекомендуется изменить модель: отдельно `executable_authority` и `delegable_authority`, обе выданы внешним authority root; worker grant subset **delegable** родителя. Model-visible tools родителя не обязаны совпадать с child catalog. Нельзя лечить это выдачей orchestrator рабочего shell «для subset». Старые v0.1 plans читаются без расширения: `delegable_authority = executable_authority`; новый вариант требует версии схемы и утверждения authority difference. [protocol/runtime.md:250](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L250)
++
++### 6.4 Модель, broker и недоверенные компоненты
++
++Core содержит conversation loop, bounded typed calls/results, cancellation/state transitions. Broker владеет authenticated model I/O, credentials, effects/approval/audit. Provider adapter компилирует portable tool schemas в диалект конкретной модели; unsupported construct отвергается до epoch, а не silently dropped. Broker повторно валидирует вход/выход: валидность provider-side function calling не заменяет boundary checks. [protocol/tool-interface.md:28](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/tool-interface.md#L28)
++
++`component` нельзя читать как «загрузить Go plugin в core»: это разрушает no-third-party-code-in-conversation-process. Для первой реализации поддержать `process` и remote wrapper через broker; component либо отдельный sandboxed WASM process с explicit imports, либо unsupported до своего контракта. В v0.1 component/remote object names есть, но enforcement для них не определён. [protocol/tool-interface.md:94](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/tool-interface.md#L94)
++
++## 7. Необходимые изменения runtime v0.1
++
++**Paths и extractor.** Детерминированный extractor не может обращаться к filesystem; следовательно, он выдаёт lexical intent, а не доказательство итогового inode. Broker/backend выполняет handle-based resolution в pinned sandbox root, запрещает symlink escape, связывает target generation и проверяет TOCTOU перед effect. Утверждение ADR0002 «broker never opens a workspace file» следует сузить до «broker не читает произвольное содержимое workspace как tool»; безопасное получение handles допустимо у доверенного backend. Возможность backend это реально обеспечить подтверждается отдельно. [decisions/0002-tools-are-skills.md:27](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/decisions/0002-tools-are-skills.md#L27) [protocol/tool-interface.md:76](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/tool-interface.md#L76)
++
++**At-most-once и crash.** §7.5 обещает stored result по repeated call_id, но не задаёт crash window между эффектом и persistence. Ввести durable `admitted → started → completed/failed/cancelled/unknown`, request digest и idempotency key на boundary исполнителя. Повтор started/unknown не запускает эффект заново; требует poll/reconcile, а для non-idempotent external sink — отдельного решения. Исключительно локальный call cache не даёт exactly-once external effect. [protocol/runtime.md:214](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L214) [paper/paper.tex:260](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L260)
++
++**Late results и переход.** Старый result не авторизуется новым plan, но его следует сохранить в audit с old epoch и outcome, а не потерять. Новые model requests не получают его как актуальный authorized result; при необходимости он входит как явно исторические data с provenance. Draining учитывает mutation calls, session workers, remote outstanding operations и prepared signatures. [protocol/runtime.md:74](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L74) [protocol/runtime.md:235](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L235)
++
++**Approval.** Broker trusted path сохранить; QC commit записи и human allowed-once — разные основания. Runtime approval §5 требует JIT на внешний network и signing, §8 не допускает auto-answerer; lease создаётся только human. Для unattended swarm надо определить **новый policy-authority contract**: человеческое разрешение на ограниченный класс действий и проверяемые committed assignments, с count/time/budget/revoke bounds. Ни модель, ни skill не создаёт consent; native `never` остаётся denial. Это реальная миграция approval protocol, а не молчаливый обход. [protocol/approval.md:64](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/approval.md#L64) [protocol/approval.md:82](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/approval.md#L82) [protocol/approval.md:126](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/approval.md#L126)
++
++**Schemas недостаточно.** Required fields session plan не требуют `provider_retention`, хотя prose требует retention terms; call-plan `interface_id` optional; epoch equality, subset grants, collision checks, hash computation, freshness и receipt-chain linkage не проверяются одной JSON Schema. Добавить typed semantic validators и negative vectors на production Session.Open/Tool.Invoke. Схема receipt не несёт полноценного подписанного Apiary attestation envelope или contract revision. [schemas/v1/session-plan-v1.schema.json:50](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/schemas/v1/session-plan-v1.schema.json#L50) [schemas/v1/call-plan-v1.schema.json:26](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/schemas/v1/call-plan-v1.schema.json#L26) [schemas/v1/execution-receipt-v1.schema.json:7](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/schemas/v1/execution-receipt-v1.schema.json#L7)
++
++## 8. Provider credentials и entitlement
++
++Наблюдение на 2026-09-08: OpenAI документирует ChatGPT subscription login и API-key usage отдельно; retention/admin controls зависят от способа входа. [Официальная authentication documentation](https://learn.chatgpt.com/docs/auth). App Server документирован как interface для интеграции Codex в собственный продукт и имеет managed ChatGPT auth; это интеграция **Codex harness**, не установленное разрешение извлекать OAuth и обращаться к произвольному model endpoint из нашего core. [App Server](https://learn.chatgpt.com/docs/app-server).
++
++Anthropic документирует API keys/supported cloud для продуктов, запрещает сторонним приложениям предлагать собственный Claude.ai login и intermediate subscription credentials; отдельно допускает unmodified Claude Code с собственным входом пользователя при соблюдении условий размещения. Это не blanket ban любого wrapper и не разрешение использовать subscription OAuth в новом runtime. [Authentication and credential use](https://code.claude.com/docs/en/legal-and-compliance#authentication-and-credential-use).
++
++Предложение: два явно разных adaptation modes. **Direct model adapter** использует разрешённый API key или local model и полностью наш broker tool surface. **Vendor harness adapter** запускает официально поддерживаемый host interface, сохраняет его auth ownership и отдельно проверяет, можно ли обеспечить донорскую boundary без native tools. Пока это не доказано для pinned harness release, такой mode относится к trusted-organization profile, а не к публичной гарантии minimal worker. Доступность конкретного account/model, entitlement на pooling/resale и исчерпание quota здесь не проверялись; read account credentials не выполнялся. API billing fallback требует отдельного локального budget policy, а не автоматической замены подписки платным ключом.
++
++Секреты разделить на четыре независимых domains: model authentication у local model broker; node signing у local signer; transport authentication у transport broker; project signing/publication у central runner. Tool process получает capability handle или узкий authenticated channel, а не provider API key или общий ssh-agent socket. Provider plugin находится за operator-owned trust boundary, а не выбирается проектной задачей.
++
++## 9. Go module boundaries
++
++Наблюдение: C — Go module `github.com/relux-works/curator` (`go 1.25.5`), substantial implementation в `internal/`. P уже делится на `pkg/board`, `pkg/remoteconfig`, CLI/server/TUI; CLI имеет исторический module path `github.com/aagrigore/task-board`, dependency `skill-agents-management v0.5.9` и local replaces на board/config. [go.mod:1](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/go.mod#L1) [tools/board-cli/go.mod:1](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/go.mod#L1) [pkg/board/go.mod:1](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/pkg/board/go.mod#L1)
++
++Предложение: первоначально один runtime module с двумя entrypoints/core-broker process roles и узкими внутренними packages `plan`, `invocation`, `effects`, `receipts`, `modelport`. Worker/orchestrator — профили того же engine, не форки runtime. Не импортировать task-board CLI, TUI, model registry, SSH orchestration и MCP SDK в kernel. Curator compiler потребляет versioned exported contract либо CLI artifact; не делать копию closure resolver ради обхода Go `internal`.
++
++Отдельные distribution units: remote-exec client skill; project-management adapter skill; communication skill; sandbox-control skill; MCP wrapper skills; operator-installed execution daemon и signing broker. Apiary authority/consensus/task contracts живут в отдельном module от generic agent runtime. Tiny shared protocol package допустим после стабилизации schema+canonical bytes; не создавать общий «utils/security» module, который притянет секреты и OS execution в model loop.
++
++Для Curator source-build упаковки использовать действующий closed Go driver: explicit first-party `modules`, snapshot-contained paths и vendor graph. Spec §4.2.3 сейчас определяет effective replacements по `vendor/modules.txt`; earlier ADR с незакрытыми вопросами не заменяет landed normative text. Не требовать переписать весь task-board в один module и не pre-vendor собственные модули как чужие ради обхода правил. [protocol/core.md:965](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/core.md#L965)
++
++## 10. Несогласованности первичных источников и решения для следующей спецификации
++
++| ID | Наблюдение | Рекомендуемое действие |
++|---|---|---|
++| F1 | Книга ch10 называет runtime существующим компонентом; R — draft без реализации и reserved surfaces | Заменить readiness claim на «существует контракт»; compiler/broker/daemon планировать как новую работу |
++| F2 | Ch10 предлагает binaries демона в skill; assurance §6 запрещает compiled host provider в skill | Client skill отдельно; host distribution отдельно; pin обоих |
++| F3 | Ch10 сближает реестр audit и журнал L0 | Переиспользовать CCJ/crypto primitives, но добавить отдельные schema/state machine/QC/fencing/availability; endorsements audit не считать QC |
++| F4 | Ch07 нормативное описание freeze до I; пример «Одна задача» перечисляет candidate до freeze | Исправить пример: freeze eligible set → commit I → randomness → deterministic review assignment |
++| F5 | Front/литература книги ещё называют вторую редакцию, README/body — третью 3.1 | Источник current определяется README/paper; исправление provenance labels отдельным upstream task |
++| F6 | Ch03/глоссарий называют fencing token растущим номером, ch07 — случайным token плюс epoch | Использовать monotonic term + unpredictable token; сравнивать term численно, token на равенство |
++| F7 | Книга связывает «минимум две bindings» с отсутствием инжекта; I10 не удостоверяет весь worker | Conformance pinned client защищает владельца при допущениях, не доказывает честность произвольной удалённой ноды |
++| F8 | P переносит acceptance при path-disjoint reparent, Apiary требует exact-I review | Новый candidate всегда new review; старые CR acceptance оставить только historical evidence |
++
++Anchors: F1–F3 — [book/ch10.tex:37](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/book/ch10.tex#L37), [book/ch10.tex:22](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/book/ch10.tex#L22), [protocol/registry.md:91](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/registry.md#L91); F4 — [book/ch07.tex:123](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/book/ch07.tex#L123); F5 — [book/front.tex:16](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/book/front.tex#L16); F6 — [book/appendix.tex:35](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/book/appendix.tex#L35); F7 — [book/ch08.tex:3](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/book/ch08.tex#L3); F8 — source path `Reparent` из раздела 5.
++
++## 11. Приёмка следующего архитектурного среза
++
++Не объявлять систему безопасной по числу tools или наличию schema. Следующий implementation task должен предъявить negative evidence на реальные входы: forged assignment; stale term/plan/generation; conflicting retry body; crash after external effect; unknown outcome; underdeclared effect; symlink race; component injection; MCP catalog drift; unavailable revocation proof; wrong candidate/contract/policy/environment; absent reviewer identity; missing native confinement. Проверять каждый configured required gate и публиковать отношение выполненных проверок к требуемым, отдельно от словесного verdict.
++
++Прямые первичные citations в этом документе закреплены на commit SHA. Дополнительная карта retain/change/reject и migration находится в [260908_requirements-map.md](260908_requirements-map.md). Исследование не изменяет принятые нормы само по себе; решения должны быть проведены следующими versioned spec changes и review.
+diff --git a/.research/260908_provider-portability-evidence.md b/.research/260908_provider-portability-evidence.md
+new file mode 100644
+index 0000000..713b3d3
+--- /dev/null
++++ b/.research/260908_provider-portability-evidence.md
+@@ -0,0 +1,151 @@
++# Реестр доказательств: provider portability
++
++TASK-260908-39n05p. Дата: 2026-09-08, Asia/Tbilisi. [Основное исследование](260908_provider-portability.md).
++
++## Метод и границы
++
++Ниже перечислены только source-файлы, из которых прочитаны и использованы конкретные участки. Загрузка других файлов не означает их ревью. Сетевые чтения публичных GitHub API/raw URLs выполнялись без исполнения кода. Полные сторонние исходники не включены в deliverable. SHA относится к commit, SHA-256 — к полученным bytes конкретного файла. Символы найдены в сохранённом файле; ссылка на строку открывает исходник именно на этом commit.
++
++## Исходники: pins и прочитанные участки
++
++### badlogic/pi-mono
++
++Commit: `b2602be77cb7b0de45dd616407fd210daa48aa75`. Commit time: `2026-09-07T20:26:47Z`. Retrieval UTC: `2026-09-07T23:06:16.927709+00:00`.
++
++| Файл / символ | Неизменяемый anchor | SHA-256 файла |
++|---|---|---|
++| `packages/ai/src/providers/openai.ts` — `export function openaiProvider` | [L6](https://github.com/badlogic/pi-mono/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/providers/openai.ts#L6) | `1904f9511221f47bbe890dc007571add9ac16ab28cd48c4090b58f13950cbfd0` |
++| `packages/ai/src/providers/kimi-coding.ts` — `export function kimiCodingProvider` | [L7](https://github.com/badlogic/pi-mono/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/providers/kimi-coding.ts#L7) | `ef864d572eef11900f24bb6a5dc620982bd9c39fac600970deec55466348f8b0` |
++| `packages/ai/src/types.ts` — `export interface ProviderRequestOptions` | [L124](https://github.com/badlogic/pi-mono/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/types.ts#L124) | `ae0427bfba137623df3a27c545ab405d4a3ad4163ec94c9fec5d4e10eb36759c` |
++| `packages/ai/src/types.ts` — `export interface ProviderStreams` | [L272](https://github.com/badlogic/pi-mono/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/types.ts#L272) | `ae0427bfba137623df3a27c545ab405d4a3ad4163ec94c9fec5d4e10eb36759c` |
++| `packages/ai/src/api/transform-messages.ts` — `export function transformMessages` | [L64](https://github.com/badlogic/pi-mono/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/api/transform-messages.ts#L64) | `cf309c00b943bc0a90ccaabb185730a3f27a3c92de6696ada3155b0185904161` |
++| `packages/ai/src/api/openai-completions.ts` — `export const stream:` | [L311](https://github.com/badlogic/pi-mono/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/api/openai-completions.ts#L311) | `7c1002a6a17cd081f36a44defea533ea03f65e07477e4ddec49b402760e97df8` |
++| `packages/ai/src/utils/event-stream.ts` — `export class AssistantMessageEventStream` | [L91](https://github.com/badlogic/pi-mono/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/ai/src/utils/event-stream.ts#L91) | `147084657f76665ff7d6c8dcd6eb0745149e3aaee3e7b9c272b315a1b5679386` |
++
++### anomalyco/opencode
++
++Commit: `ecbc6ccac85b3e8087b6445e584318419b9e2b34`. Commit time: `2026-09-07T16:21:14Z`. Retrieval UTC: `2026-09-07T23:06:18.291014+00:00`.
++
++| Файл / символ | Неизменяемый anchor | SHA-256 файла |
++|---|---|---|
++| `packages/opencode/src/provider/provider.ts` — `const BUNDLED_PROVIDERS` | [L113](https://github.com/anomalyco/opencode/blob/ecbc6ccac85b3e8087b6445e584318419b9e2b34/packages/opencode/src/provider/provider.ts#L113) | `3e0e5828ed163ccf8ef31c05a9ffd7f47655dcec30e087d6f4c57a17ba11b5bd` |
++| `packages/opencode/src/provider/transform.ts` — `function normalizeMessages` | [L101](https://github.com/anomalyco/opencode/blob/ecbc6ccac85b3e8087b6445e584318419b9e2b34/packages/opencode/src/provider/transform.ts#L101) | `c07d49e48dd2478ad2813a10805781a72551db2fd847b7df994cc854bf654c16` |
++| `packages/opencode/src/provider/transform.ts` — `function applyCaching` | [L358](https://github.com/anomalyco/opencode/blob/ecbc6ccac85b3e8087b6445e584318419b9e2b34/packages/opencode/src/provider/transform.ts#L358) | `c07d49e48dd2478ad2813a10805781a72551db2fd847b7df994cc854bf654c16` |
++| `packages/opencode/src/provider/transform.ts` — `function sanitizeOpenAISchema` | [L1479](https://github.com/anomalyco/opencode/blob/ecbc6ccac85b3e8087b6445e584318419b9e2b34/packages/opencode/src/provider/transform.ts#L1479) | `c07d49e48dd2478ad2813a10805781a72551db2fd847b7df994cc854bf654c16` |
++| `packages/opencode/src/provider/transform.ts` — `export function schema` | [L1562](https://github.com/anomalyco/opencode/blob/ecbc6ccac85b3e8087b6445e584318419b9e2b34/packages/opencode/src/provider/transform.ts#L1562) | `c07d49e48dd2478ad2813a10805781a72551db2fd847b7df994cc854bf654c16` |
++| `packages/opencode/src/session/llm.ts` — `result: streamText(` | [L280](https://github.com/anomalyco/opencode/blob/ecbc6ccac85b3e8087b6445e584318419b9e2b34/packages/opencode/src/session/llm.ts#L280) | `5f1dcfb734853e39760e4dd05470f0c7d8752fc5dcc64e118c065149602e402d` |
++
++### openai/openai-go
++
++Commit: `52e95a974582ebd8d3b23f349e1bcdbbb899c0ac`. Commit time: `2026-09-05T16:07:50Z`. Retrieval UTC: `2026-09-07T23:06:02.091599+00:00`.
++
++| Файл / символ | Неизменяемый anchor | SHA-256 файла |
++|---|---|---|
++| `responses/response.go` — `func (r *ResponseService) NewStreaming` | [L78](https://github.com/openai/openai-go/blob/52e95a974582ebd8d3b23f349e1bcdbbb899c0ac/responses/response.go#L78) | `2222dd5f21fd51d94aefac6162687658759e5e2e471ccebc6aaf113660a7b89e` |
++| `packages/ssestream/ssestream.go` — `func (s *Stream[T]) Next()` | [L191](https://github.com/openai/openai-go/blob/52e95a974582ebd8d3b23f349e1bcdbbb899c0ac/packages/ssestream/ssestream.go#L191) | `b9323be5b128a72c298c6766175e32664a77a6120b6ae18a4411cf307a6e039c` |
++| `packages/ssestream/ssestream.go` — `func (s *Stream[T]) Err()` | [L247](https://github.com/openai/openai-go/blob/52e95a974582ebd8d3b23f349e1bcdbbb899c0ac/packages/ssestream/ssestream.go#L247) | `b9323be5b128a72c298c6766175e32664a77a6120b6ae18a4411cf307a6e039c` |
++| `internal/requestconfig/requestconfig.go` — `func shouldRetry` | [L385](https://github.com/openai/openai-go/blob/52e95a974582ebd8d3b23f349e1bcdbbb899c0ac/internal/requestconfig/requestconfig.go#L385) | `cc6a1622cf9c85331ee0b16c7ab80cfb579ac5c9202c8fecf29600cc80703111` |
++
++### openai/codex
++
++Commit: `8e694e955ae02ca737230a5468c55d5847074072`. Commit time: `2026-09-07T22:11:52Z`. Retrieval UTC: `2026-09-07T23:06:23.177070+00:00`.
++
++| Файл / символ | Неизменяемый anchor | SHA-256 файла |
++|---|---|---|
++| `codex-rs/core/src/tools/spec_plan.rs` — `pub(crate) fn build_tool_router` | [L125](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/tools/spec_plan.rs#L125) | `451622e76c45dd1585318c200fdee9a00d7aaf785d4a540facca1010146307b7` |
++| `codex-rs/core/src/tools/spec_plan.rs` — `fn add_core_tool_sources` | [L974](https://github.com/openai/codex/blob/8e694e955ae02ca737230a5468c55d5847074072/codex-rs/core/src/tools/spec_plan.rs#L974) | `451622e76c45dd1585318c200fdee9a00d7aaf785d4a540facca1010146307b7` |
++
++### anthropics/claude-agent-sdk-python
++
++Commit: `efd4d865ef1795daffee3cd24cce45307aed8a51`. Commit time: `2026-09-06T02:55:08Z`. Retrieval UTC: `2026-09-07T23:06:02.240559+00:00`.
++
++| Файл / символ | Неизменяемый anchor | SHA-256 файла |
++|---|---|---|
++| `src/claude_agent_sdk/types.py` — `class ClaudeAgentOptions` | [L1941](https://github.com/anthropics/claude-agent-sdk-python/blob/efd4d865ef1795daffee3cd24cce45307aed8a51/src/claude_agent_sdk/types.py#L1941) | `49e6a4ca6155ad9b245133d138516d9269bbb3aad2eb21311d02d77d75bca86a` |
++| `src/claude_agent_sdk/_internal/transport/subprocess_cli.py` — `class SubprocessCLITransport` | [L216](https://github.com/anthropics/claude-agent-sdk-python/blob/efd4d865ef1795daffee3cd24cce45307aed8a51/src/claude_agent_sdk/_internal/transport/subprocess_cli.py#L216) | `748227e42cb9802d7316fabc836428d69bd219b63ef1b2f9f8f7a86a72a03e45` |
++| `src/claude_agent_sdk/_internal/transport/subprocess_cli.py` — `def _build_command` | [L562](https://github.com/anthropics/claude-agent-sdk-python/blob/efd4d865ef1795daffee3cd24cce45307aed8a51/src/claude_agent_sdk/_internal/transport/subprocess_cli.py#L562) | `748227e42cb9802d7316fabc836428d69bd219b63ef1b2f9f8f7a86a72a03e45` |
++
++### google-gemini/gemini-cli
++
++Commit: `85aca163f6c73ac6ce380b5447359146b8adcae4`. Commit time: `2026-09-04T18:05:05Z`. Retrieval UTC: `2026-09-07T23:06:19.478716+00:00`.
++
++| Файл / символ | Неизменяемый anchor | SHA-256 файла |
++|---|---|---|
++| `packages/core/src/core/contentGenerator.ts` — `export async function createContentGenerator(` | [L210](https://github.com/google-gemini/gemini-cli/blob/85aca163f6c73ac6ce380b5447359146b8adcae4/packages/core/src/core/contentGenerator.ts#L210) | `7a652e3c778c372eac565def5d7b31761025d5c80d90c4efebcddc4d50bee8a7` |
++
++## Официальные страницы: сохранённые bytes
++
++Для страниц без явной версии авторитетен факт чтения на указанную дату, а не предположение о дате действия договора. Прочитаны релевантные разделы; примеры кода, навигация и остальные разделы не рассматриваются как самостоятельное доказательство. `.raw` — технический снимок под `.temp/provider-portability/docs/`; hashes позволяют обнаружить изменение, но не заверяют авторство поставщика.
++
++| Снимок | Официальный URL после redirects | Retrieval UTC | SHA-256 |
++|---|---|---|---|
++| `openai-auth` | [openai-auth](https://learn.chatgpt.com/docs/auth.md) | `2026-09-07T23:07:47.394903+00:00` | `7e60e75b7efffc50de8ba9488029d8be235cd9a423520fb5f269215616d7914d` |
++| `openai-app-server` | [openai-app-server](https://learn.chatgpt.com/docs/app-server.md) | `2026-09-07T23:07:47.395427+00:00` | `a72a5c88ab05ab9737ec28b432708f2776f696be48eae09ee39c02dd2f9480e0` |
++| `claude-legal` | [claude-legal](https://code.claude.com/docs/en/legal-and-compliance.md) | `2026-09-07T23:07:47.395665+00:00` | `4a4cc1762fb1d992a66347dcf94c60a27d328391d8074c13e8ae9d5c4182413b` |
++| `claude-overview` | [claude-overview](https://code.claude.com/docs/en/agent-sdk/overview.md) | `2026-09-07T23:07:47.395803+00:00` | `97ffb20562a473292629fbfb8b8e8611dc72f8afae55a3364baf95a30340d356` |
++| `claude-plan` | [claude-plan](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan) | `2026-09-07T23:07:47.395947+00:00` | `1810e4105b114fa03dd736fe3fa8ab2e7aa631ac06caa3ba8df6013a6b2086a2` |
++| `gemini-terms` | [gemini-terms](https://geminicli.com/docs/resources/tos-privacy/) | `2026-09-07T23:07:47.396101+00:00` | `0780a50363fcd79c6886b05bb77efc4b63d7f66937249c5b694bb01d5f3e6817` |
++| `gemini-keys` | [gemini-keys](https://ai.google.dev/gemini-api/docs/api-key) | `2026-09-07T23:07:47.396250+00:00` | `7113b8718e2583a94599bd4e8b1909b91f8dcdff469119c2fb7ce720d9f6df4c` |
++| `vertex-auth` | [vertex-auth](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/start/gcp-auth) | `2026-09-07T23:07:47.396375+00:00` | `affccd6beef611168f9f12a7f897a2a1ec562512e3820443694935a1cede3766` |
++| `bedrock-converse` | [bedrock-converse](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html) | `2026-09-07T23:07:47.750732+00:00` | `7777d2764f6022fa5e121666c958e8c2aa1565b28f54668e06744ec74b4c054b` |
++| `bedrock-access` | [bedrock-access](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html) | `2026-09-07T23:07:47.826090+00:00` | `0327eb691e475f243e75c37259725c868f543ab64008b4d94e137ebe423bc44c` |
++| `bedrock-auth` | [bedrock-auth](https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys-reference.html) | `2026-09-07T23:07:48.062259+00:00` | `208b961896653679078f24ccc1fb553b19a27a00d8c66fa791461bc90040a3be` |
++| `azure-responses` | [azure-responses](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/responses) | `2026-09-07T23:07:48.212754+00:00` | `264531b67ee762650528131a6fd3deafd436f02c02b11178d21b40298bd4b1cf` |
++| `openrouter-routing` | [openrouter-routing](https://openrouter.ai/docs/guides/routing/provider-selection) | `2026-09-07T23:07:48.234248+00:00` | `1640b2cf268ae9df4b21cdeacb7b4de0128b5b411b73f41de163e80fb745096e` |
++| `deepseek-api` | [deepseek-api](https://api-docs.deepseek.com/quick_start/pricing) | `2026-09-07T23:07:48.489138+00:00` | `fc590e5b2cc856c798d46314828dd790320e177317121a1864ef5428991d12d7` |
++| `deepseek-tools` | [deepseek-tools](https://api-docs.deepseek.com/guides/tool_calls/) | `2026-09-07T23:07:48.619342+00:00` | `41420d8609a15ff13afd5b82a66ea1b2a5440a59787718ade7f48230b660bcfa` |
++| `dashscope-api` | [dashscope-api](https://www.alibabacloud.com/help/en/model-studio/compatibility-of-openai-with-dashscope) | `2026-09-07T23:07:48.710183+00:00` | `7cf5d4366b3f2487e4a2da693e44127766557f15b7b86e3d1fc485fcb6cc5357` |
++| `dashscope-plan` | [dashscope-plan](https://www.alibabacloud.com/help/en/model-studio/token-plan-overview) | `2026-09-07T23:07:48.738402+00:00` | `f1157a3c61441cda69bdd3941a0ac0dce5735a5afb33f993af4039260b617ded` |
++| `dashscope-faq` | [dashscope-faq](https://www.alibabacloud.com/help/en/model-studio/coding-plan-faq) | `2026-09-07T23:07:49.173583+00:00` | `c224710e057d7606ecbddc6fe70f9fc3681ef1df473eea5f93c5250fb31223d7` |
++| `kimi-code` | [kimi-code](https://www.kimi.com/en/help/kimi-code/membership-guide) | `2026-09-07T23:07:49.286281+00:00` | `7bebc9da76cc37b5e14fa1b7ce81526c4904e75f509a549bd46b39984de6c490` |
++| `kimi-api` | [kimi-api](https://www.kimi.com/en/help/kimi-api/api-overview) | `2026-09-07T23:07:49.366167+00:00` | `a7083b6384a7927b0c396e16eb0b01755f554c1dd673eb3c4ea5936fa1e4a7cd` |
++| `kimi-terms` | [kimi-terms](https://platform.kimi.com/docs/agreement/modeluse) | `2026-09-07T23:07:49.651933+00:00` | `fe343a5672be5cf064ab5caf4aaa0eed125a16598338ce6d5a24d06dcc117205` |
++| `ollama-compat` | [ollama-compat](https://docs.ollama.com/api/openai-compatibility) | `2026-09-07T23:07:49.841006+00:00` | `e25a70d0b8ee9b08488391fe75b4af40923e8e6c4c3e6db06943522a10689a7e` |
++| `ollama-auth` | [ollama-auth](https://docs.ollama.com/api/authentication) | `2026-09-07T23:07:50.315741+00:00` | `474f1b3c00a59fb77d900d2921688e426a781d7b66b164eb8f3dd7fbf01128b9` |
++| `google-signatures` | [google-signatures](https://ai.google.dev/gemini-api/docs/thought-signatures) | `2026-09-07T23:07:50.340469+00:00` | `4a1b95ff8a9526b0e7c36f16c2bb466ba075fbaada9a95c16fb82560d09a8f32` |
++| `claude-stream` | [claude-stream](https://platform.claude.com/docs/en/build-with-claude/streaming) | `2026-09-07T23:07:50.557232+00:00` | `2651af7af22d05681cb4acff21454dd6661e3bf7c3b1bf3d0b607ff4d94ce9bf` |
++| `claude-cache` | [claude-cache](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) | `2026-09-07T23:07:50.820457+00:00` | `030392a6e53189007fd678c8f55b8b9724839f253ab98f2f1ae2fb5301467d65` |
++| `openai-background` | [openai-background](https://developers.openai.com/api/docs/guides/background.md) | `2026-09-07T23:07:51.206332+00:00` | `930a8e678465b57e47440dc18ce4ea63bd7226b3b5f0396916f6ab1d41cd3747` |
++| `openai-function` | [openai-function](https://developers.openai.com/api/docs/guides/function-calling.md) | `2026-09-07T23:07:51.495921+00:00` | `e564e8dddb67d4cdf2ea50720c7e933bc5ae74f81171ea3e7bf33f9cb12a0b78` |
++
++Дополнительно фактически прочитаны через web tool (локальный byte hash не установлен):
++
++- [Claude API authentication](https://platform.claude.com/docs/en/manage-claude/authentication): identity keys, workspace, WIF.
++- [Gemini thinking](https://ai.google.dev/gemini-api/docs/thinking): signature и streaming delta types; старый thought-signatures URL теперь только перенаправляет читателя.
++- [Alibaba Token Plan blog](https://modelstudio.alibabacloud.com/intl/blog/model-studio-token-plan-individual/): запрет automated backends, конфликт редакций со справочником.
++- [Gemini CLI authentication](https://geminicli.com/docs/get-started/authentication/): способы аутентификации CLI.
++- [OpenRouter API overview](https://openrouter.ai/docs/api_reference/overview) и [BYOK](https://openrouter.ai/docs/guides/overview/auth/byok): API/gateway, shared capacity fallback, отдельный учёт BYOK.
++- [Kimi Hermes integration](https://www.kimi.com/code/docs/en/third-party-tools/hermes.html): официальный third-party API-key сценарий.
++
++У этих web-чтений дата 2026-09-08 по локальному времени. Не утверждается сохранение полного HTML. Неудачный дополнительный urllib fetch Gemini thinking вернул HTTP 403 (процесс exit 1); независимое web-чтение страницы было успешным. Это ошибка одного канала получения, не отсутствие документа.
++
++## Локальные входы
++
++Origins и HEAD прочитаны до использования. Чужие working-tree изменения не читались как authoritative source и не изменялись. Remote freshness соседних репозиториев не проверялась; snapshots получены из указанных локальных commits.
++
++| Репозиторий | Origin | Локальный commit | Working tree при проверке |
++|---|---|---|---|
++| curator-agent-runtime | `git@github.com:relux-works/curator-agent-runtime.git` | `da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f` | нечистый: 1 строк status (чужие изменения сохранены) |
++| apiary-docs | `git@github.com:relux-works/apiary-docs.git` | `e4249a6193c0f2730e7cffaea6b4907c0a7e80a9` | чистый |
++| curator | `https://github.com/relux-works/curator.git` | `a66eec88fa4dfb8f3ca098f594f6e48af57a6835` | нечистый: 49 строк status (чужие изменения сохранены) |
++| curator-spec | `https://github.com/relux-works/curator-spec.git` | `87a0d0060bad64ab883d007dcdf35df7485368bf` | чистый |
++| skill-project-management | `git@github.com:relux-works/skill-project-management.git` | `faa6ff96b6885c6db309b927b047ab600b19f423` | нечистый: 10 строк status (чужие изменения сохранены) |
++
++Содержательно использованы:
++
++- `apiary-docs/paper/paper.tex`, аннотация, строка 58: разделение inference capacity и полномочий. [Pin](https://github.com/relux-works/apiary-docs/blob/e4249a6193c0f2730e7cffaea6b4907c0a7e80a9/paper/paper.tex#L58).
++- `curator-spec/protocol/assurance.md`, разделы 2–3, строки 19–79: host execution provider и typed receipts. [Pin](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/assurance.md#L19).
++- README `curator` использован только для ориентации в установленном tooling и различении runtime delivery / execution assurance. `skill-project-management` — role workflow по установленному SKILL.md; его runtime-код в этом исследовании не обследован.
++
++## Диагностика получения и проверки
++
++- `task-board m set_status(...)`: exit 0; CLI readiness `task-board --version` сохранён в `.temp/provider-portability/readiness-01.log`.
++- `python3 fetch_sources.py`: exit 0 процесса, но initial manifest содержит **частичный отказ** Pi: HTTP 404 для отсутствующего `src/stream.ts`; это не объявляется полной успешной загрузкой. Используемые Pi provider/types файлы сохранились, реальные protocol paths обнаружены по pinned tree и отдельно получены в `extra-manifest.json`.
++- `python3 fetch_docs.py`: exit 0; 28 из 28 указанных HTTP downloads вернули 200. Это проверка получения bytes, не 28 проверенных runtime возможностей.
++- Первоначальный поиск по необязательным отсутствующим skill directories возвращал exit 2; последующий поиск существующего worktree без найденных SKILL/AGENTS — exit 1. Это диагностика поиска, не runtime gate; использованы явно назначенные global skills.
++- `git show HEAD:path` для трёх локальных snapshots: каждый exit 0. Git origin/head/status subprocesses: каждый exit 0, подробности `.temp/provider-portability/local-repos.json`.
++- Проверки документации и точных anchors выполняются отдельно скриптом `.temp/provider-portability/verify_report.py`; результат и действительные exit codes записываются в logbook. Runtime build/tests не применимы к этому delta.
++
++## Повторное получение
++
++Для каждого source anchor использовать GitHub raw URL с тем же полным SHA и путём; проверить SHA-256 из таблицы. Не запускать скачанное содержимое. Для web страниц сохранить текущие bytes отдельно и сравнить hash: расхождение означает новую редакцию/рендер, не автоматически ошибку прежнего вывода. Политические утверждения перепроверять по действующей официальной странице и договору.
+diff --git a/.research/260908_provider-portability-logbook.md b/.research/260908_provider-portability-logbook.md
+new file mode 100644
+index 0000000..b9369f2
+--- /dev/null
++++ b/.research/260908_provider-portability-logbook.md
+@@ -0,0 +1,31 @@
++# Исследовательский logbook: provider portability
++
++TASK-260908-39n05p — provider-auth-portability. 2026-09-08, Asia/Tbilisi.
++
++## Существенные находки и решения
++
++- **Граница полномочий:** raw inference и официальный полный агент — разные режимы. Codex dynamic tools добавляются к router, а Claude `allowed_tools` управляет auto-approval. Решение: direct `ModelPort` baseline; отдельный `AgentBridge`, без неподтверждённого strict-worker assurance.
++- **Gemini CLI:** в актуальной официальной странице есть прямой запрет стороннего доступа к CLI backend через OAuth. Работающий OSS adapter не переопределяет этот запрет.
++- **Claude:** июньские изменения Agent SDK credits приостановлены; сохранённую на странице старую таблицу нельзя использовать как текущий billing. Условия размещения неизменённого Claude Code не разрешают собственный посреднический consumer OAuth backend.
++- **Alibaba:** Coding Plan и Token Plan независимы. Справочник Token Plan от 7 сентября и официальный блог расходятся по редакции продукта/квотам; допустимость autonomous backend не считать установленной из факта совместимости API. PAYG снимает зависимость исследования от уточнения.
++- **Kimi:** официальный subscription API-key путь для coding tools подтверждён; CLI OAuth отдельно. Реальная client identity обязательна. Перенос разрешения на коммерческий pooled inference broker не установлен.
++- **OpenRouter:** BYOK означает передачу provider key gateway; это не соответствует профилю строго локального хранения такого key. Shared-capacity fallback и BYOK budget accounting проверяются независимо.
++- **Curator:** существующий provider capability receipt удостоверяет свойства host execution, а не inference capability/entitlement. Нормативные документы не менялись; предлагается отдельная типизация наблюдений.
++
++## Ограничения источников и аномалии
++
++- Pin — конкретный commit, а не плавающий `main`. Целевая выборка 6 внешних репозиториев; использованы 16 source-файлов и 23 точных symbol anchors. Это не исчерпывающий аудит runtime.
++- Первый source downloader завершился exit 0, но обнаружил HTTP 404 внутри Pi retrieval: путь `packages/ai/src/stream.ts` отсутствует в текущем tree. Реальные файлы в `src/api/` найдены по pinned tree и получены отдельно. Частичный отказ сохранён, не выдан за успешный полный fetch.
++- Web retrieval успешно прочитал актуальный Gemini thinking guide, но дополнительный локальный urllib fetch вернул HTTP 403, exit 1. Hash для этой страницы не заявлен. Устаревший thought-signatures URL содержит только сообщение о переносе.
++- Исходники/примеры не запускались; секреты и пользовательские account stores не читались. Цена, latency, grants аккаунтов и аппаратная изоляция не измерялись.
++- Изменены только три task-scoped документа `.research/260908_provider-portability*`; scratch находится в `.temp/provider-portability/`. Чужие files и sibling repos сохранены. Commit/push/land принадлежат parent.
++
++## Проверка документации
++
++Результаты записываются после прямого запуска соответствующих команд; runtime tests отсутствуют, поскольку implementation delta отсутствует.
++
++- Первый `python3 .temp/provider-portability/verify_report.py`: **exit 1**. Проверка ошибочно сочла inline labels `L562` и аналогичные reference citations. Исправлен только regex task-scoped проверяющего скрипта, чтобы отличать inline-ссылку от reference citation; source hashes и anchors до этого шага уже проверялись успешно. Это не runtime failure.
++- Второй `verify_report.py`: **exit 1**. Проверяющий regex принял иллюстративную Markdown-ссылку внутри logbook за реальный local link. Пример заменён обычным текстом; содержательные citations не изменены.
++- Третий `python3 .temp/provider-portability/verify_report.py`: **exit 0**; 23/23 source anchors и hashes, 28/28 hashes полученных страниц, 3/3 документов с разрешимыми относительными ссылками/reference labels; проверены trailing whitespace и ограниченный key-pattern scan. Лог: `.temp/provider-portability/report-check-03.log`.
++- `git diff --check`: **exit 0**, `.temp/provider-portability/diff-check-01.log`. Ограничение: новые документы ещё untracked, поэтому их whitespace проверялся также `verify_report.py`, а не приписан покрытию git diff.
++- Self-review: исследование разделяет Н/В/П, не утверждает выполнение runtime/build/security gates. Изменения scoped к трём файлам исследования. Итоговый повтор проверки после добавления этой записи сохранён в `report-check-04.log`.
+diff --git a/.research/260908_provider-portability.md b/.research/260908_provider-portability.md
+new file mode 100644
+index 0000000..34fb4ab
+--- /dev/null
++++ b/.research/260908_provider-portability.md
+@@ -0,0 +1,245 @@
++# Переносимость провайдеров, подписок и учётных записей в Apiary
++
++Дата проверки: **8 сентября 2026, Asia/Tbilisi** (получение исходников началось 7 сентября в 23:06 UTC). Задача: **TASK-260908-39n05p — provider-auth-portability**, STORY-260908-206cjt. Исследование и предложение архитектуры; реализация и проверка пользовательских аккаунтов не выполнялись.
++
++## 1. Главный результат
++
++**Базовый режим Apiary — собственный минимальный Go-цикл над официальными inference API. Подписка не является универсальным способом оплаты этого цикла.** Нужно различать API модели, право конкретного владельца пользоваться сервисом, способ оплаты и возможность делегировать задачу чужому агентному runtime.
++
++Практические решения:
++
++1. Ввести отдельные границы `ModelPort` для inference и `AgentBridge` для официального полного агента. Не реализовывать bridge как фиктивную completion-функцию.
++2. Держать provider authentication на машине владельца учётной записи, вне model-visible tool-skills. Orchestrator получает только несекретные сведения о допуске и расходе; не получает ключи, OAuth tokens или домашний каталог провайдера.
++3. Worker получает один центральный типизированный tool-skill, при необходимости отдельную узкую операцию подписи. Orchestrator использует тот же kernel с установленными Curator tool-skills управления проектом, связи и sandbox. MCP существует только в отдельных установленных Curator wrappers.
++4. Поддержку объявлять для сочетания **провайдер × продукт × протокол × версия адаптера × область аккаунта × сценарий**, а не для логотипа или строки model ID.
++5. При запрете или неизвестной допустимости подписки сохранять direct API как полноценный путь. Не извлекать чужие tokens, не подменять идентичность клиента, не переносить ограничения подписки на новые аккаунты.
++
++Обозначения ниже: **Н** — наблюдение в прочитанной официальной документации или исходнике; **В** — вывод из наблюдений; **П** — предлагаемая конструкция Apiary, ещё не реализованная и не испытанная. Слова «поддерживаемый API» означают подтверждённую поверхность поставщика, **не наличие работающего адаптера Apiary**.
++
++## 2. Матрица допуска
++
++Статусы: **A — supported direct API**; **B — official supported integration**, только в описанных пределах; **C — conditional agreement**, требуется соответствие условиям/договору либо уточнение конкретного сценария; **D — unavailable** для заявленного режима. `unknown` — причина не включать маршрут, а не доказательство абсолютного запрета. Все строки датированы 2026-09-08; регион, организационные ограничения и действующее соглашение владельца проверяются отдельно.
++
++| Поставщик и продукт | Техническая поверхность и идентичность | Допуск и оплата | Последствие для Apiary |
++|---|---|---|---|
++| OpenAI API | Responses и function calling; API identity отдельно от ChatGPT login | **A**. Usage-based API account; подписочный login не заменяет API credential. [O1][O2] | Основной `ModelPort`; tools — только предоставленные функции, без включения hosted tools по умолчанию |
++| Codex / ChatGPT login | Официальный app-server: threads, turns, события, управляемый Codex login; `dynamicTools` экспериментален | **B** для интеграции с Codex; это полный агент. **D/unknown** для произвольного raw inference посредством подписочного token: прочитанная документация app-server этого права не устанавливает. [O1][O3] | Отдельный `AgentBridge`; account ownership сохраняется у Codex. Не обещать строгую эквивалентность worker |
++| Anthropic Messages API | API keys с identity/workspace scope; доступна WIF; legacy workspace keys отдельно | **A**, отдельный API billing и поддерживаемые cloud routes. [A1] | Отдельный Messages codec и credential binding к workspace; тип OAuth сам по себе не означает consumer subscription |
++| Claude subscription + Claude Code / Agent SDK | SDK управляет Claude Code agent loop; собственный пользователь может входить в неизменённый бинарник | **B/C** для официального полного агента с условиями размещения; **D** для посредничества в consumer credentials и предложения своего claude.ai login без разрешения. [A2][A3][A4] | Не пересылать подписочные credentials в kernel. Hosted deployment требует проверки условий; direct Messages остаётся baseline |
++| Gemini Developer API | Официальная API identity, Cloud project; новый auth key привязан к service account | **A**. Отдельные project billing/quota. Документ объявляет переход со standard keys в сентябре 2026, без точного дня. [G1] | Тип credential и состояние миграции входят в admission; не считать старый key работоспособным по формату |
++| Vertex AI / актуальный Google Cloud model service | ADC/workload identity, project/location; Cloud documentation сейчас перенаправляет Vertex URL в Gemini Enterprise Agent Platform | **A** при IAM, включённом сервисе, доступной модели и биллинге проекта. [G2] | Отдельный account/project/region binding; не смешивать с Google AI Pro/Ultra |
++| Gemini CLI Google login / Code Assist / AI Pro, Ultra | Официальный CLI имеет собственный Code Assist путь | **B** для предусмотренного использования CLI. **D** для прямого доступа стороннего ПО к backend CLI через CLI OAuth: официальный запрет явный. [G3][G4] | Не делать такой OAuth `ModelPort`. Полный CLI bridge возможен лишь в отдельно подтверждённом режиме; запрет прямого backend доступа не обходить wrapper-ом |
++| AWS Bedrock | Converse/ConverseStream, model-specific invocation; IAM/SigV4 либо предусмотренные Bedrock API keys | **A**, AWS billing, regional/model eligibility, Marketplace и дополнительные условия отдельных моделей. [B1][B2][B3] | AWS identity не API key Anthropic; route включает region/model или inference profile. Не смешивать Converse, Mantle и AgentCore |
++| Azure OpenAI / Microsoft Foundry | Deployed model, resource endpoint, API key или Entra ID; Responses v1 | **A** при deployment/RBAC/region. [Z1] | Deployment ID и API family обязательны; подписка Microsoft 365/Copilot не установлена как источник этого доступа — **unknown**, не предлагать |
++| OpenRouter | API gateway с отдельным ключом, выбором upstream и параметров маршрутизации | **A**. Биллинг gateway/BYOK и upstream policy не равны consumer subscriptions. [R1][R2][R3] | Учитывать фактический upstream, разрешённые параметры и data policy. Gateway не снимает entitlement проверку |
++| DeepSeek API | Официально документированы OpenAI- и Anthropic-compatible API, streaming и tools | **A** по API account. Consumer subscription для универсального inference не подтверждена — **unknown**. [D1][D2] | Отдельные codecs/профили совместимости; beta strict не делать универсальным обещанием |
++| Qwen / DashScope PAYG | Model Studio API, региональный key; OpenAI-compatible interface | **A** после активации и регионального допуска. [Q1] | Связывать key с region/workspace endpoint. Совместимость формата не переносит семантику всех OpenAI функций |
++| Alibaba Coding Plan | Специальный подписочный API продукт для coding tools | **B** для разрешённого интерактивного coding; **D** для automated scripts, backends и non-interactive batch по текущему FAQ. [Q2] | Не использовать как скрытое питание headless swarm. Не путать с Token Plan |
++| Alibaba Token Plan | Отдельный продукт, OpenAI/Anthropic-compatible key, Personal/Team, Credits | **B** для документированной интеграции tools; **C/unknown** для автономного backend Apiary из-за расхождения официальных страниц. [Q3][Q4] | До уточнения сценария — PAYG. Не приписывать новому продукту старые квоты или запреты без проверки |
++| Moonshot / Kimi Open Platform | API для интеграции в продукты, API account/key | **A**. Отдельный PAYG продукт. [K1][K2] | Основной Kimi `ModelPort`; endpoint/регион/договор фиксировать явно |
++| Kimi Code membership | Официальный CLI OAuth; сторонние/self-built coding tools подключаются через специально выданный API key, OpenAI/Anthropic-compatible | **B** для заявленных coding-сценариев; **C** для перепродажи/общего backend за пределами этих сценариев. Сохранять реальную идентичность клиента. [K3][K4] | В отличие от Claude bridge, подписочный key здесь документирован как inference-интерфейс. Это не разрешение переиспользовать CLI OAuth |
++| Ollama, локальные OpenAI-compatible endpoints | Локальный Ollama API без обязательного auth; удалённый/cloud путь отдельный | **A** для проверенного собственного endpoint и лицензированного deployment; не универсальное право на любые weights. [L1][L2] | Capability probing, loopback/egress policy, model digest; cloud model за localhost не считать локальным исполнением |
++
++### 2.1. Изменчивые и конфликтующие документы
++
++**Claude.** [A4] содержит актуальное уведомление от 15 июня: изменение Agent SDK billing приостановлено, расход пока остаётся в subscription limits; ниже сохранена **не вступившая в силу** таблица кредитов. Она не используется для расчётов. [A2] одновременно разрешает пользователю входить в неизменённый hosted Claude Code при соблюдении условий и запрещает стороннее посредничество в credentials. [A3] сохраняет формулировку о предварительном одобрении собственного claude.ai login. **В:** индивидуальная автоматизация через официальный harness и свой OAuth backend — разные случаи; API key baseline снимает зависимость от этой границы.
++
++**Alibaba.** Справочник Token Plan обновлён 7 сентября 2026: описывает self-developed protocol-compatible tools, Personal/Team и независимость Coding Plan. Официальный августовский блог запрещает automated backend, а также описывает другие окна и правила подписок. **В:** свежая справка подтверждает совместимость, но умолчание о backend не отменяет явно опубликованное ограничение. Нужна проверка условий приобретённой редакции/письменное уточнение поставщика, если продукт хочет именно такой режим; исследование не блокируется, поскольку PAYG достаточен.
++
++**Kimi.** Membership guide разрешает API key для self-built tools и general agent frameworks, но сравнение продуктов адресует собственные продукты и enterprise calls в Open Platform. **В:** developer coding worker соответствует гораздо более узкому сценарию, чем коммерческий inference broker; последнее разрешение не установлено. OAuth-ветка найденного open-source адаптера не расширяет опубликованный API-key путь.
++
++## 3. Что действительно показали исходники
++
++Это целевая выборка Pi и OpenCode как двух многопровайдерных runtime, официального Go SDK и двух официальных агентных интеграций. Популярность и исчерпывающее покрытие рынка не измерялись. Загруженный код **не исполнялся**. Точные SHA, пути, символы и hashes — в [реестре доказательств](260908_provider-portability-evidence.md).
++
++| Прочитанный участок | Наблюдение | Вывод для проекта; что не доказано |
++|---|---|---|
++| Pi `openaiProvider`, `kimiCodingProvider`, `ProviderRequestOptions`, `ProviderStreams` | Factory связывает product ID, auth, catalog и protocol implementation; разные продукты используют один wire family | Разделение product/codec полезно. Совместная структура не означает переносимость секретов или entitlement |
++| Pi `transformMessages` | Сопоставляет provider/api/model; сохраняет same-model signatures, удаляет redacted blocks при переносе, меняет tool IDs; вставляет synthetic error results для orphan calls; пропускает error/aborted assistant turns | Нужны provenance и явный export boundary. Для Apiary synthetic error может быть только записью runtime о неизвестном результате, никогда execution receipt |
++| Pi `openai-completions.ts::stream` | Собирает partial tool args и reasoning details; при ожидаемом, но отсутствующем finish reason выдаёт ошибку. Есть compatibility branch для провайдеров без finish reason | EOF нельзя универсально принимать за успех. Для строгого профиля такие exceptions требуют отдельной проверяемой terminal semantics |
++| Pi `AssistantMessageEventStream` | Отдельные `done`/`error` и асинхронная очередь | Общая event-модель возможна; bounded memory/backpressure и crash durability из этого участка не доказаны |
++| OpenCode `normalizeMessages`, `applyCaching`, `schema` | Provider-specific sanitation, cache options, преобразование схем; OpenAI lowering теряет часть JSON Schema constraints | Kernel должен сохранять каноническую схему и валидировать её до execution. Lossy wire schema не становится источником полномочий |
++| OpenCode `session/llm.ts`, вызов `streamText` | Реальный integration call передаёт prepared tools, activeTools, provider options, transform middleware; `maxRetries` задаётся явно | Это используемый inference путь, не только мёртвый helper. Полнота всех provider branches и end-to-end behavior не проверены |
++| OpenAI Go `ResponseService.NewStreaming`, `Stream.Next/Err`, `shouldRetry` | Typed request и stream union; stream error заканчивает чтение; HTTP retry зависит от replayable body и класса ответа | SDK подходит внутрь Go adapter, но не заменяет транзакционный журнал tool effects и не обеспечивает exactly-once |
++| Gemini CLI `createContentGenerator` | `LOGIN_WITH_GOOGLE`/`COMPUTE_ADC` выбирают Code Assist generator, API/Vertex/Gateway — другой путь | Нельзя выводить сервис/оплату из одного слова OAuth или из наличия ADC. Официальный запрет стороннего прямого CLI backend доступа остаётся независимым |
++| Claude Python SDK `ClaudeAgentOptions`, `SubprocessCLITransport` | `tools=[]` и `allowed_tools` имеют разные назначения; strict MCP есть; transport формирует CLI arguments, наследует process environment с исключением одной переменной | Это subprocess bridge, которому нужны отдельные boundaries. Environment по умолчанию не является безопасным контейнером для нескольких владельцев |
++| Codex `build_tool_router`, `add_core_tool_sources` | Core tools добавляются отдельно; затем MCP, extensions, dynamic tools и hosted specs | `dynamicTools=[central]` — добавление, а не доказанное обнуление остальных источников. Внутренние special session branches не являются публичным режимом Apiary |
++
++**Ограничение lineage:** комментарий OpenCode утверждает сходство schema lowering с Codex. Мы фиксируем только реально прочитанную функцию; происхождение, историю переноса и поведенческую эквивалентность не утверждаем.
++
++## 4. Raw inference и полный агент: разные контракты
++
++### 4.1. Базовый `ModelPort` — предложение
++
++Минимальные операции: `Describe(binding)`, `Generate(context, request) -> EventStream`, `Cancel(attempt)`; `Resume(cursor)` — только optional capability. Не добавлять agent planning, filesystem, shell, MCP discovery, account login или task acceptance в этот интерфейс.
++
++`GenerateRequest` содержит model/deployment, adapter revision, typed messages, canonical tool definitions, output budget, выбранные возможности и несекретный `BindingRef`. Runtime не передаёт secrets через request, который может попасть в trace. HTTP transport получает credential через локальную приватную связь с credential service. Go SDK types не выходят из adapter package; SDK pin и wire version входят в manifest.
++
++`AgentBridge` принимает **делегированную задачу**, отдельные upstream session handles, constraints и callbacks; возвращает события агента и артефакты. Он не обещает количество внутренних completions, идентичный prompt, отсутствие встроенных действий или тот же context compaction. Его расходы и журнал помечаются `delegated-agent`, а не `kernel-inference`.
++
++### 4.2. Можно ли оставить bridge только центральный tool?
++
++| Проверка | Codex app-server | Claude Agent SDK | Gemini CLI |
++|---|---|---|---|
++| Есть официальный full-agent interface | Да: threads/turns, approvals, auth [O3] | Да: SDK/CLI, session и tools [A3] | Официальная CLI authentication описана в [G4]; headless/IDE bridge contract здесь не обследован |
++| Можно передать центральную функцию | `dynamicTools` + `item/tool/call`, экспериментально [O3] | Custom MCP tool; только во внешнем Curator wrapper [A3] | Возможный внешний tool bridge требует отдельной проверки; не утверждается как проверенный путь |
++| Allowlist достаточно для исключения остальных tools | Нет: прочитанный router композитный | Нет: `allowed_tools` только auto-approval; `tools=[]` отдельно | Не установлено |
++| Доказано отсутствие локальных/hosted effects | Нет. Sandbox и tool configuration уменьшают доступ, но app-server остаётся полноценным процессом | Нет. Возможность отключить builtins не отключает все служебные I/O, settings/plugins/hooks и provider-side effects | Нет |
++| Рекомендуемый статус строгого worker | Не допускать как эквивалент `ModelPort` без отдельного conformance/изоляции | То же; legal deployment constraints проверяются отдельно | Direct API baseline; CLI backend OAuth не использовать |
++
++**П:** допустимый compatibility mode запускает неизменённый официальный binary в отдельном пользовательском security domain. Обязательны отдельный state root, минимальное окружение, закрытые project/home imports, запрет неожиданных extensions/hooks/MCP и provider-hosted tools, независимый egress/filesystem/process контроль. Настройки устанавливаются только публичными поддерживаемыми средствами. Если binary не позволяет нужного ограничения, профиль не допускается — не подделываем special session identity и не патчим binary ради обхода.
++
++В Claude официальные условия запрещают удалять/ограничивать встроенные способы аутентификации при размещении binary [A2]. Поэтому host не должен «решать» изоляцию модификацией login-поведения; подписочная сессия принадлежит конечному пользователю. Если архитектура требует, чтобы bridge не мог владеть даже собственным credential state, такой bridge не подходит. Собственный direct API credential service и официальный upstream-managed login — разные режимы хранения.
++
++Receipt bridge фиксирует hash/config binary, task/session mapping, фактически подтверждённые ограничения и результат проверки артефакта. Это **не** аттестация всех внутренних действий upstream. Отсутствие события в stream не доказывает отсутствие эффекта.
++
++## 5. Разделение обязанностей минимального kernel
++
++Все пункты раздела — **П**, основанное на перечисленных несовместимостях.
++
++| Слой | Ответственность | Что не должно в него попадать |
++|---|---|---|
++| Provider codec | Wire schema, сериализация, event decode, protocol/version compatibility | Выбор владельца аккаунта, login UI, tool execution |
++| Credential service владельца | Разрешённый auth flow, secret store, refresh, audience/endpoint binding, revoke | Model transcript, inter-agent messages, доступ orchestrator к tokens |
++| Entitlement policy | Product/use-case admission с URL, retrieval date, scope, expiry, decision reason | Вывод разрешения из успешного HTTP или OSS license |
++| Billing/quota ledger | Reservations, расходы, provider usage reconciliation, quota windows | Ротация аккаунтов для обхода квот, неявный платный fallback |
++| Capability registry | Подтверждённые возможности конкретного route, версия, evidence freshness | Непроверенные boolean defaults и market model names как proof |
++| Transport | HTTP/SSE/WebSocket/AWS event stream, timeout, cancellation, ограниченный retry | Повтор tool side effects и переинтерпретация EOF как успеха |
++| Kernel loop | Канонический transcript, validation, task-bound tool dispatch и recovery state | Credentials, provider-specific login, встроенный MCP host |
++| Curator wrappers | Установленные отдельно tools, sandbox/communication/project management integration | Неограниченный универсальный shell внутри worker |
++
++В исходном Apiary paper разделены inference capacity и полномочия изменения проекта (локальный pin в реестре). Это сохраняется: API response подтверждает ответ сервиса, а не право worker изменить scope, принять результат или подписать интеграционный кандидат.
++
++Curator `provider-capability-receipt-v1` из прочитанного `protocol/assurance.md` относится к **host execution** и конкретным шести свойствам изоляции. Его нельзя переиспользовать для «модель умеет tools». **П:** отдельные типы `ModelCapabilityObservation`, `CredentialBinding`, `EntitlementDecision`, `InferenceUsageRecord`; новые имена здесь иллюстративны, действующие normative protocols не меняются. Подпись worker удостоверяет авторство записи, но не делает self-reported model/billing данные доказательством со стороны поставщика.
++
++### 5.1. Versioned adapters и negotiation
++
++Ключ route: provider product, API family/version, endpoint class, region, account/workspace/deployment, model resolved ID, adapter hash/revision, SDK revision, transport. Manifest имеет compatibility tests revision и дату последней проверки официальных правил.
++
++Необходимые возможности worker: текст, стабильная идентификация tool calls, ограничение output, однозначный конец turn, возможность передать центральную схему и отделить function calls от текста. Дополнительные: strict schema, parallel tool calls, image input, reasoning controls, opaque replay, token counting, cache, resumable streaming. Для каждого поля состояния **supported / unsupported / unknown** и источник: documentation, inspected implementation, live observation. Только первые два не доказывают конкретный account access.
++
++Admission — пересечение требований профиля, разрешённых use cases, наблюдаемого account route и capabilities адаптера. Каталог моделей — подсказка, не доказательство. Небольшой runtime probe в будущем проверяет encoding/terminal/tool arguments без эффектов; live API calls в этой работе не выполнялись. Ответ `401/403/404` классифицируется с контекстом, а не как универсальное «нет такой модели»: в Anthropic недоступный workspace может выглядеть как 404 [A1], в Kimi HighSpeed 401 может означать отсутствие tier [K3].
++
++При изменении model alias, endpoint, аккаунта, SDK, tool schema или plan инвалидировать observation; новое решение допусков — перед новым turn. Между tool proposal и execution всегда повторно проверять локальное task authorization. Для OpenRouter включать требование поддержки обязательных параметров и фиксировать допустимый upstream routing/data policy [R2]. Автоматическое переключение на другого поставщика не должно незаметно расширять передачу данных.
++
++### 5.2. Tool schema и непрозрачные блоки
++
++Канонический центральный tool — именованная операция с task/session IDs, operation enum, typed payload и ограничениями размеров. Не строка произвольного shell. Для optional signing — digest и назначение, а не «подпиши любые байты». Execution adapter проверяет исходную каноническую схему и task permit даже при provider strict mode.
++
++Для каждого codec составляется таблица lowering: nullable/optional, enum, unions, `$ref`, required, additionalProperties, числа и Unicode. Отбрасывание constraint допустимо только при сохранении локальной проверки и явной записи потери wire enforcement; если потеря меняет смысл вызова — отклонить конфигурацию. OpenAI strict требует своих schema условий [O2]; DeepSeek strict отмечен beta с ограниченным набором типов [D2]. Не «чинить» неизвестное имя tool эвристикой регистра и не подменять его другим действием.
++
++Provider block хранится как opaque bytes/JSON с namespace, issuer product, source model/session/account scope, API revision и digest. Encrypted thinking/signatures не превращаются в открытый текст и не пересылаются между владельцами. Текущий Gemini thinking guide описывает signature и отдельные stream deltas [G5]; Pi показывает необходимость сохранять same-model metadata. При смене route разрешён перенос только переносимой части transcript по явной политике; если полноценный replay требует старого блока, продолжать старый route либо начать новую сессию с явно обозначенным контекстным резюме. Резюме не является исходным reasoning или receipt.
++
++## 6. Streaming, retries и восстановление
++
++**Н:** Anthropic может вернуть error внутри HTTP-успешного SSE, usage deltas накопительные, tool JSON приходит частями [A5]. OpenAI Background позволяет продолжить определённый stream по response ID и cursor [O4]. Ollama Responses не поддерживает stateful `previous_response_id`/`conversation` [L2]. Следовательно, один универсальный reconnect неверен.
++
++**П: нормализованные события:** `AttemptStarted`, `ContentStarted`, `TextDelta`, `OpaqueDelta`, `ToolCallStarted`, `ToolArgumentsDelta`, `ToolCallReady`, `UsageObserved`, `ProviderTransition`, `TurnEnded`, `AttemptFailed`. Envelope: local attempt ID, local monotonic sequence, upstream request/response ID при наличии, block/tool ID и provenance. Raw provider envelope хранить отдельно, с redaction и size bound. Неизвестные необязательные события сохранять/пропускать без эффектов; неизвестное событие, влияющее на completion/tool semantics, завершает attempt как unsupported.
++
++| Точка сбоя | Восстановление | Что запрещено |
++|---|---|---|
++| До отправки request | Повтор в пределах reservation/deadline | Создавать новую расходную сессию без учёта попытки |
++| Request ушёл, ответ не получен | Outcome unknown; provider-supported idempotency/retrieve либо новая явно учтённая попытка | Утверждать, что расход нулевой или первая генерация не началась |
++| 429 / временный 5xx | Уважить Retry-After, bounded exponential backoff+jitter, cancellation; различать quota exhaustion и overload | Бесконечный retry, смена владельца ради обхода лимита |
++| Частичный text/JSON | Записать partial attempt, не выполнять незавершённые calls. Resume только с подтверждённым cursor contract; иначе новая генерация от checkpoint | Склеивать новый ответ с хвостом старого как один response |
++| Полный tool proposal, terminal ещё не подтверждён | Для baseline буферизовать до валидного terminal; latency optimisation требует отдельного протокола | Выполнять syntactically parseable partial JSON |
++| Tool принят, execution outcome потерян | Запросить реестр operation по durable idempotency key; вернуть известный receipt либо `outcome_unknown` | Повторять необратимое действие из-за reconnect inference |
++| Tool выполнен, результат не дошёл модели | Replay того же результата/receipt с тем же operation ID в разрешённой сессии | Выполнять tool заново |
++| Истёк/отозван credential | Один coordinated refresh там, где он предусмотрен, затем `reauth_required` | Скрыто переключаться с подписки на PAYG |
++| Cancel во время server-side generation | Закрыть transport и вызвать поддерживаемую cancel операцию; расход считать неизвестным до reconciliation | Обещать мгновенную остановку сервера и отсутствие charges |
++
++Для side effects нужен отдельный автомат `proposed → validated → reserved → executing → succeeded/failed/outcome_unknown`, с durable записью **до dispatch**. Idempotency key включает task authority/version и логическую операцию, а не только provider tool ID; повтор с тем же key и другим payload запрещён. Exactly-once HTTP delivery не обещается. Effectively-once возможно только там, где executor поддерживает дедупликацию и возвращает прежний результат.
++
++OpenAI Go `shouldRetry` и stream `Next/Err` подтверждают разные границы HTTP retry и чтения событий. **П:** один владелец retry policy: SDK automatic retries отключить либо включить в общий attempt/budget accounting, чтобы вложенные retry loops не умножали запросы. Состояние partial response никогда не теряется из usage ledger даже при исключении из переносимого transcript.
++
++## 7. Аккаунты, refresh, бюджет и контекст
++
++### 7.1. Credential lifecycle — предложение
++
++`CredentialBinding` содержит opaque local reference, issuer/product, owner pseudonym, tenant/project/workspace/region, разрешённую audience/endpoint, auth kind, generation и expiry metadata. Секрет читается только credential process/transport; модель и центральный tool его не видят. Не использовать один process-global environment для нескольких владельцев. Для официального агентного bridge login и refresh остаются внутри его пользовательского security domain.
++
++Состояния: `unconfigured → authenticating → active → refreshing → active`; отдельно `expired`, `revoked`, `reauth_required`, `disabled`. Межпроцессный refresh lock/lease по binding, compare-and-swap generation и atomic secret replacement. После `invalid_grant` не запускается storm повторных login; старое поколение не перезаписывает новое. Refresh нельзя дедуплицировать по имени провайдера между разными владельцами. WIF/ADC token renewal, static key rotation и subscription OAuth — разные стратегии.
++
++Logout увеличивает generation, отменяет связанные новые dispatch, очищает локальную доступность и provider session по поддерживаемому API; незавершённые attempts остаются для reconciliation. Ротация key не означает новый budget owner. Смена account/workspace создаёт отдельную transcript/cache/session область. Общий team service account допустим только там, где владелец и договор разрешают, с явной отчётностью; personal subscriptions не собираются в общий credential pool.
++
++Предотвращение утечки: allowlisted outbound auth injection; запрет переноса Authorization на redirect к другой audience; TLS и endpoint policy; redaction transport errors/headers/telemetry/crash reports; отсутствие raw credentials в argv, model messages, outcome artifacts и worker-to-orchestrator обмене. Local endpoint не получает настоящий cloud key «для совместимости». При неизвестном host protocol не делать authenticated capability probes.
++
++### 7.2. Billing/quota — предложение
++
++Бюджет выделяется одновременно на владельца, проект, задачу, сессию и model route. До отправки атомарно резервируются worst-case input/output и provider-specific reasoning/cache/tool charges с запасом. Не смешивать USD, tokens, requests и subscription Credits. Цена и conversion rule версионированы; неизвестная цена либо запрещает автоматический spend, либо требует заранее ограниченного отдельного allowance.
++
++После ответа: reconcile actual usage и reservation; накопительные deltas не суммировать как независимые. Missing usage означает `unknown`, не ноль. Partial attempt удерживает консервативную reservation до provider reconciliation/явного accounting решения. Cancellation и billing alerts не являются hard cap. Локальный enforcement ограничивает только запросы, прошедшие через него; параллельный расход тем же аккаунтом в других клиентах требует provider-side quota/limit и не может быть строго ограничен локальным ledger.
++
++**Н:** OpenRouter BYOK может переходить на shared capacity, а BYOK spend по умолчанию не включается в некоторые budget counters [R3]. **П:** явно отключать недопустимый billing fallback и отдельно проверять включение BYOK в нужный budget. BYOK передаёт upstream key внешнему gateway и потому не соответствует профилю, где этот key обязан оставаться только у владельца; для такого профиля использовать собственный OpenRouter key или прямой upstream API. Это отдельный выбор владельца, не автоматическая часть подключения.
++
++Subscription capacity — отдельное наблюдение с reset window, freshness и доступными моделями. Автоматический top-up, смена billing mode, покупка дополнительных credits или PAYG fallback требуют ранее заданной политики владельца. Ничего из этого не следует из общего разрешения выполнить coding task. Plan cancellation/expiry/seat removal инвалидируют entitlement; один уже выданный token не доказывает действующую подписку.
++
++### 7.3. Context/cache — предложение
++
++Хранить отдельно input context limit, output cap, reasoning budget, tokenizer/count endpoint, supported modalities и effective tool-schema size. Лимит модели не равен доступному остатку конкретного turn. Резервировать место под ожидаемые tool results; при превышении уменьшать контекст до запроса, сохраняя causal tool-call/result пары и task constraints. Compaction явно версионируется и не удаляет audit receipts из журнала.
++
++Cache identity включает owner/workspace, provider product, model/version, adapter, schema, system context и режим data retention. Prompt cache поставщика, собственный response cache, upstream conversation ID и compiled artifact cache Curator — четыре разных объекта. Anthropic prompt caching имеет отдельные hit/write semantics [A6]; не обещать одинаковые TTL или переносимый cache hit. Cache не подтверждает актуальность entitlement или результата внешнего tool. Смена account, policy или model alias инвалидирует подходящую область cache.
++
++## 8. Отклонённые варианты и план проверок
++
++| Вариант | Почему отклонён | Чистая альтернатива |
++|---|---|---|
++| «Любая подписка через один OAuth adapter» | Отсутствует единый официальный raw inference grant; есть прямые запреты и условия | Direct APIs + отдельные разрешённые subscription products/agent bridges |
++| «OAuth код в Pi/OpenCode означает разрешение» | License кода не договор доступа к сервису | Отдельная датированная entitlement policy |
++| «Agent SDK/app-server = completion» | Чужой loop, встроенные tools, state и billing boundary | `AgentBridge` с отдельным assurance label |
++| «Allowed tools доказывают no local effects» | Allowlist может быть auto-approval; process I/O и hosted effects остаются | Минимальный direct API worker; independent isolation для bridge |
++| «Все провайдеры — OpenAI-compatible» | Различаются schemas, IDs, reasoning, transport, completion и state | Небольшое семейство versioned codecs, явные capability requirements |
++| «Retry stream значит retry tool» | Возможен повтор необратимого эффекта | Durable operation ledger и reconciliation |
++| «Credentials отправим orchestrator для удобства» | Нарушает владельческий boundary Apiary | Локальный credential service и несекретные observations |
++| «Provider receipt доказывает модель и законность» | Наблюдение сервиса/worker не аттестует юридическое право, model provenance или host isolation | Раздельные типы evidence и явная степень доверия |
++
++Будущие conformance проверки **не запускались в этой исследовательской задаче**. Нужны отрицательные случаи: недопустимый endpoint с реальным key; чужой owner/session; stale entitlement; неверный workspace; unknown capability; lossy schema, пропускающая запрещённые args; partial JSON; EOF без terminal; duplicate tool ID; смена payload под operation key; процесс упал после effect; refresh race двух процессов; quota исчерпана до отправки; 200 с SSE error; неожиданный hosted tool; новый provider block; cross-account cache hit. Проверять production dispatch, не только helpers. Для bridge — filesystem/network/process наблюдение при запрещённых действиях; настройка tools сама по себе тестом не считается.
++
++Первый implementation milestone: direct OpenAI Responses + Anthropic Messages с локальным mock transport только для fault injection, затем живые разрешённые API probes с владельцем/расходом. Следом Gemini/Vertex и cloud/vendor codecs. Live tests не заменяют policy review; успешная авторизация не легализует запрещённый use case. Подписочные compatibility modes не должны задерживать полезность direct API Apiary.
++
++## 9. Ограничения, доказательства и воспроизводимость
++
++Не проверялись реальные аккаунты, оплата, refresh tokens, доступность моделей по странам, производительность, binary sandbox escape, полная матрица всех моделей и wire APIs. Нет утверждений об exhaustiveness, рейтинге популярности или сертификации. Политики — официальные опубликованные границы, не заключение о конкретном договоре пользователя. Новые SDK/API surfaces могут появляться быстрее адаптеров.
++
++Исходники получены как отдельные файлы по immutable commit SHA, без checkout и без исполнения. Соседние репозитории обследованы read-only; для документов использован `git show HEAD:path`, а не изменённый working tree. Свежий remote HEAD соседних repos не запрашивался: их pins обозначают локальные входы, не «последнюю upstream версию». Снимки `.temp` не входят в delivery diff; durable реестр сохраняет hashes, URL, SHA и символы для повторного получения.
++
++Документация получена через официальный web retrieval и публичный HTTP fetch. Search snippets и сторонние обсуждения не использованы как доказательство. Несколько URL переместились; в реестре разделены исходный и resolved URL. SHA-256 страницы фиксирует полученные bytes, не её юридическую дату действия. Для страниц, доступных только web tool, hash не выдуман. Найденные расхождения отражены в [исследовательском logbook](260908_provider-portability-logbook.md).
++
++### Официальные источники
++
++Все прочитаны 2026-09-08 по локальной дате. Ниже краткие обозначения для ссылок в тексте; версия web-страницы — retrieved snapshot, если явная дата не указана.
++
++[O1]: https://learn.chatgpt.com/docs/auth
++[O2]: https://developers.openai.com/api/docs/guides/function-calling
++[O3]: https://learn.chatgpt.com/docs/app-server
++[O4]: https://developers.openai.com/api/docs/guides/background
++[A1]: https://platform.claude.com/docs/en/manage-claude/authentication
++[A2]: https://code.claude.com/docs/en/legal-and-compliance
++[A3]: https://code.claude.com/docs/en/agent-sdk/overview
++[A4]: https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan
++[A5]: https://platform.claude.com/docs/en/build-with-claude/streaming
++[A6]: https://platform.claude.com/docs/en/build-with-claude/prompt-caching
++[G1]: https://ai.google.dev/gemini-api/docs/api-key
++[G2]: https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/start/gcp-auth
++[G3]: https://geminicli.com/docs/resources/tos-privacy/
++[G4]: https://geminicli.com/docs/get-started/authentication/
++[G5]: https://ai.google.dev/gemini-api/docs/thinking
++[B1]: https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html
++[B2]: https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html
++[B3]: https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys-reference.html
++[Z1]: https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/responses
++[R1]: https://openrouter.ai/docs/api_reference/overview
++[R2]: https://openrouter.ai/docs/guides/routing/provider-selection
++[R3]: https://openrouter.ai/docs/guides/overview/auth/byok
++[D1]: https://api-docs.deepseek.com/quick_start/pricing
++[D2]: https://api-docs.deepseek.com/guides/tool_calls/
++[Q1]: https://www.alibabacloud.com/help/en/model-studio/compatibility-of-openai-with-dashscope
++[Q2]: https://www.alibabacloud.com/help/en/model-studio/coding-plan-faq
++[Q3]: https://www.alibabacloud.com/help/en/model-studio/token-plan-overview
++[Q4]: https://modelstudio.alibabacloud.com/intl/blog/model-studio-token-plan-individual/
++[K1]: https://www.kimi.com/en/help/kimi-api/api-overview
++[K2]: https://platform.kimi.com/docs/agreement/modeluse
++[K3]: https://www.kimi.com/en/help/kimi-code/membership-guide
++[K4]: https://www.kimi.com/code/docs/en/third-party-tools/hermes.html
++[L1]: https://docs.ollama.com/api/authentication
++[L2]: https://docs.ollama.com/api/openai-compatibility
+diff --git a/.research/260908_requirements-map.md b/.research/260908_requirements-map.md
+new file mode 100644
+index 0000000..0667587
+--- /dev/null
++++ b/.research/260908_requirements-map.md
+@@ -0,0 +1,132 @@
++# Карта требований и решений: Apiary / Curator / runtime
++
++Дата: 8 сентября 2026 года. TASK-260908-31st2v. Исследовательский материал для review. Все решения ниже — рекомендации, не изменения действующих протоколов.
++
++## 1. Обозначения и область
++
++`retain` — сохранить правило; `change` — изменить с versioned migration; `reject` — не использовать это правило/предположение в целевом Apiary profile. Reject локальной политики task-board не означает предложение удалить её из task-board: речь о неприменимости к публичной гарантии Apiary.
++
++Источники закреплены на тех же ревизиях, что [основной отчёт](260908_apiary-curator-contracts.md):
++
++| ID | Репозиторий | SHA |
++|---|---|---|
++| A | apiary-docs | `b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7` |
++| C | curator | `2d0901444ecfe3c11c424c561c66c66b4bb5ddd1` |
++| S | curator-spec | `87a0d0060bad64ab883d007dcdf35df7485368bf` |
++| P | skill-project-management | `ebdf21a2dbe44892296c91a9401d87abc612f87f` |
++| R | curator-agent-runtime | `da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f` |
++
++Все строки содержат прямой permalink на прочитанный источник. Пункты, названные «предложенной альтернативой» или «смешением», — аналитические выводы, а не найденные требования исходной спецификации. Для production limitations ссылкой служит реализация, а не предположение из README.
++
++## 2. Решения и миграция
++
++| ID | Правило / предположение | Исходный контракт | Решение | Архитектурное следствие | Миграция / проверка | Источник |
++|---|---|---|---|---|---|---|
++| D01 | Runtime: никакого встроенного model tool | R §3.4, ADR0002 | retain | Все tools приходят из pinned skill; служебный protocol transport не model tool. | Compiler отвергает tool вне plan; отдельно инвентаризировать service channels. | [protocol/runtime.md:55](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L55) |
++| D02 | Core без FS/process/provider credentials | R §3.1–2 | retain | Broker/model I/O и OS boundary отделены от model loop. Go interface сам не security boundary. | Два process roles или доказанное capability isolation; негативная попытка доступа к host/keys. | [protocol/runtime.md:46](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L46) |
++| D03 | Managed context из verified store | R §3.3, ADR0003 | retain | Инструкции не загружаются из writable workspace; remote task content — data. | Freeze repository context по commit/digest; при изменении instruction bundle новая epoch. | [protocol/runtime.md:51](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L51) |
++| D04 | Grant ceiling → call-plan profile → receipt observed | R §3.5/§6 | retain | Описание effects и реально применённый профиль связаны одним typed object. | Schema validation до extractor; обязательный subset check до execution; output не доверяет self-report provider. | [protocol/runtime.md:154](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L154) |
++| D05 | Детерминированный effect extractor без filesystem | R tool-interface §5 | change | Extractor выдаёт lexical intent; physical path/symlink/TOCTOU решает trusted backend с handles. | Версионировать path semantics, bind sandbox root/generation; не считать canonical string доказательством inode. | [protocol/tool-interface.md:76](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/tool-interface.md#L76) |
++| D06 | Broker никогда не открывает workspace file | R ADR0002 consequence | change | Запретить произвольный content-reading tool в broker, разрешить confinement handle resolution backend. | Сузить фразу; добавить проверяемую no-follow/open-relative boundary. | [decisions/0002-tools-are-skills.md:27](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/decisions/0002-tools-are-skills.md#L27) |
++| D07 | Immutable execution epoch | R §4/§8 | retain | Hot-plug превращается в explicit compile/drain/approve/new-epoch. | Existing call IDs остаются в old epoch; новые bindings не применяются к in-flight calls. | [protocol/runtime.md:235](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L235) |
++| D08 | Late result просто reject | R §4 | change | Отказать в использовании как current result, сохранить historical receipt/outcome. | Разделить authorization disposition и audit retention; не терять факт завершённого remote effect. | [protocol/runtime.md:81](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L81) |
++| D09 | Delegated tools literal subset parent model list | R §9, ADR0005 | change | Subset относится к выданной delegable authority, отдельной от executable/model-visible set родителя. | Versioned plan field; v0.1 defaults только прежние права; worker central не вынуждает дать orchestrator shell. | [protocol/runtime.md:255](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L255) |
++| D10 | At-most-once со stored result | R §7.5 | change | Durable invocation state + unknown + reconciliation вместо обещания результата после любого crash. | Уникальность call body и at-most-once admission сохраняются; внешний effect не повторяется при unknown. | [protocol/runtime.md:214](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L214) |
++| D11 | Session-worker fixed grant, одна binding | R §5.5 | retain | Не делить один worker process между bindings разных полномочий. | Persistent transport может multiplex только при отдельном проверяемом per-operation permit; иначе process per binding. | [protocol/runtime.md:135](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L135) |
++| D12 | Process/component/remote как готовые классы | R tool-interface §6 | change | До определённых enforcement semantics поддержать process; remote через confined wrapper; component fail-closed. | WASM/component вводить новой conformance capability, не Go plugin/dlopen в core. | [protocol/tool-interface.md:94](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/tool-interface.md#L94) |
++| D13 | Human JIT на любой external network/signing | R approval §5–8 | change | Для unattended swarm нужен отдельно авторизованный bounded policy contract; QC не human consent. | До изменения протокола применимы только реальные human-created leases; never всегда denial. | [protocol/approval.md:64](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/approval.md#L64) |
++| D14 | Полнота всего увиденного моделью | R §10 против Apiary I10 | change | Локальный honest runtime логирует свой transcript; network verifier удостоверяет только наблюдаемые protocol interactions. | Не переносить local accountability claim на произвольную недоверенную worker node. | [protocol/runtime.md:272](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/protocol/runtime.md#L272) |
++| D15 | Одна центральная логическая среда | Apiary §5 | retain | Реплики допустимы; main mutation authority одна; ownership sandbox у проекта. | Pin executor identity и assignment; pool scheduler не становится вторым main writer. | [paper/paper.tex:152](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L152) |
++| D16 | Один инструмент = узкие права | Упрощение топологии Apiary | reject | Количество tools не ограничивает union effects. Unknown shell ограничивается task ceiling. | Центральный typed dispatcher с operation allowlist, closed inputs, budgets, audience и sandbox generation. | [paper/paper.tex:118](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L118) |
++| D17 | Worker ровно две bindings | Apiary §12, книга ch08 | change | Один central tool; signing — service flow или optional narrowly typed second tool. | Подпись только допустимого revision envelope, не arbitrary bytes/ssh-agent passthrough. | [paper/paper.tex:273](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L273) |
++| D18 | Без отдельного worker communication transport | Предположение из one-tool UX | reject | Join/heartbeat/assignment/review/submit/stop нужны независимо от tools модели. | Версионированный node protocol с authenticated envelopes и bounded inbox; capabilities ограничивают sends. | [book/ch11.tex:55](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/book/ch11.tex#L55) |
++| D19 | Текущий task-board — protocol authority | Книга ch05/ch10 | reject | Task-board — локальная materialization/adapter; authority задают Apiary records и validators. | Импорт legacy задач без minted QC; стабильные protocol IDs отдельно от файловой иерархии. | [book/ch10.tex:59](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/book/ch10.tex#L59) |
++| D20 | Один digest для задачи и полномочий | Устаревшее смешение | reject | TaskContract и SessionPlan — разные identities; изменение критериев инвалидирует acceptance. | Раздельные поля и signed bindings; не выводить contract version из CR revision. | [paper/paper.tex:178](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L178) |
++| D21 | Review exact candidate и CAS M→I | Apiary I3 | retain | Ни patch-id, ни совпадение changed_paths не переносит approval. | Fresh candidate → fresh review/attestations; добавить negative vectors wrong I/base/contract/policy/env. | [paper/paper.tex:256](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L256) |
++| D22 | Task-board reparent сохраняет acceptance | P integration.Reparent | reject | В Apiary non-overlap только уменьшает merge conflicts; не доказывает semantic equivalence. | Adapter выдаёт new Candidate + ReviewRequired; P локальная политика может жить отдельно, без Apiary claim. | [tools/board-cli/internal/integration/reparent.go:37](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/internal/integration/reparent.go#L37) |
++| D23 | Независимость трёх ролей и review selection | Apiary I5 | retain | Run IDs/role labels недостаточно для owner/model/toolchain independence. | Freeze eligible set до I; randomness после I; issuer evidence и policy revision в records. | [paper/paper.tex:281](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L281) |
++| D24 | QC из existing audit endorsements | Книга ch10 | change | CCJ/Ed25519/high-water переиспользуются; audit status не task authorization QC. | Новые record domains, quorum policy, validator identity, inclusion proofs, availability protocol. | [protocol/registry.md:91](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/registry.md#L91) |
++| D25 | L2 добавляется сменой threshold | Упрощение книги ch02/ch12 | reject | L2 меняет ordering и fault model, не только quorum count. | L0 API предусмотреть consensus adapter; L1 не рекламировать fork safety. | [paper/paper.tex:99](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L99) |
++| D26 | Unavailable evidence = отсутствует/успех | Опасная совместимость | reject | Три исхода для проверок, liveness, resolver и external operations. | Unknown запрещает acceptance/reclaim/replay, пока другой источник не установит нужный факт. | [tools/board-cli/internal/worktree/lease.go:288](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/internal/worktree/lease.go#L288) |
++| D27 | Scope held до integration/cancel | Apiary §7 | retain | Отдельная занятость scope и execution slot; slot release не снимает scope reservation. | Slot/claim/assignment IDs раздельны; cancellation journals scope release. | [paper/paper.tex:197](https://github.com/relux-works/apiary-docs/blob/b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7/paper/paper.tex#L197) |
++| D28 | Portable/verified assurance disjoint | S assurance | retain | Не обещать full от portable или schema success. | Runtime task-execution assurance получает собственный contract, не alias build-only шести capabilities. | [protocol/assurance.md:6](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/assurance.md#L6) |
++| D29 | script-worker-v1 уже запускается | Не подтверждено C | reject | В C имеется parser+unconditional refusal; обычный shim declared-only. | Будущая implementation задача должна заменить refusal настоящим worker и production negative evidence. | [internal/scriptpolicy/scriptpolicy.go:85](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/internal/scriptpolicy/scriptpolicy.go#L85) |
++| D30 | Verified daemon уже есть в C | Не подтверждено C | reject | Production provider resolver nil; Darwin lossless boundary unavailable. | Отдельная реализация и native qualification; no automatic fallback. | [cmd/curator/assurance.go:17](https://github.com/relux-works/curator/blob/2d0901444ecfe3c11c424c561c66c66b4bb5ddd1/cmd/curator/assurance.go#L17) |
++| D31 | Демон как готовый бинарь в skill | Apiary ch10 против S assurance §6 | change | Trusted host provider устанавливает оператор; skill приносит client source/contract. | Бинарная distribution policy возможна отдельной версией, но не ослабляет operator ownership. | [protocol/assurance.md:149](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/assurance.md#L149) |
++| D32 | MCP в ядре или динамический tools/list | Предложенная альтернатива | reject | MCP только вне процесса, wrapper обычный pinned typed tool provider. | Новый catalog/schema digest требует epoch; resources/prompts не повышают instruction tier. | [protocol/environments.md:412](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/environments.md#L412) |
++| D33 | Profile fragment = runtime plan | Смешение объектов | reject | Fragment задаёт managed home/channels, но не effects/approval/attestations. | Compiler явно consumes fragment/lock и emits отдельный SessionPlan; разные domains digests. | [protocol/environments.md:2025](https://github.com/relux-works/curator-spec/blob/87a0d0060bad64ab883d007dcdf35df7485368bf/protocol/environments.md#L2025) |
++| D34 | Goal CAS/revision/owner separation | P board-goal-v2 | retain | User intent versioned отдельно; applied не выводится из pending ack. | Adapter сохраняет parent/run distinction; goal mutation не меняет assignment authority. | [pkg/board/board_goal_v2.go:764](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/pkg/board/board_goal_v2.go#L764) |
++| D35 | Один общий Go kernel, profiles сверху | Целевой дизайн | retain | Один loop и broker contract, разные compiled catalogs; domain policy вне generic kernel. | Начать одним runtime module; API types вынести только при доказанной потребности внешнего consumer. | [docs/architecture.md:38](https://github.com/relux-works/curator-agent-runtime/blob/da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f/docs/architecture.md#L38) |
++| D36 | Все P/C internal packages перенести в runtime | Предложенная альтернатива | reject | Не тащить CLI/UI/config/native host/provider SDK dependency graph в kernel. | Versioned artifacts или explicit public library API; MCP и task-board за process boundary. | [tools/board-cli/go.mod:1](https://github.com/relux-works/skill-project-management/blob/ebdf21a2dbe44892296c91a9401d87abc612f87f/tools/board-cli/go.mod#L1) |
++
++## 3. Минимальные интерфейсные границы
++
++Это проектная декомпозиция ответственности, применимая к любому model provider и sandbox backend; здесь нет зависимости от конкретного vendor API.
++
++| Граница | Вход | Выход | Владелец authority |
++|---|---|---|---|
++| Curator → environment compiler | Exact closure/profile lock, audited source identities, built client artifacts | Immutable SessionPlan с interface/provider/schema/effect digests | Operator policy + заданная задача, не package bytes |
++| Core → broker | Typed tool intent и model call correlation | Bounded result + receipt reference | Broker выводит effect plan и проверяет grant |
++| Model adapter → model service | Serialized request по pinned adapter contract | Streamed typed model events | Local provider-auth broker; tool skill не владеет credentials |
++| Worker → Apiary control | Join/heartbeat/revision proposal/review result | Assigned task contract + plan authorization | Журнал с QC и действующей арендой |
++| Worker tool wrapper → environment | Operation + authenticated envelope + sandbox generation | Command status/output/receipt | Central daemon, проверяющий assignment и stop на boundary |
++| Orchestrator skills → control | Предложения decomposition/assignment/integration | Accepted/rejected/unknown protocol result | Validators, а не LLM orchestrator |
++| Environment → project runner | Named privileged operation и отдельная authorization | Signed outcome или unknown/reconcile | Project-owned runner и отдельные secrets |
++| MCP wrapper → MCP server | Fixed translated operation | Validated bounded result | Wrapper grant и broker mediation; server tools/list не authority |
++
++**Ключевой запрет:** не добавлять в центральный tool произвольное поле `service/method/payload`, принимающее любое сообщение внутреннего протокола. Такая форма скрывает универсальный RPC и нивелирует worker profile. Закрытый discriminator и branch-specific effect extractor должны быть частью hashed interface.
++
++## 4. Рекомендуемые identity bindings
++
++| Объект | Обязательная привязка в новом контракте | Что не должно его заменять |
++|---|---|---|
++| Assignment authorization | Project ID, task ID, contract revision/digest, node ID, role, plan digest, term/token, scope, limits, validity | Task title, local RUN env var, current directory |
++| Tool invocation | Epoch, plan digest, call ID, input digest, operation/interface digest, sandbox ID+generation, authorization record | Arbitrary caller-supplied grant |
++| Execution receipt | Invocation/permit digest, executor identity, environment digest, bounded output digests, actual assurance, outcome, prev receipt | Текст «тесты зелёные», exit code без subject |
++| Revision | B, R, task/contract identity, receipt-chain head, node signature | Только patch-id |
++| Review/attestation | I, contract revision, policy version, environment digest, checker identity, property, passed/failed/unknown | CR accepted без версии criteria |
++| Integration | Expected M, exact I, valid evidence set, term, fresh authorization | Текущее дерево, вычисленное после review |
++| Provider auth | Operator-owned adapter instance и разрешённый sink/account mode | Skill manifest с OAuth token |
++| Revocation | Subject/key/plan/assignment identity, issuer, effective boundary, monotonic high-water | Недоступность resolver или удаление локального файла |
++
++Часть полей уже есть в Apiary paper, часть конкретизирует wire layer, отсутствующий в runtime v0.1. Не представлять таблицу как существующую JSON Schema.
++
++## 5. План перехода без ложной совместимости
++
++1. **Заморозить исходные semantics.** Сохранить v0.1 session/call/receipt objects и существующие C/P markers как исторические. Добавить явные version/domain IDs новым объектам. Не переименовывать portable receipt в verified и CR revision в contract revision.
++2. **Нормативный минимальный срез.** Описать typed operation descriptor, lexical/physical path split, worker service transport, authority binding, unknown invocation outcome и delegated authority. Уточнить approval для unattended policy. Рассмотреть на review прежде реализации.
++3. **Один вертикальный worker path.** API-key или local model → core → broker → Curator-built client skill → project-owned sandbox daemon. Один task, pinned plan, no project secrets. Это новая реализация; разрешённость subscription не prerequisite.
++4. **Control plane L0.** Versioned contracts, assignments, leases, stop/high-water, receipts, immutable candidate, independent review/attestation и CAS. L0 упрощает quorum, но не пропускает I1/I3/I6/I9/I10.
++5. **Project-management adapter.** Read/materialize старые tasks и resources; новые authoritative writes идут через Apiary record submission. Migration старых goals сохраняет owner/revision, старые review records остаются provenance. Не синтезировать отсутствующую независимость подписантов.
++6. **MCP wrappers и новые providers.** Добавлять только через normal resolve/build/audit/pin/new-epoch; unsupported native/provider modes отказывают. Vendor harness integration имеет отдельный профиль доверия до доказательства отсутствия лишних native effects.
++7. **L1/L2 и pooling.** Отдельные consensus/availability/recovery qualification и provider entitlement review. Не обещать BFT или разрешённое использование подписок по результатам локального L0 smoke.
++
++## 6. Evidence matrix для следующей реализации
++
++В этом исследовании перечисленные gates **не запускались**. Таблица — будущие acceptance criteria, а не отчёт о прошедших тестах. Правило доказательства: отрицательный вектор должен проходить через реальный entrypoint и обнаруживать ослабление соответствующего gate, включая narrowing mutation.
++
++| Gate | Production entrypoint | Обязательная отрицательная форма | Ожидаемый результат |
++|---|---|---|---|
++| Plan admission | Session.Open | Unknown schema, digest mismatch, missing retention policy, unsupported assurance | No model request, no tool start |
++| Per-call authority | Tool.Invoke / environment exec | Forged node, wrong assignment/task, widened scope, wrong term/epoch/generation | Denial до effect |
++| Effect precision | Broker profile derivation | Broad central shell с ложным exact extractor | Refusal либо unknown с явно ограниченным ceiling |
++| Path confinement | Реальное открытие target backend | Symlink swap/escape, case collision, protected path | Нет записи вне scope; trace evidence |
++| Retry safety | Durable invocation executor | Same ID/different input, crash после внешнего effect | Conflict / unknown; нет blind replay |
++| Transition | Session transition + late result | In-flight mutation, старая epoch, revoked binding | Drain/cancel/reconcile; historical audit без new authority |
++| Component/MCP isolation | Provider launch | In-process plugin, changed server catalog, undeclared prompt/resource | Refusal, никакой hidden tool activation |
++| Signing | Local broker signer | Arbitrary bytes, чужой R/task, wrong audience | Подпись не выдана |
++| Identity resolver | Confirmation pipeline | Network error, malformed evidence, removed fingerprint | Unknown отдельно от observed absence |
++| Review independence | Review assignment/acceptance | Same owner, unfrozen pool, random seed до I | No acceptance; ожидание/отдельное изменение policy |
++| Candidate binding | main.cas | Old I, new contract/policy/environment, moved M | No main advance; new candidate/review |
++| Stop/high-water | Executor admission/recovery | Old valid snapshot, stale term, unknown persisted state | Fail closed; restart не сбрасывает stop |
++| Provider entitlement | Adapter admission | Unproven subscription mode, forced paid fallback | Unsupported/explicit policy decision, не credential workaround |
++
++Для каждого execution gate отчёт следующего этапа должен назвать `passed / required`, commit/plan/candidate subject, exit status, skipped/unknown и blind spots. Source-level inspection настоящей задачи не заменяет эти результаты.
++
++## 7. Оставшиеся решения и границы уверенности
++
++**Решения для архитектора, не блокеры исследования:** конкретный authority delegation object; trust root и key provisioning; wire canonicalization/domain separation; stop/revocation freshness; policy-approved unattended execution; первый OS backend; supported model-provider mode. Для каждого рекомендован вариант выше, поэтому исследование можно передать на review без реализации и без чтения аккаунтов.
++
++**Непроверенное:** ax implementation и внешняя curator-run implementation, native enforcement всех платформ, реальная полнота receipts, conformance всех Curator drivers, subscription account entitlements, benchmark скорости/качества роя, независимость модельных ошибок. Эти свойства нельзя выводить из документов, Go interface, schema success или названий тестов.
++
++Source limitations и обнаруженные противоречия F1–F8 подробно указаны в [основном отчёте](260908_apiary-curator-contracts.md). Приложенный task-scoped handoff включает logbook находок и фактические validation exits.
