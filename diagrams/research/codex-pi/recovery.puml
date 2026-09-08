@@ -1,0 +1,33 @@
+@startuml
+!theme plain
+title Apiary: допуск эффекта и восстановление после сбоя
+participant "Адаптер модели" as model
+participant "Ядро" as core
+participant "Broker" as broker
+database "Журнал" as journal
+participant "Tool provider" as tool
+model -> core : Частичные arguments
+note right of core : Только preview
+model -> core : Terminal response
+alt error / aborted / length
+ core -> journal : Ответ не допущен к effects
+else Успешный полный ответ
+ core -> broker : Call + epoch + plan digest
+ broker -> broker : Schema + grant + approval + sandbox
+ broker -> journal : Зафиксировать intent
+ journal --> broker : Commit acknowledgement
+ broker -> tool : Effect с invocation ID
+ alt Исход получен
+  tool --> broker : Результат
+  broker -> journal : Зафиксировать outcome
+  broker --> core : Settled receipt
+ else Crash до квитанции
+  broker -> journal : Восстановить effect_pending
+  broker -> tool : Reconcile, если предусмотрено
+  note over broker,tool
+  Без доказуемого исхода — unknown.
+  Повтор только по проверенному replay-контракту.
+  end note
+ end
+end
+@enduml

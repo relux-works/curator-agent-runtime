@@ -1,0 +1,27 @@
+@startuml
+!theme plain
+left to right direction
+title Apiary: одно ядро и два профиля полномочий
+rectangle "Curator\nУстановка и проверка плана" as curator
+rectangle "Общее ядро\nСессия • очередь • проекция истории" as kernel
+database "Канонический журнал\nСобытия и квитанции" as log
+rectangle "Доверенный broker\nПроверка эпохи и допуск effects" as broker
+rectangle "Адаптер модели\nОтдельный auth-контур" as model
+rectangle "Skills профиля Worker\nОдин typed tool-skill\nОпционально узкий signing" as worker
+rectangle "Skills профиля Orchestrator\nProject-management\nCommunication • Sandbox" as orchestrator
+rectangle "Отдельный MCP wrapper\nТолько установленный интерфейс" as mcp
+curator --> broker : Неизменяемый план эпохи
+broker --> kernel : Объявленные schemas
+kernel --> model : Проекция контекста
+model --> kernel : Ответ и opaque state
+kernel --> broker : Типизированный запрос
+broker --> log : Intent / outcome
+kernel --> log : События разговора
+broker --> worker : Ограниченный процесс
+broker --> orchestrator : Ограниченный процесс
+orchestrator --> mcp : При наличии grant
+note bottom of model
+Credentials не передаются tool-skills.
+Модель не меняет полномочия эпохи.
+end note
+@enduml
