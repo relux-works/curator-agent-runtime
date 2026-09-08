@@ -1,0 +1,38 @@
+@startuml
+!theme plain
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam wrapWidth 220
+skinparam maxMessageSize 90
+title Процессы и trust: один binary не один principal
+top to bottom direction
+package "Contributor host (root входит в TCB)" {
+ rectangle "agent-core\nНедоверенный model loop" as core
+ rectangle "local-broker\nPlan / admission / history" as broker
+ rectangle "model-host\nCodec + account credentials" as model
+ rectangle "node-signer\nTyped claims only\nНет Sign(bytes) или grants" as signer
+ rectangle "Confined central client\nОдна binding" as tool
+ core --> broker : authenticated IPC
+ broker --> model : admitted ModelRequest
+ broker --> signer : exact Submission/Review ref
+ broker --> tool : validated invocation
+}
+package "Project host (root входит в TCB)" {
+ rectangle "Authority\nValidator + sequencer + ledger" as auth
+ rectangle "Executor supervisor\nWAL / fence / resource policy" as exec
+ rectangle "Sandbox\nUntrusted task code" as box
+ rectangle "Runner\nCandidate / test / attestation\nProject key вне sandbox" as runner
+ rectangle "Publication gateway\nSole local ref writer\nIntent / CAS / receipt" as pub
+ database "Local authoritative Git\nProtected ref + strong closure" as git
+ auth --> pub : serialized publication intent
+ pub --> git : exclusive fenced CAS
+ runner --> pub : accepted candidate ref
+ auth --> exec : grant / dispatch permit
+ exec --> box : OS confinement
+ runner --> auth : evidence
+}
+tool --> exec : bound operation
+broker --> auth : node lifecycle messages
+exec --> runner : immutable snapshot receipt
+@enduml

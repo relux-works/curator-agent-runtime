@@ -1,0 +1,34 @@
+@startuml
+!theme plain
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam wrapWidth 220
+skinparam maxMessageSize 90
+title Worker turn: terminal response до эффектов
+actor "Модель" as model
+participant "Core" as core
+participant "Broker" as broker
+participant "Model-host" as mh
+participant "Executor" as ex
+database "Operation WAL" as wal
+core -> broker : immutable context / plan request
+broker -> mh : reserve budget; Generate
+mh -> model : installed central schema
+model --> mh : deltas + tool arguments
+alt length / error / EOF без terminal
+ mh --> broker : AttemptFailed
+ broker --> core : interrupted; effects = 0
+else успешный terminal response
+ mh --> broker : complete response
+ broker -> broker : durable response; canonical validate
+ broker -> ex : bound op + fresh permit
+ ex -> wal : reserve + digest + owner; sync
+ ex -> wal : dispatch marker; sync
+ ex -> ex : start confined process
+ ex -> wal : observation / receipt; sync
+ ex --> broker : result или handle
+ broker --> core : bounded tool result
+ core -> broker : next model request
+end
+@enduml

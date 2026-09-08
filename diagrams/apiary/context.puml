@@ -1,0 +1,29 @@
+@startuml
+!theme plain
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam wrapWidth 220
+skinparam maxMessageSize 90
+title Контекст Apiary: inference отдельно от проекта
+left to right direction
+actor "Владелец проекта" as owner
+actor "Участник" as user
+rectangle "Contributor host\nWorker + local broker" as worker
+cloud "Admitted model provider" as model
+rectangle "Apiary проекта\nAuthority / executor / runner" as project
+database "Project repository\nmain + immutable candidates" as repo
+rectangle "Curator\nPinned packages и closure" as curator
+owner --> project : policy / membership / budget
+user --> worker : own account / identity
+worker --> model : разрешённый inference
+worker --> project : signed intents / observations
+project --> worker : assignment / receipts
+project --> repo : exact candidate / CAS
+curator --> worker : installed tool exports
+curator --> project : pinned client contracts
+note bottom of worker
+Нет обязательного local checkout.
+Model credentials и личный ключ остаются здесь.
+end note
+@enduml

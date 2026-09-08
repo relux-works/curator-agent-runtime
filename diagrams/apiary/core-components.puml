@@ -1,0 +1,42 @@
+@startuml
+!theme plain
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam wrapWidth 220
+skinparam maxMessageSize 90
+title Общий runtime: порты вместо встроенных tools
+left to right direction
+package "agent-core" {
+ [session reducer] as session
+ [history projection] as history
+ [runtime types] as types
+ session --> history
+ session --> types
+}
+package "local-broker" {
+ [plan validator] as plan
+ [invocation admission] as invocation
+ [lexical effects] as effects
+ [journal adapter] as journal
+ plan --> invocation
+ invocation --> effects
+ invocation --> journal
+}
+interface "BrokerPort" as bp
+interface "ModelPort" as mp
+interface "ExecutionPort" as ep
+session --> bp
+bp --> invocation
+bp --> plan
+invocation --> mp
+invocation --> ep
+rectangle "model-host\nSDK codec / credentials" as mh
+rectangle "Installed tool process\nCentral client" as skill
+mp --> mh
+ep --> skill
+note bottom of session
+Worker и orchestrator используют один reducer.
+Catalog, authority и domain policy находятся снаружи.
+end note
+@enduml

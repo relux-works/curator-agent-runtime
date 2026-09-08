@@ -1,0 +1,44 @@
+@startuml
+!theme plain
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam maxMessageSize 240
+title L0: sealed bytes, permission и локальная публикация
+participant "Host control /\nNode signer" as h
+participant "Executor /\nRunner" as r
+participant "Authority /\nJournal" as a
+participant "Reviewer" as v
+participant "Publication\ngateway" as g
+database "Local Git\nsole writer" as git
+h -> r : SealRequest после model proposal
+r -> r : close mutations / drain / seal R + C(R)
+r --> h : SnapshotReceipt
+h -> a : typed signed Submission\nR/C(R), assignment, contract
+ a -> a : freeze eligible policy
+ a -> r : build I on M
+r --> a : qualified M/R/I + C(M/R/I)
+a -> v : frozen candidate tuple
+v --> a : ReviewAttestation(tuple digest)
+r --> a : TestAttestation(tuple digest)
+a -> a : validate / Acceptance
+r -> g : Request(request_id, AcceptedCandidateRef)
+g -> a : current tuple, term, stop checks
+a -> a : sync PublicationIntent\npermission linearization
+ a --> g : durable intent / target reservation
+note over a,g
+Later stop forbids NEW permissions.
+Earlier intent remains in-flight; no instant halt claim.
+end note
+g -> g : exclusive lock / closure recheck\nsync dispatching before local CAS
+g -> git : CAS M -> I; durable sync
+g -> git : verify exact ref + C(I)
+g -> a : sync IntegrationReceipt + outbox
+note over g,git
+No next ref writer before terminal receipt.
+Crash recovery: M/C(M) = not_applied;
+I/C(I) = applied; other/read failure = unknown.
+Journal, Git CAS and receipt are separate steps.
+Remote mirror is a separate external effect.
+end note
+@enduml

@@ -1,0 +1,32 @@
+@startuml
+!theme plain
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam wrapWidth 220
+skinparam maxMessageSize 90
+title Установка не меняет live epoch
+actor "Operator policy owner" as owner
+participant "Curator" as curator
+participant "Compiler" as compiler
+participant "Broker" as broker
+participant "Executor" as executor
+owner -> curator : install pinned closure
+curator --> compiler : closure / build evidence
+compiler -> compiler : select binding; schemas; grant intersection
+alt ambiguous / unsupported / insufficient assurance
+ compiler --> owner : refusal, live plan unchanged
+else staged plan valid
+ compiler --> broker : proposed next plan
+ broker -> executor : stop new mutations; drain/reconcile
+ executor --> broker : boundary settled
+ broker -> owner : authority delta
+ owner --> broker : bounded policy approval
+ broker -> broker : commit old/new digests + epoch
+ broker -> executor : activate new binding/assignment
+end
+note over broker,executor
+Unknown old effect blocks new mutation epoch.
+Late receipts retain their old epoch provenance.
+end note
+@enduml

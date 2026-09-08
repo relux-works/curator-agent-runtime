@@ -1,0 +1,35 @@
+@startuml
+!theme plain
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam wrapWidth 220
+skinparam maxMessageSize 90
+title Неопределённый effect и гонка cancel
+participant "Client" as c
+participant "Executor" as e
+database "WAL" as w
+participant "Supervisor / sink" as s
+c -> e : operation_id + body digest
+e -> w : reserve; sync
+e -> w : dispatching; sync
+e -> s : effect(idempotency key)
+s -> s : effect may happen
+... crash / lost reply ...
+e -> w : recover dispatching without outcome
+e -> s : observe / reconcile same operation
+alt outcome established
+ s --> e : result evidence
+ e -> w : terminal receipt; sync
+else cannot establish
+ s --> e : unavailable / ambiguous
+ e -> w : outcome_unknown; keep reserve
+ e --> c : no blind retry or owner transfer
+end
+c -> e : cancel request
+e -> w : cancel_requested; sync
+e -> s : terminate process group / cancel sink
+s --> e : actual exit or cancellation observation
+e -> w : settle one observed outcome
+note over e,s : Cancel is not rollback; late success remains success.
+@enduml

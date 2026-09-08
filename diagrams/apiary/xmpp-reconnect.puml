@@ -1,0 +1,35 @@
+@startuml
+!theme plain
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam wrapWidth 220
+skinparam maxMessageSize 90
+title XMPP reconnect: domain ack и artifact digest
+participant "Sender outbox" as o
+participant "XMPP relay" as x
+participant "Receiver inbox" as i
+participant "Executor" as e
+participant "Artifact store" as store
+o -> x : signed domain envelope (message_id)
+x --> o : XEP-0198 ack
+note over o : Keep pending domain delivery.
+x -> i : envelope
+ i -> i : bytes + dedup durable commit
+ i --> o : signed received_durable
+ i -> e : validate + admit operation
+e --> o : admitted / refused
+... disconnect / reconnect ...
+o -> x : SM resume or retransmit same bytes
+x -> i : possible duplicate
+ i --> o : stored application ack/status
+ o -> e : reconcile operation_id / ledger cursor
+e --> o : receipt + artifact digest/size
+o -> store : bounded fetch (optional XEP-0363 URL)
+store --> o : bytes
+ o -> o : verify digest/size; publish local CAS
+note over o,store
+URL and HTTP 201 are not authorization or integrity proof.
+No new execution on reconnect.
+end note
+@enduml

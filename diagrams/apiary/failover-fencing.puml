@@ -1,0 +1,35 @@
+@startuml
+!theme plain
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam wrapWidth 220
+skinparam maxMessageSize 90
+title Failover: term, permit и живой процесс различны
+participant "Old orchestrator\nterm 14" as old
+participant "Authority" as a
+participant "New orchestrator\nterm 15" as new
+participant "Executor" as e
+participant "Sandbox g3" as s
+a -> e : permit op-53 under term 14
+e -> s : start process h3
+a -> a : commit halt + term 15
+new -> a : resume from committed checkpoint
+old -> a : renew / assign with term 14
+a --> old : stale_term
+e -> a : request next dispatch permit
+a --> e : refused after halt
+a -> e : stop control message
+e -> s : terminate h3
+s --> e : actual terminal observation
+e -> a : old epoch/g3 historical receipt
+alt restart sandbox
+ e -> e : allocate generation 4
+ new -> e : poll old handle h3
+ e --> new : session_lost; no process-memory recovery
+end
+note over a,e
+Partition denies new strict-online permits.
+Previously admitted effects require explicit reconciliation.
+end note
+@enduml
