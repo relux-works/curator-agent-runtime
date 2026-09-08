@@ -1,0 +1,142 @@
+[
+  {
+    "path": ".spec/apiary-runtime-design.md",
+    "size": 7012,
+    "sha256": "4cbb1e77d0ba84029ede659f45ca6e63632295be4ebef485a18fcbbd3a4f6581"
+  },
+  {
+    "path": "diagrams/apiary/README.md",
+    "size": 2637,
+    "sha256": "fbc6982bce942425fc0fc6dac9b596d0e7d3ff6514ec622dde2ed9ace9a9b9d3"
+  },
+  {
+    "path": "diagrams/apiary/context.puml",
+    "size": 1183,
+    "sha256": "0f283c034bb0b328bc17677e3d73d76570b6e6ad31dbca526db521a07aad46e1"
+  },
+  {
+    "path": "diagrams/apiary/context.svg",
+    "size": 27770,
+    "sha256": "82feb350c7c2199a407ac6c5ee1339cf96926f6dd4d9a111885a92a9319ba6b9"
+  },
+  {
+    "path": "diagrams/apiary/core-components.puml",
+    "size": 1121,
+    "sha256": "65d21565abc71bc5faddc567e6b87d957904a73aaa7947e77979d875da61cff9"
+  },
+  {
+    "path": "diagrams/apiary/core-components.svg",
+    "size": 24031,
+    "sha256": "4461f7c9ca549c23f0ae04937379653fe52b87f92e4234f24672db33a9d5c9ea"
+  },
+  {
+    "path": "diagrams/apiary/failover-fencing.puml",
+    "size": 1096,
+    "sha256": "0979d56411728e011ba36161052affbf9bf497531aa4339a341ba0621e52bb80"
+  },
+  {
+    "path": "diagrams/apiary/failover-fencing.svg",
+    "size": 31124,
+    "sha256": "fb14e117e9c5ebd3e17cbadcce2dba20844c1138e190cc3ece8c28f253510aa0"
+  },
+  {
+    "path": "diagrams/apiary/operation-recovery.puml",
+    "size": 1099,
+    "sha256": "fa436efb7ae7b06ac592a3d4a404b3d4f40946cabe2c7d13bbc9c1fc52ce39a5"
+  },
+  {
+    "path": "diagrams/apiary/operation-recovery.svg",
+    "size": 32460,
+    "sha256": "9ebe90f73306409694e60bbbde80fcd6a2d60c5b7a2539277865955cb5e4ba0c"
+  },
+  {
+    "path": "diagrams/apiary/process-trust.puml",
+    "size": 1391,
+    "sha256": "3d79d3abd7001c97c22a305b05484802e843ee8359fd60289bbde16fb29a7926"
+  },
+  {
+    "path": "diagrams/apiary/process-trust.svg",
+    "size": 30313,
+    "sha256": "5f62bc2f213d9b89649a57d1662a38008bb9c8d93c04a96e6fe8df66c0eecff2"
+  },
+  {
+    "path": "diagrams/apiary/task-integration.puml",
+    "size": 1072,
+    "sha256": "fac753b504123ac4c3efff6b4c3f5bd6328b0d6ed8e4150b52ef6e2f5b379c2b"
+  },
+  {
+    "path": "diagrams/apiary/task-integration.svg",
+    "size": 33592,
+    "sha256": "020f9bca1d2475a366b18329384da61b5baeffa3e0cc0db046f50df3951fb6f6"
+  },
+  {
+    "path": "diagrams/apiary/tool-skill-activation.puml",
+    "size": 1143,
+    "sha256": "117cca44443ab4daf4a81fd2eaa91804252a33962e73b8f049f0c0bc17325e0d"
+  },
+  {
+    "path": "diagrams/apiary/tool-skill-activation.svg",
+    "size": 26260,
+    "sha256": "472dccf603fd23c58239211412647fe54eb1993ecd0a236efd74cb8363b71d97"
+  },
+  {
+    "path": "diagrams/apiary/worker-turn.puml",
+    "size": 1142,
+    "sha256": "5f8ba78d8b19015d4afce7f02e99cc38f3b93ba813096424b6c9d1a1481a9bc0"
+  },
+  {
+    "path": "diagrams/apiary/worker-turn.svg",
+    "size": 31352,
+    "sha256": "db5bd6dff49da1f6ee277c217671a5452443f29e377f034e17515712f47e6848"
+  },
+  {
+    "path": "diagrams/apiary/xmpp-reconnect.puml",
+    "size": 1129,
+    "sha256": "42fea3096c0b14f1dff0384781d248a230ccd6db841eae223c29cc2c298c8e9a"
+  },
+  {
+    "path": "diagrams/apiary/xmpp-reconnect.svg",
+    "size": 33271,
+    "sha256": "8030057682cdd5d29e910a8d184eb18cabd4fd4aa0d912749a52b12f44763605"
+  },
+  {
+    "path": "docs/apiary/accepted-inputs.json",
+    "size": 6039,
+    "sha256": "3b68b3b89d5e254f11be693c13b5acfc7aa25ff998a7ca755af3e391aa83b3be"
+  },
+  {
+    "path": "docs/apiary/authority-wire.md",
+    "size": 21806,
+    "sha256": "8c83f67184e9711a76862a62ebe0b90720acb354fbf786b198492210feae089d"
+  },
+  {
+    "path": "docs/apiary/evidence.md",
+    "size": 47356,
+    "sha256": "d0c8cc1e1be387bb2fc3ed59e5a3d40d8b4e968c316f667eba575f4e73216704"
+  },
+  {
+    "path": "docs/apiary/execution.md",
+    "size": 20840,
+    "sha256": "a00024dabe1f18966f58e92edfbadde1fbddbf67349f52ac15cecba9afefa35c"
+  },
+  {
+    "path": "docs/apiary/kernel.md",
+    "size": 14713,
+    "sha256": "cbd5ac8238913cce8ab36a8636faf145de13b80761dac5311b056bbd918fc013"
+  },
+  {
+    "path": "docs/apiary/migration-conformance.md",
+    "size": 20935,
+    "sha256": "ebd70367568ec8e9e77ab5fc25dcfdf3eb084d266823bf8941534dd488be70a5"
+  },
+  {
+    "path": "docs/apiary/models-context.md",
+    "size": 17858,
+    "sha256": "a696554a47d04e82d1a2149985bd34fac22b4175a67f2a9a323474a2830e596c"
+  },
+  {
+    "path": "docs/apiary/tool-skills.md",
+    "size": 15371,
+    "sha256": "9287d58e990a4155f319865524ed7bcb905e39b0ac4c6e51c386446e9b18de30"
+  }
+]

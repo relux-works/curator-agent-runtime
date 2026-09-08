@@ -1,0 +1,9 @@
+# Current phase: final accepted architecture integration
+
+This NEW bound doc-writer/implementer run is for integration only. The earlier authoring, broad review and single-paragraph F1 rework instructions describe completed phases and must not be replayed. No file edits, new research, rerenders, republishing accepted CRs or independent model delegation.
+
+Reviewer RUN-260908-71ce97 accepted CR-TASK-260908-q8pkiz-2 revision 2, candidate tree 6f1df833192dfb25a1c0da5dcaca230a6817dfb2, base 187ace42aa98a06948ace94d7973ea7a7547f59f. F1 is closed; all 35 paths against base are reviewed, with 70/70 non-README files byte-identical to the preceding fully reviewed assembly. Prior architect TASK-260908-2qhe31 rev2 is checkpointed and is the other leaf in the same Story.
+
+Control root /Users/iv/Developer/ReluxWorks/curator-agent-runtime is on main and main equals fresh origin/main 187ace42aa98a06948ace94d7973ea7a7547f59f. Preserve the genuine inherited runtime binding and TASK_BOARD_RUN_ID. Execute canonical task-board worktree integrate STORY-260908-2o9ao6 --cr TASK-260908-q8pkiz --revision 2 from that control root. Respect configured revalidation, signed commit and board admission gates. If a board_delta_moved refusal leaves trunk unmoved and no transaction, inspect actual state then retry the identical command, as explicitly allowed by the CLI. Never weaken gates or edit refs/transaction state by hand.
+
+Verify resulting signed Story/board commit IDs, exact candidate tree equality, actual task/Story/epic statuses and preserved working state. Store a concise task-scoped outcome outside the managed worktree and attach it through resource CRUD. Do not push, open a PR, land remotely or clean dirty managed worktrees. Parent owns the final hosted publication and collection of post-integration coordination evidence. No generic authoring handoff after successful integration.

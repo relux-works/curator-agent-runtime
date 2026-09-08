@@ -1,0 +1,142 @@
+[
+  {
+    "path": ".spec/apiary-runtime-design.md",
+    "size_bytes": 7200,
+    "sha256": "913bcc6405fca7748df5d3fe3582fd0b34968e50b013b5ffb334dd8ac86400e0"
+  },
+  {
+    "path": "docs/apiary/accepted-inputs.json",
+    "size_bytes": 6039,
+    "sha256": "3b68b3b89d5e254f11be693c13b5acfc7aa25ff998a7ca755af3e391aa83b3be"
+  },
+  {
+    "path": "docs/apiary/authority-wire.md",
+    "size_bytes": 23233,
+    "sha256": "b1cbc34eb4c1afcdcefcf0df68a39aaf020d6422bac37ea0262702651ee4c75f"
+  },
+  {
+    "path": "docs/apiary/evidence.md",
+    "size_bytes": 48421,
+    "sha256": "1b88c7a492dea09007d05898d27dabe68cd99e514f7d1b7a4d6a92d48797a366"
+  },
+  {
+    "path": "docs/apiary/execution.md",
+    "size_bytes": 44405,
+    "sha256": "5ed00e8362b873ab597a009465068e408f4c4530366a5cc7d1c48a0525a9f62b"
+  },
+  {
+    "path": "docs/apiary/kernel.md",
+    "size_bytes": 15397,
+    "sha256": "ca15590e186c9105bac28e401d62d0a71176d4bdbf14820b4c95efa6191b890a"
+  },
+  {
+    "path": "docs/apiary/migration-conformance.md",
+    "size_bytes": 23025,
+    "sha256": "2765ea7357614a6bebd3cd360f0bbe694622269e16ac41035c442d47e0a4ed9c"
+  },
+  {
+    "path": "docs/apiary/models-context.md",
+    "size_bytes": 17858,
+    "sha256": "a696554a47d04e82d1a2149985bd34fac22b4175a67f2a9a323474a2830e596c"
+  },
+  {
+    "path": "docs/apiary/tool-skills.md",
+    "size_bytes": 15851,
+    "sha256": "878fccbe142fdb584229f3e5a7fea695d2f2c473ebc24f68d1765242279bf0ac"
+  },
+  {
+    "path": "diagrams/apiary/README.md",
+    "size_bytes": 3206,
+    "sha256": "c847b7ce8b4608bc037076176aae9ad0874507687e49aaec98e4aad416304c47"
+  },
+  {
+    "path": "diagrams/apiary/context.puml",
+    "size_bytes": 1183,
+    "sha256": "0f283c034bb0b328bc17677e3d73d76570b6e6ad31dbca526db521a07aad46e1"
+  },
+  {
+    "path": "diagrams/apiary/context.svg",
+    "size_bytes": 27770,
+    "sha256": "82feb350c7c2199a407ac6c5ee1339cf96926f6dd4d9a111885a92a9319ba6b9"
+  },
+  {
+    "path": "diagrams/apiary/core-components.puml",
+    "size_bytes": 1121,
+    "sha256": "65d21565abc71bc5faddc567e6b87d957904a73aaa7947e77979d875da61cff9"
+  },
+  {
+    "path": "diagrams/apiary/core-components.svg",
+    "size_bytes": 24031,
+    "sha256": "4461f7c9ca549c23f0ae04937379653fe52b87f92e4234f24672db33a9d5c9ea"
+  },
+  {
+    "path": "diagrams/apiary/failover-fencing.puml",
+    "size_bytes": 1096,
+    "sha256": "0979d56411728e011ba36161052affbf9bf497531aa4339a341ba0621e52bb80"
+  },
+  {
+    "path": "diagrams/apiary/failover-fencing.svg",
+    "size_bytes": 31124,
+    "sha256": "fb14e117e9c5ebd3e17cbadcce2dba20844c1138e190cc3ece8c28f253510aa0"
+  },
+  {
+    "path": "diagrams/apiary/operation-recovery.puml",
+    "size_bytes": 1099,
+    "sha256": "fa436efb7ae7b06ac592a3d4a404b3d4f40946cabe2c7d13bbc9c1fc52ce39a5"
+  },
+  {
+    "path": "diagrams/apiary/operation-recovery.svg",
+    "size_bytes": 32460,
+    "sha256": "9ebe90f73306409694e60bbbde80fcd6a2d60c5b7a2539277865955cb5e4ba0c"
+  },
+  {
+    "path": "diagrams/apiary/process-trust.puml",
+    "size_bytes": 1675,
+    "sha256": "66a010ffd3afbb9864e86dad66225e48c8984693264ff527ed3775c4f5d15b17"
+  },
+  {
+    "path": "diagrams/apiary/process-trust.svg",
+    "size_bytes": 39764,
+    "sha256": "53d31f91cf23d59b9dd3144f3964a20c3bb4a9cd39fddedec69cc174bda82059"
+  },
+  {
+    "path": "diagrams/apiary/task-integration.puml",
+    "size_bytes": 1639,
+    "sha256": "5b89c4c5760781a67a10ae16f9437aa0a361079f0b39bbf473616f62b6a3aa3d"
+  },
+  {
+    "path": "diagrams/apiary/task-integration.svg",
+    "size_bytes": 41854,
+    "sha256": "54d194e62d834df83bc9c93d71f4a3ec71db89340a3bebd7ca60dddc915fd8cf"
+  },
+  {
+    "path": "diagrams/apiary/tool-skill-activation.puml",
+    "size_bytes": 1143,
+    "sha256": "117cca44443ab4daf4a81fd2eaa91804252a33962e73b8f049f0c0bc17325e0d"
+  },
+  {
+    "path": "diagrams/apiary/tool-skill-activation.svg",
+    "size_bytes": 26260,
+    "sha256": "472dccf603fd23c58239211412647fe54eb1993ecd0a236efd74cb8363b71d97"
+  },
+  {
+    "path": "diagrams/apiary/worker-turn.puml",
+    "size_bytes": 1142,
+    "sha256": "5f8ba78d8b19015d4afce7f02e99cc38f3b93ba813096424b6c9d1a1481a9bc0"
+  },
+  {
+    "path": "diagrams/apiary/worker-turn.svg",
+    "size_bytes": 31352,
+    "sha256": "db5bd6dff49da1f6ee277c217671a5452443f29e377f034e17515712f47e6848"
+  },
+  {
+    "path": "diagrams/apiary/xmpp-reconnect.puml",
+    "size_bytes": 1129,
+    "sha256": "42fea3096c0b14f1dff0384781d248a230ccd6db841eae223c29cc2c298c8e9a"
+  },
+  {
+    "path": "diagrams/apiary/xmpp-reconnect.svg",
+    "size_bytes": 33271,
+    "sha256": "8030057682cdd5d29e910a8d184eb18cabd4fd4aa0d912749a52b12f44763605"
+  }
+]

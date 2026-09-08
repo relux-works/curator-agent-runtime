@@ -1,0 +1,166 @@
+{
+  "status": "review-accepted research inputs; source Story integration pending",
+  "source_integration_note": "The Claude lineage EOF formatting correction may change its file hash without changing substantive content; final assembly must use the landed file.",
+  "entries": [
+    {
+      "logical_path": ".research/260908_claude-lineage.md",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-1l3m6n/.research/260908_claude-lineage.md",
+      "sha256": "34bbb61869c0b3cb90a1f2dc80ef2863c18985427603024a005157d3137f78bb",
+      "size_bytes": 45313,
+      "task_id": "TASK-260908-2x6kuv",
+      "revision": 1,
+      "candidate_tree": "5ed64f3a1670a4735202316516b554c533d1be04",
+      "reviewer_run": "RUN-260907-634339"
+    },
+    {
+      "logical_path": ".research/260908_codex-pi.md",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-1l3m6n/.research/260908_codex-pi.md",
+      "sha256": "638d35f980e2d4348136bfaefba1da843753592659e898c6109ceb77f48eeaff",
+      "size_bytes": 73999,
+      "task_id": "TASK-260908-2x6kuv",
+      "revision": 1,
+      "candidate_tree": "5ed64f3a1670a4735202316516b554c533d1be04",
+      "reviewer_run": "RUN-260907-634339"
+    },
+    {
+      "logical_path": "diagrams/research/codex-pi/kernel.puml",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-1l3m6n/diagrams/research/codex-pi/kernel.puml",
+      "sha256": "662b7bba88095d528496fda849637ab5891991332c56edafabe18779a96e675a",
+      "size_bytes": 1638,
+      "task_id": "TASK-260908-2x6kuv",
+      "revision": 1,
+      "candidate_tree": "5ed64f3a1670a4735202316516b554c533d1be04",
+      "reviewer_run": "RUN-260907-634339"
+    },
+    {
+      "logical_path": "diagrams/research/codex-pi/kernel.svg",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-1l3m6n/diagrams/research/codex-pi/kernel.svg",
+      "sha256": "504f41359f6304f03f8f54d1f80f3b0a3152ac1a592bf9134ba63a2c18c8feb5",
+      "size_bytes": 17320,
+      "task_id": "TASK-260908-2x6kuv",
+      "revision": 1,
+      "candidate_tree": "5ed64f3a1670a4735202316516b554c533d1be04",
+      "reviewer_run": "RUN-260907-634339"
+    },
+    {
+      "logical_path": "diagrams/research/codex-pi/recovery.puml",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-1l3m6n/diagrams/research/codex-pi/recovery.puml",
+      "sha256": "8d695ac2f73ba78b3d868e8ed532b5fcdb63676275f776a979e4cff5440ac9b1",
+      "size_bytes": 1323,
+      "task_id": "TASK-260908-2x6kuv",
+      "revision": 1,
+      "candidate_tree": "5ed64f3a1670a4735202316516b554c533d1be04",
+      "reviewer_run": "RUN-260907-634339"
+    },
+    {
+      "logical_path": "diagrams/research/codex-pi/recovery.svg",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-1l3m6n/diagrams/research/codex-pi/recovery.svg",
+      "sha256": "0b0b2b637a8821e0dcc589f3c9c46700e9644afc45754bbf811baca66479e44b",
+      "size_bytes": 20696,
+      "task_id": "TASK-260908-2x6kuv",
+      "revision": 1,
+      "candidate_tree": "5ed64f3a1670a4735202316516b554c533d1be04",
+      "reviewer_run": "RUN-260907-634339"
+    },
+    {
+      "logical_path": ".research/260908_go-and-additional-harnesses.md",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-27xtpm/.research/260908_go-and-additional-harnesses.md",
+      "sha256": "52929a4cb2aa1f80b9ee5c87f3b993178c6df83e40544da705064594ca052203",
+      "size_bytes": 19806,
+      "task_id": "TASK-260908-1ir76l",
+      "revision": 1,
+      "candidate_tree": "49eee1123ea8dc8e42544f8da48ba8315e428dd1",
+      "reviewer_run": "RUN-260907-35d7e2"
+    },
+    {
+      "logical_path": ".research/260908_protocol-literature.md",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-27xtpm/.research/260908_protocol-literature.md",
+      "sha256": "8e77c9c20ecfb67b05162a720fb638d0513c1ba19f1f6f8f9db6fb48661f0b2d",
+      "size_bytes": 64604,
+      "task_id": "TASK-260908-1ir76l",
+      "revision": 1,
+      "candidate_tree": "49eee1123ea8dc8e42544f8da48ba8315e428dd1",
+      "reviewer_run": "RUN-260907-35d7e2"
+    },
+    {
+      "logical_path": ".research/260908_protocol-source-catalog.json",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-27xtpm/.research/260908_protocol-source-catalog.json",
+      "sha256": "d12aab6a5410427be328bb19b2ad9f704d8946e4177f1fd626f8b0f527a71253",
+      "size_bytes": 56036,
+      "task_id": "TASK-260908-1ir76l",
+      "revision": 1,
+      "candidate_tree": "49eee1123ea8dc8e42544f8da48ba8315e428dd1",
+      "reviewer_run": "RUN-260907-35d7e2"
+    },
+    {
+      "logical_path": ".research/260908_runtime-landscape.md",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-27xtpm/.research/260908_runtime-landscape.md",
+      "sha256": "9e194386bce5eb09a9c4d50cd610bd8fa2fb4c4df33a8bacd7bf5d35a8d6589d",
+      "size_bytes": 93118,
+      "task_id": "TASK-260908-1ir76l",
+      "revision": 1,
+      "candidate_tree": "49eee1123ea8dc8e42544f8da48ba8315e428dd1",
+      "reviewer_run": "RUN-260907-35d7e2"
+    },
+    {
+      "logical_path": ".research/260908_source-catalog.json",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-27xtpm/.research/260908_source-catalog.json",
+      "sha256": "cb79c50f9cd1f9766dddcbb90ffe73eba85477def81cd2c4b675125018ea4514",
+      "size_bytes": 124166,
+      "task_id": "TASK-260908-1ir76l",
+      "revision": 1,
+      "candidate_tree": "49eee1123ea8dc8e42544f8da48ba8315e428dd1",
+      "reviewer_run": "RUN-260907-35d7e2"
+    },
+    {
+      "logical_path": ".research/260908_apiary-curator-contracts.md",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-206cjt/.research/260908_apiary-curator-contracts.md",
+      "sha256": "59563bae31206892a38f8e4bd79da5287ccb8ca40347e5d3a2ddea9eb720e824",
+      "size_bytes": 59107,
+      "task_id": "TASK-260908-39n05p",
+      "revision": 1,
+      "candidate_tree": "6d424210d9d2059f4485b35aa6ec9929ce6f9443",
+      "reviewer_run": "RUN-260907-ba65e1"
+    },
+    {
+      "logical_path": ".research/260908_provider-portability-evidence.md",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-206cjt/.research/260908_provider-portability-evidence.md",
+      "sha256": "b37e3aba9010b1faf2cf18932d2de83a587a995760e4150e04e6288bdf5420ec",
+      "size_bytes": 22508,
+      "task_id": "TASK-260908-39n05p",
+      "revision": 1,
+      "candidate_tree": "6d424210d9d2059f4485b35aa6ec9929ce6f9443",
+      "reviewer_run": "RUN-260907-ba65e1"
+    },
+    {
+      "logical_path": ".research/260908_provider-portability-logbook.md",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-206cjt/.research/260908_provider-portability-logbook.md",
+      "sha256": "67c2e202f9ad8774c8484a806f879cbdb2e2258b40662aa9b520f12bd90ceaac",
+      "size_bytes": 6529,
+      "task_id": "TASK-260908-39n05p",
+      "revision": 1,
+      "candidate_tree": "6d424210d9d2059f4485b35aa6ec9929ce6f9443",
+      "reviewer_run": "RUN-260907-ba65e1"
+    },
+    {
+      "logical_path": ".research/260908_provider-portability.md",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-206cjt/.research/260908_provider-portability.md",
+      "sha256": "743b52b191e45fb9279307e1e7a262476f509887f1198ddba303e46a82dedb64",
+      "size_bytes": 54770,
+      "task_id": "TASK-260908-39n05p",
+      "revision": 1,
+      "candidate_tree": "6d424210d9d2059f4485b35aa6ec9929ce6f9443",
+      "reviewer_run": "RUN-260907-ba65e1"
+    },
+    {
+      "logical_path": ".research/260908_requirements-map.md",
+      "local_path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/architecture-research/accepted-inputs/STORY-260908-206cjt/.research/260908_requirements-map.md",
+      "sha256": "5608cb6f3b5d2fd25d89fc9f066a11381a361f45cb34d06d4b8049545f9c5b78",
+      "size_bytes": 30529,
+      "task_id": "TASK-260908-39n05p",
+      "revision": 1,
+      "candidate_tree": "6d424210d9d2059f4485b35aa6ec9929ce6f9443",
+      "reviewer_run": "RUN-260907-ba65e1"
+    }
+  ]
+}
