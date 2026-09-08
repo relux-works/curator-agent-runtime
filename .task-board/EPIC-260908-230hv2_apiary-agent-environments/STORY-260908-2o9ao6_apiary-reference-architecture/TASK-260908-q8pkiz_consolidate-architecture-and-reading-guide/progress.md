@@ -63,6 +63,8 @@ spawn agent resolution: Agent selection: codex via explicit_override
 spawn launch composition: empty; contract=agents-infra.child-launch-composition; provider=codex; schema=1; producer=v1.6.1-128-gab60e0d; diagnostic=launch_composition_empty; no project MCP servers enabled
 spawn queued: [implementer] doc-writer (codex) (run=RUN-260908-df2cab, max_parallel=20)
 spawn run started: [implementer] doc-writer (codex) (run=RUN-260908-df2cab)
+agent completed: [implementer] doc-writer (codex) (exit=0)
+spawn run completed: codex (run=RUN-260908-df2cab, pid=60903, exit=0)
 
 ## Precondition Resources
 - [TASK-260908-q8pkiz_consolidation-brief.md](file://TASK-260908-q8pkiz/TASK-260908-q8pkiz_consolidation-brief.md) — Combined-tree closure, exact provenance, known publication-key terminology/table findings and Russian navigation
@@ -90,12 +92,14 @@ spawn run started: [implementer] doc-writer (codex) (run=RUN-260908-df2cab)
 - [TASK-260908-q8pkiz_review-verdict-rev2.md](file://TASK-260908-q8pkiz/TASK-260908-q8pkiz_review-verdict-rev2.md) — Accepted focused rev2 review: F1 closed, exact README delta, retained prior evidence and limitations
 - [TASK-260908-q8pkiz_review-evidence-rev2.zip](file://TASK-260908-q8pkiz/TASK-260908-q8pkiz_review-evidence-rev2.zip) — Independent exact candidate comparison, 37 README links, three configured gates and review logbook
 - [TASK-260908-q8pkiz_spawn-log_-implementer--doc-writer--codex-_RUN-260908-df2cab.log](file://TASK-260908-q8pkiz/TASK-260908-q8pkiz_spawn-log_-implementer--doc-writer--codex-_RUN-260908-df2cab.log) — System spawn log captured by task-board
+- [TASK-260908-q8pkiz_integration-rev2.md](file://TASK-260908-q8pkiz/TASK-260908-q8pkiz_integration-rev2.md) — Accepted rev2 canonical integration, signed commits, exact tree and live done statuses
+- [TASK-260908-q8pkiz_integration-verification-rev2.json](file://TASK-260908-q8pkiz/TASK-260908-q8pkiz_integration-verification-rev2.json) — Direct signature, exact tree, board-only commit and 71/71 preserved blob verification with process exits
 
 ## Created
 2026-09-08T00:29:37Z
 
 ## Last Update
-2026-09-08T03:19:47Z
+2026-09-08T03:21:53Z
 
 ## Assigned To
 [implementer] doc-writer (codex)

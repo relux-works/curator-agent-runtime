@@ -25,10 +25,11 @@ The canonical source setup installed task-board/tb-sessiond/TUI/roles/references
 - [EPIC-260908-230hv2_architecture-acceptance.md](file://EPIC-260908-230hv2/EPIC-260908-230hv2_architecture-acceptance.md) — Complete architecture acceptance and synthesis brief
 
 ## Outcome Resources
-(none)
+- [EPIC-260908-230hv2_delivery-evidence.md](file://EPIC-260908-230hv2/EPIC-260908-230hv2_delivery-evidence.md) — Complete artifact map, exact reviews/integrations, validation limits and ancillary source delivery state
+- [EPIC-260908-230hv2_patch-context-audit.json](file://EPIC-260908-230hv2/EPIC-260908-230hv2_patch-context-audit.json) — Immutable unified-diff grammar and hash verification; all other paths whitespace-clean
 
 ## Created
 2026-09-07T22:20:24Z
 
 ## Last Update
-2026-09-08T03:19:47Z
+2026-09-08T03:28:28Z

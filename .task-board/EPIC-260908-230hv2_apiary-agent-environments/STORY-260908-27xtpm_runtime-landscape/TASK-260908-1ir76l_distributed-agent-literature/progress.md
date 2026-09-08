@@ -49,6 +49,8 @@ spawn agent resolution: Agent selection: codex via explicit_override
 spawn launch composition: empty; contract=agents-infra.child-launch-composition; provider=codex; schema=1; producer=v1.6.1-128-gab60e0d; diagnostic=launch_composition_empty; no project MCP servers enabled
 spawn queued: [analyst] researcher (codex) (run=RUN-260908-95b842, max_parallel=20)
 spawn run started: [analyst] researcher (codex) (run=RUN-260908-95b842)
+agent completed: [analyst] researcher (codex) (exit=0)
+spawn run completed: codex (run=RUN-260908-95b842, pid=45109, exit=0)
 
 ## Precondition Resources
 - [TASK-260908-1ir76l_review-scope.md](file://TASK-260908-1ir76l/TASK-260908-1ir76l_review-scope.md) — Role-conditional evidence review requirements
@@ -69,12 +71,13 @@ spawn run started: [analyst] researcher (codex) (run=RUN-260908-95b842)
 - [TASK-260908-1ir76l_review-source-checks-rev1.json](file://TASK-260908-1ir76l/TASK-260908-1ir76l_review-source-checks-rev1.json) — Independent exact-SHA source checks: 27/27; candidate identity and accepted sibling identity
 - [TASK-260908-1ir76l_review-verdict-rev1.md](file://TASK-260908-1ir76l/TASK-260908-1ir76l_review-verdict-rev1.md) — Reviewer acceptance for exact CR revision 1; documentary AC coverage and substantive source checks
 - [TASK-260908-1ir76l_spawn-log_-analyst--researcher--codex-_RUN-260908-95b842.log](file://TASK-260908-1ir76l/TASK-260908-1ir76l_spawn-log_-analyst--researcher--codex-_RUN-260908-95b842.log) — System spawn log captured by task-board
+- [TASK-260908-1ir76l_integration-outcome.md](file://TASK-260908-1ir76l/TASK-260908-1ir76l_integration-outcome.md) — Managed Story integration: signed commits, retryable refusal, verified done state and publication handoff
 
 ## Created
 2026-09-07T22:22:21Z
 
 ## Last Update
-2026-09-08T02:36:32Z
+2026-09-08T02:37:49Z
 
 ## Assigned To
 [analyst] researcher (codex)

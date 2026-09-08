@@ -94,6 +94,8 @@ spawn agent resolution: Agent selection: codex via explicit_override
 spawn launch composition: empty; contract=agents-infra.child-launch-composition; provider=codex; schema=1; producer=v1.6.1-128-gab60e0d; diagnostic=launch_composition_empty; no project MCP servers enabled
 spawn queued: [analyst] researcher (codex) (run=RUN-260908-79203d, max_parallel=20)
 spawn run started: [analyst] researcher (codex) (run=RUN-260908-79203d)
+agent completed: [analyst] researcher (codex) (exit=0)
+spawn run completed: codex (run=RUN-260908-79203d, pid=42788, exit=0)
 
 ## Precondition Resources
 - [TASK-260908-2x6kuv_source-leads.md](file://TASK-260908-2x6kuv/TASK-260908-2x6kuv_source-leads.md) — Provenance leads requiring primary verification
@@ -140,12 +142,13 @@ spawn run started: [analyst] researcher (codex) (run=RUN-260908-79203d)
 - [TASK-260908-2x6kuv_review-verdict-rev2.md](file://TASK-260908-2x6kuv/TASK-260908-2x6kuv_review-verdict-rev2.md) — Принята rev2: один EOF-байт, 5/5 файлов сохранены, gates и отрицательный контроль
 - [TASK-260908-2x6kuv_review-checks-rev2.json](file://TASK-260908-2x6kuv/TASK-260908-2x6kuv_review-checks-rev2.json) — Независимые byte/tree проверки и точные exit codes
 - [TASK-260908-2x6kuv_spawn-log_-analyst--researcher--codex-_RUN-260908-79203d.log](file://TASK-260908-2x6kuv/TASK-260908-2x6kuv_spawn-log_-analyst--researcher--codex-_RUN-260908-79203d.log) — System spawn log captured by task-board
+- [TASK-260908-2x6kuv_integration-rev2.md](file://TASK-260908-2x6kuv/TASK-260908-2x6kuv_integration-rev2.md) — Интеграция revision 2: commit IDs, подписи, точное дерево и состояние workspace
 
 ## Created
 2026-09-07T22:22:17Z
 
 ## Last Update
-2026-09-08T02:30:36Z
+2026-09-08T02:32:00Z
 
 ## Assigned To
 [analyst] researcher (codex)

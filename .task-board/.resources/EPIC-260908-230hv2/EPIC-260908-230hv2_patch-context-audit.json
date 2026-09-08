@@ -1,0 +1,203 @@
+{
+  "full_range_exit": 2,
+  "findings": [
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 130,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 133,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 136,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 139,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 142,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 145,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 160,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 166,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 169,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 174,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 191,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 194,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 199,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 204,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+      "line": 207,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 130,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 133,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 136,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 139,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 142,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 145,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 160,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 166,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 169,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 174,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 191,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 194,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 199,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 204,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    },
+    {
+      "path": ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch",
+      "line": 207,
+      "bytes_hex": "20",
+      "meaning": "unified diff blank context marker"
+    }
+  ],
+  "patch_hashes": {
+    ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch": "ed8c2d421af4aad49c05471652cc1a5f6f9ff531d0e5d8dbbd81df761c670e69",
+    ".task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch": "78b5ad3f84e45ff9bb70407b44003f639efac56964d86b20a6830793dc40ced7"
+  },
+  "parsed_paths_each": 35,
+  "all_other_paths_exit": 0,
+  "all_other_paths_command": [
+    "git",
+    "diff",
+    "--check",
+    "187ace42aa98a06948ace94d7973ea7a7547f59f",
+    "abb4e9661792ffe8ffc779a5a328b550be84d46e",
+    "--",
+    ".",
+    ":(exclude).task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch",
+    ":(exclude).task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch"
+  ],
+  "no_artifact_or_gate_changed": true
+}

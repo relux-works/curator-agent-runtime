@@ -1,0 +1,791 @@
+[
+  {
+    "command": [
+      "git",
+      "verify-commit",
+      "95d89e4d77e9021b564ac2500a71f75c31578ca5"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "Good \"git\" signature for ivan@relux.works with ED25519 key SHA256:Ng99XGF2pboYgFVfWJhYI2JRi0PyYsV9UwsJ70NBYd0\n"
+  },
+  {
+    "command": [
+      "git",
+      "verify-commit",
+      "abb4e9661792ffe8ffc779a5a328b550be84d46e"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "Good \"git\" signature for ivan@relux.works with ED25519 key SHA256:Ng99XGF2pboYgFVfWJhYI2JRi0PyYsV9UwsJ70NBYd0\n"
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "95d89e4d77e9021b564ac2500a71f75c31578ca5^{tree}"
+    ],
+    "exit_code": 0,
+    "stdout": "6f1df833192dfb25a1c0da5dcaca230a6817dfb2\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "stdout": "abb4e9661792ffe8ffc779a5a328b550be84d46e\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "abb4e9661792ffe8ffc779a5a328b550be84d46e^"
+    ],
+    "exit_code": 0,
+    "stdout": "95d89e4d77e9021b564ac2500a71f75c31578ca5\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff-tree",
+      "--no-commit-id",
+      "--name-only",
+      "-r",
+      "abb4e9661792ffe8ffc779a5a328b550be84d46e"
+    ],
+    "exit_code": 0,
+    "stdout": ".task-board/.activity/EPIC-260908-230hv2/events.ndjson\n.task-board/.activity/STORY-260908-2o9ao6/events.ndjson\n.task-board/.activity/TASK-260908-2qhe31/events.ndjson\n.task-board/.activity/TASK-260908-q8pkiz/events.ndjson\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_accepted-research-inputs.json\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_architecture-acceptance.md\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_architecture-evidence.zip\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_architecture-handoff.md\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_architecture-rereview-rev2.md\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_architecture-review.md\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_architecture-rework-rev2.md\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_change-request_rev1.patch\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_change-request_rev2.patch\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_checkpoint-evidence.md\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_checkpoint-scope.md\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_evidence-rev2.zip\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_inventory-rev2.json\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_inventory.json\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_review-evidence-rev1.zip\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_review-evidence-rev2.zip\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_review-verdict-rev1.md\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_review-verdict-rev2.md\n.task-board/.resources/TASK-260908-2qhe31/TASK-260908-2qhe31_rework-rev2.md\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev1.patch\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_change-request_rev2.patch\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_consolidation-brief.md\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_evidence.zip\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_final-review-scope.md\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_handoff.md\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_logbook.md\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_rev2-evidence.zip\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_review-evidence-rev1.zip\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_review-evidence-rev2.zip\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_review-logbook-rev1.md\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_review-verdict-rev1.md\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_review-verdict-rev2.md\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_rework-6d0665.md\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_rework-rev2.md\n.task-board/.resources/TASK-260908-q8pkiz/TASK-260908-q8pkiz_zz-final-integration.md\n.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-2o9ao6_apiary-reference-architecture/README.md\n.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-2o9ao6_apiary-reference-architecture/TASK-260908-2qhe31_design-shared-kernel-and-apiary-profiles/README.md\n.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-2o9ao6_apiary-reference-architecture/TASK-260908-2qhe31_design-shared-kernel-and-apiary-profiles/progress.md\n.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-2o9ao6_apiary-reference-architecture/TASK-260908-q8pkiz_consolidate-architecture-and-reading-guide/README.md\n.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-2o9ao6_apiary-reference-architecture/TASK-260908-q8pkiz_consolidate-architecture-and-reading-guide/progress.md\n.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-2o9ao6_apiary-reference-architecture/progress.md\n.task-board/EPIC-260908-230hv2_apiary-agent-environments/progress.md\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "ls-tree",
+      "-r",
+      "6f1df833192dfb25a1c0da5dcaca230a6817dfb2"
+    ],
+    "exit_code": 0,
+    "stdout": "100644 blob f22f0f477871ae40697571b819b43b2f904d3eeb\t.gitignore\n100644 blob 64cebccb374e27343b31a80a712bc2fe2efdc6c4\t.planning/260908_022239_epic-260908-230hv2.md\n100644 blob 0ae158923f880dc9c0c8303a2608b75984e25c2a\t.planning/260908_065026_epic-260908-230hv2.md\n100644 blob ef1ea3d08b61eff015dde39125d3bf3df0130f30\t.planning/README.md\n100644 blob bf3e8f5d15aaba97831f98c29e17f28dfb26436c\t.research/260908_apiary-curator-contracts.md\n100644 blob 507c1419ec8411d177eddb47d7cd3877db7d32f0\t.research/260908_claude-lineage.md\n100644 blob b94bc1183e6cba0ca52fe09de40805cef74b6db3\t.research/260908_codex-pi.md\n100644 blob 67c41523adc05a044611854e9f4b4b8816ed3e42\t.research/260908_go-and-additional-harnesses.md\n100644 blob 95ba0d336d9f880c42db32c0f64fcb1a1b711a22\t.research/260908_protocol-literature.md\n100644 blob e6df812d832bae561928ad9e2325f26f7628dfe2\t.research/260908_protocol-source-catalog.json\n100644 blob 713b3d3ad1c359eb18cf67307d4046cd7630b6c6\t.research/260908_provider-portability-evidence.md\n100644 blob b9369f2130988ffabb3c5a47c499ba6cd649029f\t.research/260908_provider-portability-logbook.md\n100644 blob 34fb4abdb657bf36cd9823a72bd2c2031cf26f53\t.research/260908_provider-portability.md\n100644 blob 06675870a5b9d828e1a85fd01fd20cd8540a3802\t.research/260908_requirements-map.md\n100644 blob aa81644d7846f1d31bbf825b022b1a7b207d0323\t.research/260908_runtime-landscape.md\n100644 blob 947df54a22e631549e497d3cba2013a0d76a62a6\t.research/260908_source-catalog.json\n100644 blob d66d441afca73fba999c79733681603e83e7b201\t.spec/apiary-runtime-design.md\n100644 blob 042b6c46e9bed70eeed9959939afddd78ead8fcb\t.task-board/.activity/EPIC-260908-230hv2/events.ndjson\n100644 blob 8fe13acadf372cc367aa531da2ee7fedd0367ab0\t.task-board/.activity/STORY-260908-1l3m6n/events.ndjson\n100644 blob d75b7bbec78e521c799d5e3cf606d89a031b4a1d\t.task-board/.activity/STORY-260908-206cjt/events.ndjson\n100644 blob 8ea8f86c96f31c78edc90305d7e82ba5e3688e8b\t.task-board/.activity/STORY-260908-27xtpm/events.ndjson\n100644 blob c3721825cdcbb6ff8372ed17a99ff5289db17ea1\t.task-board/.activity/TASK-260908-1ir76l/events.ndjson\n100644 blob 97b607eb72725f09239b4b173b2d5b5a7866b2d0\t.task-board/.activity/TASK-260908-1v88g1/events.ndjson\n100644 blob 59c7cc7bfc124b7b15b4c4693805bda2eb2fcb29\t.task-board/.activity/TASK-260908-2x6kuv/events.ndjson\n100644 blob fed88fca896583175350fa9fc1d6fe46bb3bfd0a\t.task-board/.activity/TASK-260908-31st2v/events.ndjson\n100644 blob 253d0dc2df79e27ab32d2602511779ffb3aa5b6c\t.task-board/.activity/TASK-260908-39n05p/events.ndjson\n100644 blob 485b538da00b1dd8ec6d9695706c947a7e97d985\t.task-board/.activity/TASK-260908-oqx20d/events.ndjson\n100644 blob 8516e18a5cbddf506fc7ea7da638069c02a9f446\t.task-board/.resources/TASK-260908-1ir76l/TASK-260908-1ir76l_change-request_rev1.patch\n100644 blob f9fe3ea8cbbab77afa70412cf9aa269afda44c6a\t.task-board/.resources/TASK-260908-1ir76l/TASK-260908-1ir76l_coverage-extension.md\n100644 blob 5a8ca79ee7d9096a02de1961e5e2d4eb4d69898a\t.task-board/.resources/TASK-260908-1ir76l/TASK-260908-1ir76l_distributed-questions.md\n100644 blob da95786ac7e22bfca465b974b5f59d57a9802eb8\t.task-board/.resources/TASK-260908-1ir76l/TASK-260908-1ir76l_go-and-additional-harnesses.md\n100644 blob d4c18ac7b1443684a61cbc9ae97aea236f3bcc15\t.task-board/.resources/TASK-260908-1ir76l/TASK-260908-1ir76l_handoff.md\n100644 blob fe2f04f13d248bfb23db558d62fee66d9bca2ef5\t.task-board/.resources/TASK-260908-1ir76l/TASK-260908-1ir76l_logbook.md\n100644 blob cbb61590ae6fd5db1a469c4f4b86d59b2796df64\t.task-board/.resources/TASK-260908-1ir76l/TASK-260908-1ir76l_protocol-literature.md\n100644 blob 58c6b1601b7f1c093d22e040f3c1397171a1cfeb\t.task-board/.resources/TASK-260908-1ir76l/TASK-260908-1ir76l_review-scope.md\n100644 blob 0b68574dc5aa7b6ac49fa28237a6612381e878c4\t.task-board/.resources/TASK-260908-1ir76l/TASK-260908-1ir76l_review-source-checks-rev1.json\n100644 blob 6d3f7b3d0263b7689242be9eff506b5112865140\t.task-board/.resources/TASK-260908-1ir76l/TASK-260908-1ir76l_review-verdict-rev1.md\n100644 blob e6df812d832bae561928ad9e2325f26f7628dfe2\t.task-board/.resources/TASK-260908-1ir76l/TASK-260908-1ir76l_source-catalog.json\n100644 blob 74a014a463ec6eacc7d048ebb10a01105f54938b\t.task-board/.resources/TASK-260908-1ir76l/TASK-260908-1ir76l_story-integration-scope.md\n100644 blob f70cf153b16b63dbad4825ef548396626b8b112d\t.task-board/.resources/TASK-260908-1ir76l/TASK-260908-1ir76l_validation.json\n100644 blob 23b81082dc60e5fc0c41042cc776fa17fe1e1e99\t.task-board/.resources/TASK-260908-1v88g1/TASK-260908-1v88g1_change-request_rev1.patch\n100644 blob 867bb645b77dbbeac6c1c4d4f719d0095ddb5061\t.task-board/.resources/TASK-260908-1v88g1/TASK-260908-1v88g1_change-request_rev2.patch\n100644 blob b94bc1183e6cba0ca52fe09de40805cef74b6db3\t.task-board/.resources/TASK-260908-1v88g1/TASK-260908-1v88g1_codex-pi.md\n100644 blob bd3338bb3b238c4f3188b2c51e5565085f8f4b20\t.task-board/.resources/TASK-260908-1v88g1/TASK-260908-1v88g1_evidence.zip\n100644 blob b18f31000f20434e4e4f9e52fb7d3b858a5ce00d\t.task-board/.resources/TASK-260908-1v88g1/TASK-260908-1v88g1_integration-checkpoint-rev2.md\n100644 blob 76e2488f7ab78f5d7bce9e66dda255076b277676\t.task-board/.resources/TASK-260908-1v88g1/TASK-260908-1v88g1_integration-scope.md\n100644 blob d90f8c19c5a379b9b9c0407e14924d20b8f27747\t.task-board/.resources/TASK-260908-1v88g1/TASK-260908-1v88g1_rereview-rev2.md\n100644 blob 58c6b1601b7f1c093d22e040f3c1397171a1cfeb\t.task-board/.resources/TASK-260908-1v88g1/TASK-260908-1v88g1_review-scope.md\n100644 blob 76d711fb606f8a23fc85c9458c0d7865b10da924\t.task-board/.resources/TASK-260908-1v88g1/TASK-260908-1v88g1_review-verdict-rev1.md\n100644 blob c246dcd03f093ef745d93f9069e0635144f92690\t.task-board/.resources/TASK-260908-1v88g1/TASK-260908-1v88g1_review-verdict-rev2.md\n100644 blob 4e1688e03b2d7f680c0975ed0d226014b355c699\t.task-board/.resources/TASK-260908-1v88g1/TASK-260908-1v88g1_rework-evidence-rev2.md\n100644 blob 5bff985db0743987eb5b980ea797f25409d587c0\t.task-board/.resources/TASK-260908-1v88g1/TASK-260908-1v88g1_rework-rev2.md\n100644 blob 73e0d49dc57e04e404af8750cb9bdea5a5ec743b\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_change-request_rev1.patch\n100644 blob 4da685ec3cfcf9166fdffa67a0f4ef66024b0f22\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_change-request_rev2.patch\n100644 blob 507c1419ec8411d177eddb47d7cd3877db7d32f0\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_claude-lineage.md\n100644 blob 4188b6aa2558b7c54a4c339215fadcdd3f61bcfe\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_current-eof-gates.json\n100644 blob 108845d2d8f19abb809c9b8b0b3fad98078ac06a\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_current-eof.md\n100644 blob 0071f7229a847b0a6a0b56c009f5bcd2d3bd09ac\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_eof-replay-gates.json\n100644 blob b90727df3d7afe8eb2314f0fe21b08665d8bc6be\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_eof-replay.md\n100644 blob 310ec6bef1f971eca459cb7fbed4642368a20b4e\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_formatting-final-review.md\n100644 blob b8493e147bd1aa6ba20a12fe83188769ed770046\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_formatting-proof.json\n100644 blob 4dad9d001533985b320d5e7969c79bdd95c3b84f\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_formatting-rework.md\n100644 blob 39ff233633c9eac9af61c54fd51b8eafc12b9471\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_integration-refusal-rev1.md\n100644 blob 14af9a173f57bfe918a9e28d1f16dc1d7ad9badc\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_legacy-failure-capture-result.md\n100644 blob e706f16c2b19d2fa4aa900eb5f3f1988fb1483eb\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_legacy-failure-capture.md\n100644 blob 3bdf87e123886cfe22f25dacbc781e4218a19ce1\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_logbook.md\n100644 blob 319264eaba54f04cd82d50540ead32e8e4901358\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_restoration-gates.json\n100644 blob 18da3d53e9d6d036a1eaa2db7f9c51c7a1deb751\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_restoration-proof.json\n100644 blob b7940db73a45caeda9ee918392c5848d27d8ee37\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_restoration.md\n100644 blob 3e6e2634c709b9a3ed98cd3d0d59bb0b2326b0ac\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_review-checks-rev1.json\n100644 blob 8393294d88abfe44ad1ae07f0579cf8cd2133464\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_review-checks-rev2.json\n100644 blob 58c6b1601b7f1c093d22e040f3c1397171a1cfeb\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_review-scope.md\n100644 blob 006f07c3e86baffb4ebaf0dcf8a775432bcb7b62\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_review-verdict-rev1.md\n100644 blob dce68e23b32762f36929d38d0a10788372c2fb5b\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_review-verdict-rev2.md\n100644 blob 0355f4ec4ac6235f7a76b51949796275d06a5c79\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_source-leads.md\n100644 blob 421ff4ed8600cdaa61b36a5d8b7c86b74b633ab3\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_source-manifest.json\n100644 blob a4bd72e5439feb2e62aba20373c6810e61df04fb\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_story-integration-scope.md\n100644 blob 402ca82afa6e56ba953f683a9e9395b4fd6c0409\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_zz-current-authoring-phase.md\n100644 blob 48a7257e6ed7d8a461000bfa735dc86da39c2f0e\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_zzz-restore-after-refresh.md\n100644 blob 69fd8ff704fb6a165b2c2e18dca733afeccc0d75\t.task-board/.resources/TASK-260908-2x6kuv/TASK-260908-2x6kuv_zzzz-current-integration-rev2.md\n100644 blob bf3e8f5d15aaba97831f98c29e17f28dfb26436c\t.task-board/.resources/TASK-260908-31st2v/TASK-260908-31st2v_apiary-curator-contracts.md\n100644 blob 7f0b7f0695a23e03f6ad51fc25d13987c0c913c1\t.task-board/.resources/TASK-260908-31st2v/TASK-260908-31st2v_change-request_rev1.patch\n100644 blob 50172f9524d6c15eed4753936594ce5d8d1a776c\t.task-board/.resources/TASK-260908-31st2v/TASK-260908-31st2v_handoff-logbook.md\n100644 blob 2a0bedd23dcc31f16bcda9d3b643a81ce7355405\t.task-board/.resources/TASK-260908-31st2v/TASK-260908-31st2v_integration-evidence.md\n100644 blob 76e2488f7ab78f5d7bce9e66dda255076b277676\t.task-board/.resources/TASK-260908-31st2v/TASK-260908-31st2v_integration-scope.md\n100644 blob 06675870a5b9d828e1a85fd01fd20cd8540a3802\t.task-board/.resources/TASK-260908-31st2v/TASK-260908-31st2v_requirements-map.md\n100644 blob 58c6b1601b7f1c093d22e040f3c1397171a1cfeb\t.task-board/.resources/TASK-260908-31st2v/TASK-260908-31st2v_review-scope.md\n100644 blob d61f9e3718a8ab9029d35fd933301212a7164281\t.task-board/.resources/TASK-260908-31st2v/TASK-260908-31st2v_review-verdict-rev1.md\n100644 blob 12428be04b113bb1b6f6d177474c55f401b02d5d\t.task-board/.resources/TASK-260908-39n05p/TASK-260908-39n05p_change-request_rev1.patch\n100644 blob 2591e43fbfdf64cebc7c3206c07bb4810b0548d2\t.task-board/.resources/TASK-260908-39n05p/TASK-260908-39n05p_provider-coverage.md\n100644 blob 4e1c696af75da64c87ce98f3830b607fc8e814b3\t.task-board/.resources/TASK-260908-39n05p/TASK-260908-39n05p_provider-portability-evidence.md\n100644 blob b9369f2130988ffabb3c5a47c499ba6cd649029f\t.task-board/.resources/TASK-260908-39n05p/TASK-260908-39n05p_provider-portability-logbook.md\n100644 blob 5f96ad3f01ad1365da59effabca371eb2013e726\t.task-board/.resources/TASK-260908-39n05p/TASK-260908-39n05p_provider-portability.md\n100644 blob 58c6b1601b7f1c093d22e040f3c1397171a1cfeb\t.task-board/.resources/TASK-260908-39n05p/TASK-260908-39n05p_review-scope.md\n100644 blob a9702aa2f40976160e122458e0c526b2afa4fc74\t.task-board/.resources/TASK-260908-39n05p/TASK-260908-39n05p_review-verdict-rev1.md\n100644 blob 3f499072d4c4e786e32c4db5625aec7390e80a1a\t.task-board/.resources/TASK-260908-39n05p/TASK-260908-39n05p_sdk-boundary.md\n100644 blob 977a93971beb268a6834f988edfca3bd1b634d19\t.task-board/.resources/TASK-260908-39n05p/TASK-260908-39n05p_story-integration-scope.md\n100644 blob c9b1fa5b3e0b3516a507971bce123e28c720cb03\t.task-board/.resources/TASK-260908-39n05p/TASK-260908-39n05p_validation.txt\n100644 blob 4b811b0d5f56d642bbbbdfeb349cf76fd189303e\t.task-board/.resources/TASK-260908-oqx20d/TASK-260908-oqx20d_change-request_rev1.patch\n100644 blob a6b1d2f3d6c3efff576c8f398af2a9ec19eb6173\t.task-board/.resources/TASK-260908-oqx20d/TASK-260908-oqx20d_handoff.md\n100644 blob 76e2488f7ab78f5d7bce9e66dda255076b277676\t.task-board/.resources/TASK-260908-oqx20d/TASK-260908-oqx20d_integration-scope.md\n100644 blob 53d3ae59b276b532161a22c604e9724b5091d45d\t.task-board/.resources/TASK-260908-oqx20d/TASK-260908-oqx20d_integration.md\n100644 blob 58c6b1601b7f1c093d22e040f3c1397171a1cfeb\t.task-board/.resources/TASK-260908-oqx20d/TASK-260908-oqx20d_review-scope.md\n100644 blob a901f75674618bc65b2076263e1ec751573a3b70\t.task-board/.resources/TASK-260908-oqx20d/TASK-260908-oqx20d_review-source-checks-rev1.json\n100644 blob 99fc38974a7c42977368b52ae19c306f0dd74657\t.task-board/.resources/TASK-260908-oqx20d/TASK-260908-oqx20d_review-verdict-rev1.md\n100644 blob aa81644d7846f1d31bbf825b022b1a7b207d0323\t.task-board/.resources/TASK-260908-oqx20d/TASK-260908-oqx20d_runtime-landscape.md\n100644 blob 947df54a22e631549e497d3cba2013a0d76a62a6\t.task-board/.resources/TASK-260908-oqx20d/TASK-260908-oqx20d_source-catalog.json\n100644 blob f1ce122510a1f2479658ced94c636c03dae8885a\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-1l3m6n_primary-agent-harnesses/README.md\n100644 blob 92e1ee454efb72312e53ae0dd1d5e792cb2c51b3\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-1l3m6n_primary-agent-harnesses/TASK-260908-1v88g1_codex-pi-deep-source/README.md\n100644 blob a0d8ea3168ab34f2642dd38688e277553cd9a74a\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-1l3m6n_primary-agent-harnesses/TASK-260908-1v88g1_codex-pi-deep-source/progress.md\n100644 blob d35197e3e9e6e8f581b2896ccd10345f7db7d7bd\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-1l3m6n_primary-agent-harnesses/TASK-260908-2x6kuv_claude-code-lineage/README.md\n100644 blob 3171c885215856f753878075fbf22aad76a680f7\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-1l3m6n_primary-agent-harnesses/TASK-260908-2x6kuv_claude-code-lineage/progress.md\n100644 blob 9e380e5a620e1eefeaf0d060bc3eda36033a3c0c\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-1l3m6n_primary-agent-harnesses/progress.md\n100644 blob 1179e5f59715cd27fd3ed559e3902e25e68307a1\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-206cjt_apiary-curator-fit/README.md\n100644 blob 45843e257687cf72623a0303b5fc739ae11367e6\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-206cjt_apiary-curator-fit/TASK-260908-31st2v_apiary-curator-contract-analysis/README.md\n100644 blob 7cf98a064f547ea911a9d9d7570fde4462098805\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-206cjt_apiary-curator-fit/TASK-260908-31st2v_apiary-curator-contract-analysis/progress.md\n100644 blob 820932a331d78abfcd3e4ce2d5f7af5acea3c556\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-206cjt_apiary-curator-fit/TASK-260908-39n05p_provider-auth-portability/README.md\n100644 blob 4dde03e311f862eaeb41ba927e6e27c23736520e\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-206cjt_apiary-curator-fit/TASK-260908-39n05p_provider-auth-portability/progress.md\n100644 blob 3a51976012d7d5f6baedafc03409be0aa1f5b788\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-206cjt_apiary-curator-fit/progress.md\n100644 blob a3a87b67852301b3da22620d83b1b6afdeea9faa\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-27xtpm_runtime-landscape/README.md\n100644 blob 4dec97030e0c1dcc15c68ceaae17fe47482f51f4\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-27xtpm_runtime-landscape/TASK-260908-1ir76l_distributed-agent-literature/README.md\n100644 blob 5304614ba012b6d948ff358151e652613646b2d8\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-27xtpm_runtime-landscape/TASK-260908-1ir76l_distributed-agent-literature/progress.md\n100644 blob 5c679a4f15f2b79854b59e3dd0e254e38441338f\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-27xtpm_runtime-landscape/TASK-260908-oqx20d_significant-runtime-source-survey/README.md\n100644 blob 6ad50c25b23a5c71bcc224272b3356bf573e8805\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-27xtpm_runtime-landscape/TASK-260908-oqx20d_significant-runtime-source-survey/progress.md\n100644 blob b869c1628342f0603fcc12d6955ba4f05d3472c2\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/STORY-260908-27xtpm_runtime-landscape/progress.md\n100644 blob 7d1d896e438f464211fe6b165b399b245ffacdf3\t.task-board/EPIC-260908-230hv2_apiary-agent-environments/progress.md\n100644 blob b448229ca41c0424fc97010a2ed563987e5ecac6\tCHANGELOG.md\n100644 blob 3b915ff9637baad0ae0f2a83d0819f4525afafb2\tLICENSE\n100644 blob 1eee6b224d3b956361c78c635047d91dfb1b4f9e\tNOTICE\n100644 blob 80f183a4649b794c17f38710b992734abed9c67a\tREADME.md\n100644 blob db6c6675eab53cecb87640cb147a201ee4f876fc\tSECURITY.md\n100644 blob 49ca433a7050b36d3f289125d94f324f7903dab1\tUNRESOLVED_QUESTIONS.md\n100644 blob 069edde501553c821cc0977af11a796b7d723dce\tdecisions/0001-separate-runtime.md\n100644 blob b81517bf2d8639cd7dd377339c229c0b0e7574d7\tdecisions/0002-tools-are-skills.md\n100644 blob c5c36e1c87febb029b028c066326d9be4840dcc5\tdecisions/0003-managed-context.md\n100644 blob 538c448e65df207fe58fe8e9edeb4937a2dd0bd3\tdecisions/0004-call-plan-as-profile.md\n100644 blob 28a5ebd1d9da31479e622d87fa5a157a006f7d40\tdecisions/0005-epochs-and-attenuation.md\n100644 blob 04a57b8954081c89954b619d8de42737d0cc2c22\tdiagrams/README.md\n100644 blob 2957a3c0279103a8fa7da2c58ed9c359d5ce9fc6\tdiagrams/apiary/README.md\n100644 blob 77271cdd6f4bf98e060eedc72d7b1eacc5e5fb7d\tdiagrams/apiary/context.puml\n100644 blob 77686856518e3396f4d2cacd9a5be741f4a80e43\tdiagrams/apiary/context.svg\n100644 blob 382b7dcee9fccede4b57feb3a4415186fd9b7247\tdiagrams/apiary/core-components.puml\n100644 blob 3ba264c9aa3b2daa76edacb7d581369f9eaea3d5\tdiagrams/apiary/core-components.svg\n100644 blob e333dd59c8f50b6aeae7d954dfaae54a6b63ae1d\tdiagrams/apiary/failover-fencing.puml\n100644 blob 36464c9427818781b9fb4560fdc8b345453fdbe1\tdiagrams/apiary/failover-fencing.svg\n100644 blob 2d3524557eeb1b0fda9e1b83ee797eb5f4cf60e2\tdiagrams/apiary/operation-recovery.puml\n100644 blob 2b4fad762cf76fd80dc0ab5be7661d247fe4d80b\tdiagrams/apiary/operation-recovery.svg\n100644 blob 6176a01cbf5af8389aee5f89abfb3b876470fd9b\tdiagrams/apiary/process-trust.puml\n100644 blob 0a21e75906b55baa795c3e46c597226d96c42853\tdiagrams/apiary/process-trust.svg\n100644 blob 5ba3d2e32ded9b335b0c94b13effda4f90d99ad8\tdiagrams/apiary/task-integration.puml\n100644 blob f0c194fd69756d2b7369ce0e7fc47d07abe8814d\tdiagrams/apiary/task-integration.svg\n100644 blob b8add5dd68111325d4eb59fdb69b3e38c25817c4\tdiagrams/apiary/tool-skill-activation.puml\n100644 blob 2e652a5b4ffb3451d308acdff304e02377139b91\tdiagrams/apiary/tool-skill-activation.svg\n100644 blob 550443a2d4fe1ac43a3786f274c7cc70953d47de\tdiagrams/apiary/worker-turn.puml\n100644 blob e67bae8d07f5b4e17bfa49e8e28cea3e097e19f7\tdiagrams/apiary/worker-turn.svg\n100644 blob 7bea58133895f5ede1c896c07c3633c9f7009fa6\tdiagrams/apiary/xmpp-reconnect.puml\n100644 blob 45bb0efd488cfc9efd54335b02ea159f124dc153\tdiagrams/apiary/xmpp-reconnect.svg\n100644 blob 29c0b82520d5d69287bcf00c5dd8b3e6ac10279d\tdiagrams/research/codex-pi/kernel.puml\n100644 blob 08fe49548c1f7b73ca4ebfe63990afe5253d1ccf\tdiagrams/research/codex-pi/kernel.svg\n100644 blob fd195b2cb07d93e3e3d908417b473526167de22a\tdiagrams/research/codex-pi/recovery.puml\n100644 blob a3be8c1c43fe11a1e0c95ecf5e66ce5e7f04d060\tdiagrams/research/codex-pi/recovery.svg\n100644 blob 9e01dbb3c6b38e85b3dba09b408a794006889bbc\tdocs/apiary/accepted-inputs.json\n100644 blob f9339fdf5c7bf774058138742f845851ea832cf9\tdocs/apiary/authority-wire.md\n100644 blob 1a36ae367bb73638b16f9287a06b4fd1ad8cdf10\tdocs/apiary/current-inputs.json\n100644 blob f98ae21de885bc2e1760dcd404d9053334bab1a9\tdocs/apiary/evidence.md\n100644 blob 7b961ca51ee0b3e53cbaecc8a62d70c4893593ba\tdocs/apiary/execution.md\n100644 blob 3e396e7656ad3aa79401de1d87b6dbc54b8c8ec0\tdocs/apiary/kernel.md\n100644 blob 11e53e7bf0c4a0ad53df27202791bc108088f7f9\tdocs/apiary/migration-conformance.md\n100644 blob 40e60da46ff2c86dc5b2a620bcbb3847de329339\tdocs/apiary/models-context.md\n100644 blob 19cb8942c8c28b233b8f3560e1052e82aee90904\tdocs/apiary/tool-skills.md\n100644 blob 47feca14d35d8ead5c0df23e702b79c68a936ba0\tdocs/architecture.md\n100644 blob db114e29c4b66984fd5f122b05a022a0a1f45a35\tdocs/threat-model.md\n100644 blob 9e94c2cccd26bee55b35be8f6b4e99c15fc05f5b\tprotocol/approval.md\n100644 blob 685939947a377b7236edf5c985931235e22e4814\tprotocol/runtime.md\n100644 blob 41a7d648c021ef5586fc08ce22525cefe6c9ce5c\tprotocol/tool-interface.md\n100644 blob 393f2c61fed8ace926e3a87c0c295ed022f4cdf9\tschemas/v1/approval-lease-v1.schema.json\n100644 blob a057040a5633591ffff1c8684db103897fcf051c\tschemas/v1/call-plan-v1.schema.json\n100644 blob a7169a226618e8ce19da0a2dadf5ceb7560948d1\tschemas/v1/execution-receipt-v1.schema.json\n100644 blob fdc687446fff12bded8185c3742b5d57e8cf739d\tschemas/v1/session-plan-v1.schema.json\n100644 blob da42692e500e63f8b4b4f7a704df2ebcb533d9b3\ttask-board.config.json\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.gitignore"
+    ],
+    "exit_code": 0,
+    "stdout": "f22f0f477871ae40697571b819b43b2f904d3eeb\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.planning/260908_022239_epic-260908-230hv2.md"
+    ],
+    "exit_code": 0,
+    "stdout": "64cebccb374e27343b31a80a712bc2fe2efdc6c4\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.planning/260908_065026_epic-260908-230hv2.md"
+    ],
+    "exit_code": 0,
+    "stdout": "0ae158923f880dc9c0c8303a2608b75984e25c2a\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.planning/README.md"
+    ],
+    "exit_code": 0,
+    "stdout": "ef1ea3d08b61eff015dde39125d3bf3df0130f30\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.research/260908_apiary-curator-contracts.md"
+    ],
+    "exit_code": 0,
+    "stdout": "bf3e8f5d15aaba97831f98c29e17f28dfb26436c\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.research/260908_claude-lineage.md"
+    ],
+    "exit_code": 0,
+    "stdout": "507c1419ec8411d177eddb47d7cd3877db7d32f0\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.research/260908_codex-pi.md"
+    ],
+    "exit_code": 0,
+    "stdout": "b94bc1183e6cba0ca52fe09de40805cef74b6db3\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.research/260908_go-and-additional-harnesses.md"
+    ],
+    "exit_code": 0,
+    "stdout": "67c41523adc05a044611854e9f4b4b8816ed3e42\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.research/260908_protocol-literature.md"
+    ],
+    "exit_code": 0,
+    "stdout": "95ba0d336d9f880c42db32c0f64fcb1a1b711a22\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.research/260908_protocol-source-catalog.json"
+    ],
+    "exit_code": 0,
+    "stdout": "e6df812d832bae561928ad9e2325f26f7628dfe2\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.research/260908_provider-portability-evidence.md"
+    ],
+    "exit_code": 0,
+    "stdout": "713b3d3ad1c359eb18cf67307d4046cd7630b6c6\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.research/260908_provider-portability-logbook.md"
+    ],
+    "exit_code": 0,
+    "stdout": "b9369f2130988ffabb3c5a47c499ba6cd649029f\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.research/260908_provider-portability.md"
+    ],
+    "exit_code": 0,
+    "stdout": "34fb4abdb657bf36cd9823a72bd2c2031cf26f53\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.research/260908_requirements-map.md"
+    ],
+    "exit_code": 0,
+    "stdout": "06675870a5b9d828e1a85fd01fd20cd8540a3802\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.research/260908_runtime-landscape.md"
+    ],
+    "exit_code": 0,
+    "stdout": "aa81644d7846f1d31bbf825b022b1a7b207d0323\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.research/260908_source-catalog.json"
+    ],
+    "exit_code": 0,
+    "stdout": "947df54a22e631549e497d3cba2013a0d76a62a6\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/.spec/apiary-runtime-design.md"
+    ],
+    "exit_code": 0,
+    "stdout": "d66d441afca73fba999c79733681603e83e7b201\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/CHANGELOG.md"
+    ],
+    "exit_code": 0,
+    "stdout": "b448229ca41c0424fc97010a2ed563987e5ecac6\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/LICENSE"
+    ],
+    "exit_code": 0,
+    "stdout": "3b915ff9637baad0ae0f2a83d0819f4525afafb2\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/NOTICE"
+    ],
+    "exit_code": 0,
+    "stdout": "1eee6b224d3b956361c78c635047d91dfb1b4f9e\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/README.md"
+    ],
+    "exit_code": 0,
+    "stdout": "80f183a4649b794c17f38710b992734abed9c67a\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/SECURITY.md"
+    ],
+    "exit_code": 0,
+    "stdout": "db6c6675eab53cecb87640cb147a201ee4f876fc\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/UNRESOLVED_QUESTIONS.md"
+    ],
+    "exit_code": 0,
+    "stdout": "49ca433a7050b36d3f289125d94f324f7903dab1\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/decisions/0001-separate-runtime.md"
+    ],
+    "exit_code": 0,
+    "stdout": "069edde501553c821cc0977af11a796b7d723dce\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/decisions/0002-tools-are-skills.md"
+    ],
+    "exit_code": 0,
+    "stdout": "b81517bf2d8639cd7dd377339c229c0b0e7574d7\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/decisions/0003-managed-context.md"
+    ],
+    "exit_code": 0,
+    "stdout": "c5c36e1c87febb029b028c066326d9be4840dcc5\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/decisions/0004-call-plan-as-profile.md"
+    ],
+    "exit_code": 0,
+    "stdout": "538c448e65df207fe58fe8e9edeb4937a2dd0bd3\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/decisions/0005-epochs-and-attenuation.md"
+    ],
+    "exit_code": 0,
+    "stdout": "28a5ebd1d9da31479e622d87fa5a157a006f7d40\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/README.md"
+    ],
+    "exit_code": 0,
+    "stdout": "04a57b8954081c89954b619d8de42737d0cc2c22\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/README.md"
+    ],
+    "exit_code": 0,
+    "stdout": "2957a3c0279103a8fa7da2c58ed9c359d5ce9fc6\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/context.puml"
+    ],
+    "exit_code": 0,
+    "stdout": "77271cdd6f4bf98e060eedc72d7b1eacc5e5fb7d\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/context.svg"
+    ],
+    "exit_code": 0,
+    "stdout": "77686856518e3396f4d2cacd9a5be741f4a80e43\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/core-components.puml"
+    ],
+    "exit_code": 0,
+    "stdout": "382b7dcee9fccede4b57feb3a4415186fd9b7247\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/core-components.svg"
+    ],
+    "exit_code": 0,
+    "stdout": "3ba264c9aa3b2daa76edacb7d581369f9eaea3d5\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/failover-fencing.puml"
+    ],
+    "exit_code": 0,
+    "stdout": "e333dd59c8f50b6aeae7d954dfaae54a6b63ae1d\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/failover-fencing.svg"
+    ],
+    "exit_code": 0,
+    "stdout": "36464c9427818781b9fb4560fdc8b345453fdbe1\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/operation-recovery.puml"
+    ],
+    "exit_code": 0,
+    "stdout": "2d3524557eeb1b0fda9e1b83ee797eb5f4cf60e2\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/operation-recovery.svg"
+    ],
+    "exit_code": 0,
+    "stdout": "2b4fad762cf76fd80dc0ab5be7661d247fe4d80b\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/process-trust.puml"
+    ],
+    "exit_code": 0,
+    "stdout": "6176a01cbf5af8389aee5f89abfb3b876470fd9b\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/process-trust.svg"
+    ],
+    "exit_code": 0,
+    "stdout": "0a21e75906b55baa795c3e46c597226d96c42853\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/task-integration.puml"
+    ],
+    "exit_code": 0,
+    "stdout": "5ba3d2e32ded9b335b0c94b13effda4f90d99ad8\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/task-integration.svg"
+    ],
+    "exit_code": 0,
+    "stdout": "f0c194fd69756d2b7369ce0e7fc47d07abe8814d\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/tool-skill-activation.puml"
+    ],
+    "exit_code": 0,
+    "stdout": "b8add5dd68111325d4eb59fdb69b3e38c25817c4\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/tool-skill-activation.svg"
+    ],
+    "exit_code": 0,
+    "stdout": "2e652a5b4ffb3451d308acdff304e02377139b91\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/worker-turn.puml"
+    ],
+    "exit_code": 0,
+    "stdout": "550443a2d4fe1ac43a3786f274c7cc70953d47de\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/worker-turn.svg"
+    ],
+    "exit_code": 0,
+    "stdout": "e67bae8d07f5b4e17bfa49e8e28cea3e097e19f7\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/xmpp-reconnect.puml"
+    ],
+    "exit_code": 0,
+    "stdout": "7bea58133895f5ede1c896c07c3633c9f7009fa6\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/apiary/xmpp-reconnect.svg"
+    ],
+    "exit_code": 0,
+    "stdout": "45bb0efd488cfc9efd54335b02ea159f124dc153\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/research/codex-pi/kernel.puml"
+    ],
+    "exit_code": 0,
+    "stdout": "29c0b82520d5d69287bcf00c5dd8b3e6ac10279d\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/research/codex-pi/kernel.svg"
+    ],
+    "exit_code": 0,
+    "stdout": "08fe49548c1f7b73ca4ebfe63990afe5253d1ccf\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/research/codex-pi/recovery.puml"
+    ],
+    "exit_code": 0,
+    "stdout": "fd195b2cb07d93e3e3d908417b473526167de22a\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/diagrams/research/codex-pi/recovery.svg"
+    ],
+    "exit_code": 0,
+    "stdout": "a3be8c1c43fe11a1e0c95ecf5e66ce5e7f04d060\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/docs/apiary/accepted-inputs.json"
+    ],
+    "exit_code": 0,
+    "stdout": "9e01dbb3c6b38e85b3dba09b408a794006889bbc\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/docs/apiary/authority-wire.md"
+    ],
+    "exit_code": 0,
+    "stdout": "f9339fdf5c7bf774058138742f845851ea832cf9\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/docs/apiary/current-inputs.json"
+    ],
+    "exit_code": 0,
+    "stdout": "1a36ae367bb73638b16f9287a06b4fd1ad8cdf10\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/docs/apiary/evidence.md"
+    ],
+    "exit_code": 0,
+    "stdout": "f98ae21de885bc2e1760dcd404d9053334bab1a9\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/docs/apiary/execution.md"
+    ],
+    "exit_code": 0,
+    "stdout": "7b961ca51ee0b3e53cbaecc8a62d70c4893593ba\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/docs/apiary/kernel.md"
+    ],
+    "exit_code": 0,
+    "stdout": "3e396e7656ad3aa79401de1d87b6dbc54b8c8ec0\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/docs/apiary/migration-conformance.md"
+    ],
+    "exit_code": 0,
+    "stdout": "11e53e7bf0c4a0ad53df27202791bc108088f7f9\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/docs/apiary/models-context.md"
+    ],
+    "exit_code": 0,
+    "stdout": "40e60da46ff2c86dc5b2a620bcbb3847de329339\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/docs/apiary/tool-skills.md"
+    ],
+    "exit_code": 0,
+    "stdout": "19cb8942c8c28b233b8f3560e1052e82aee90904\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/docs/architecture.md"
+    ],
+    "exit_code": 0,
+    "stdout": "47feca14d35d8ead5c0df23e702b79c68a936ba0\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/docs/threat-model.md"
+    ],
+    "exit_code": 0,
+    "stdout": "db114e29c4b66984fd5f122b05a022a0a1f45a35\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/protocol/approval.md"
+    ],
+    "exit_code": 0,
+    "stdout": "9e94c2cccd26bee55b35be8f6b4e99c15fc05f5b\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/protocol/runtime.md"
+    ],
+    "exit_code": 0,
+    "stdout": "685939947a377b7236edf5c985931235e22e4814\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/protocol/tool-interface.md"
+    ],
+    "exit_code": 0,
+    "stdout": "41a7d648c021ef5586fc08ce22525cefe6c9ce5c\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/schemas/v1/approval-lease-v1.schema.json"
+    ],
+    "exit_code": 0,
+    "stdout": "393f2c61fed8ace926e3a87c0c295ed022f4cdf9\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/schemas/v1/call-plan-v1.schema.json"
+    ],
+    "exit_code": 0,
+    "stdout": "a057040a5633591ffff1c8684db103897fcf051c\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/schemas/v1/execution-receipt-v1.schema.json"
+    ],
+    "exit_code": 0,
+    "stdout": "a7169a226618e8ce19da0a2dadf5ceb7560948d1\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/schemas/v1/session-plan-v1.schema.json"
+    ],
+    "exit_code": 0,
+    "stdout": "fdc687446fff12bded8185c3742b5d57e8cf739d\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "hash-object",
+      "/Users/iv/Developer/ReluxWorks/curator-agent-runtime/.temp/STORY-260908-2o9ao6/worktree/task-board.config.json"
+    ],
+    "exit_code": 0,
+    "stdout": "da42692e500e63f8b4b4f7a704df2ebcb533d9b3\n",
+    "stderr": ""
+  },
+  {
+    "property": "managed worktree accepted non-board blobs",
+    "matched": 71,
+    "total": 71
+  }
+]

@@ -49,6 +49,8 @@ spawn agent resolution: Agent selection: codex via explicit_override
 spawn launch composition: empty; contract=agents-infra.child-launch-composition; provider=codex; schema=1; producer=v1.6.1-128-gab60e0d; diagnostic=launch_composition_empty; no project MCP servers enabled
 spawn queued: [analyst] researcher (codex) (run=RUN-260908-553bac, max_parallel=20)
 spawn run started: [analyst] researcher (codex) (run=RUN-260908-553bac)
+agent completed: [analyst] researcher (codex) (exit=0)
+spawn run completed: codex (run=RUN-260908-553bac, pid=47564, exit=0)
 
 ## Precondition Resources
 - [TASK-260908-39n05p_review-scope.md](file://TASK-260908-39n05p/TASK-260908-39n05p_review-scope.md) — Role-conditional evidence review requirements
@@ -66,12 +68,13 @@ spawn run started: [analyst] researcher (codex) (run=RUN-260908-553bac)
 - [TASK-260908-39n05p_spawn-log_-reviewer--reviewer--codex-_RUN-260907-ba65e1.log](file://TASK-260908-39n05p/TASK-260908-39n05p_spawn-log_-reviewer--reviewer--codex-_RUN-260907-ba65e1.log) — System spawn log captured by task-board
 - [TASK-260908-39n05p_review-verdict-rev1.md](file://TASK-260908-39n05p/TASK-260908-39n05p_review-verdict-rev1.md) — Reviewer acceptance of exact CR revision 1; source spot checks, AC coverage and limits
 - [TASK-260908-39n05p_spawn-log_-analyst--researcher--codex-_RUN-260908-553bac.log](file://TASK-260908-39n05p/TASK-260908-39n05p_spawn-log_-analyst--researcher--codex-_RUN-260908-553bac.log) — System spawn log captured by task-board
+- [TASK-260908-39n05p_integration-outcome.md](file://TASK-260908-39n05p/TASK-260908-39n05p_integration-outcome.md) — Управляемая интеграция revision 1: signed commits, сохранность пяти документов, retry после board_delta_moved и границы проверок
 
 ## Created
 2026-09-07T22:22:24Z
 
 ## Last Update
-2026-09-08T02:42:27Z
+2026-09-08T02:43:46Z
 
 ## Assigned To
 [analyst] researcher (codex)
