@@ -1,0 +1,2543 @@
+{
+  "schema_version": 1,
+  "task": "TASK-260908-oqx20d",
+  "retrieval_date": "2026-09-08",
+  "language": "ru",
+  "method": "GitHub API metadata/tree и pinned raw source; при HTTP 403 — shallow no-checkout git clone. Только чтение, без запуска чужого кода.",
+  "depth_scale": {
+    "D0": "Только первичная документация; исходники реализации не читались.",
+    "D1": "Прочитаны выборочные production-фрагменты; сквозной путь по нескольким компонентам не прослежен.",
+    "D2": "Прочитаны связанные production-фрагменты цикла и ещё одной границы (tools/context/state); частичное статическое прослеживание, не полный аудит.",
+    "D3": "Исполненный/проверенный runtime с воспроизводимыми тестами. В этом обзоре отсутствует."
+  },
+  "coverage": {
+    "pinned_repositories": 28,
+    "source_inspected_repositories": 26,
+    "depth_counts": {
+      "D2": 14,
+      "D1": 12,
+      "D0": 2
+    },
+    "closed_docs_only": 4,
+    "runtime_execution_count": 0,
+    "claim_of_exhaustiveness": false
+  },
+  "systems": [
+    {
+      "id": "S01",
+      "name": "Gemini CLI",
+      "selection_mechanism": "Интерактивный CLI и scheduler",
+      "repository": {
+        "requested_repo": "google-gemini/gemini-cli",
+        "repo": "google-gemini/gemini-cli",
+        "sha": "85aca163f6c73ac6ce380b5447359146b8adcae4",
+        "commit_date": "2026-09-04T18:05:05Z",
+        "archived": false,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D2",
+      "symbols": [
+        "GeminiClient.processTurn",
+        "Scheduler._processNextItem"
+      ],
+      "evidence": [
+        {
+          "path": "packages/core/src/core/client.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              91,
+              134
+            ],
+            [
+              614,
+              702
+            ]
+          ],
+          "file_lines": 1299,
+          "sha256": "6a6935054eedede5561272c9e53026ac50e604721ec9fbed95fe14d615a6676c",
+          "permalinks": [
+            "https://github.com/google-gemini/gemini-cli/blob/85aca163f6c73ac6ce380b5447359146b8adcae4/packages/core/src/core/client.ts#L91-L134",
+            "https://github.com/google-gemini/gemini-cli/blob/85aca163f6c73ac6ce380b5447359146b8adcae4/packages/core/src/core/client.ts#L614-L702"
+          ]
+        },
+        {
+          "path": "packages/core/src/scheduler/scheduler.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              97,
+              140
+            ],
+            [
+              450,
+              578
+            ]
+          ],
+          "file_lines": 970,
+          "sha256": "75f39d7daed17f7a1f73a48bacf0c239214ead672110e7f8898fe2b846bc5f1c",
+          "permalinks": [
+            "https://github.com/google-gemini/gemini-cli/blob/85aca163f6c73ac6ce380b5447359146b8adcae4/packages/core/src/scheduler/scheduler.ts#L97-L140",
+            "https://github.com/google-gemini/gemini-cli/blob/85aca163f6c73ac6ce380b5447359146b8adcae4/packages/core/src/scheduler/scheduler.ts#L450-L578"
+          ]
+        },
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              1,
+              41
+            ]
+          ],
+          "file_lines": 412,
+          "sha256": "bacf354f3f674d57679ebf7b42dd69311bb9ef14200e18ca703d82aba48bf833",
+          "permalinks": [
+            "https://github.com/google-gemini/gemini-cli/blob/85aca163f6c73ac6ce380b5447359146b8adcae4/README.md#L1-L41"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "GeminiClient → Turn; отдельный Scheduler",
+        "provider_portability": "Gemini-ориентированный ContentGenerator; иные адаптеры здесь не проверены",
+        "tool_plugin_boundary": "Реестр tools, policy/confirmation и executor",
+        "context": "renderHistory, отдельные display/API представления, compression и masking",
+        "durable_recovery": "resumeChat есть; атомарность внешних эффектов не установлена",
+        "concurrency": "Группировка соседних parallel calls; edit tools последовательны",
+        "security": "Policy до исполнения; отсутствие wait_for_previous по умолчанию разрешает parallel",
+        "runtime_overhead": "TypeScript; перенос логики потребует Go-реализации, latency не измерялась"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Разделить render context, проверку вызова и исполнение; явно моделировать awaiting approval.",
+      "rejected_alternative": "Не переносить default-parallel по аргументу модели: разрешение параллелизма выводить из доверенного effect plan.",
+      "limitations": "Внутренние реализации policy и storage не аудированы; наличие guard не доказывает его полноту.",
+      "tests_executed": false
+    },
+    {
+      "id": "S02",
+      "name": "Qwen Code",
+      "selection_mechanism": "Интерактивный CLI и scheduler",
+      "repository": {
+        "requested_repo": "QwenLM/qwen-code",
+        "repo": "QwenLM/qwen-code",
+        "sha": "f1ed3bc31a2b618072dbd3c8d9ee3e04f48416d1",
+        "commit_date": "2026-09-07T16:33:50Z",
+        "archived": false,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D2",
+      "symbols": [
+        "LlmClient.sendMessageStream",
+        "createContentGenerator"
+      ],
+      "evidence": [
+        {
+          "path": "packages/core/src/core/client.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              393,
+              456
+            ],
+            [
+              2826,
+              2880
+            ]
+          ],
+          "file_lines": 5223,
+          "sha256": "4dd918068759c3af9c609bf7cda9d2c65d7d47485c2f5f5a86ea5476118b35ec",
+          "permalinks": [
+            "https://github.com/QwenLM/qwen-code/blob/f1ed3bc31a2b618072dbd3c8d9ee3e04f48416d1/packages/core/src/core/client.ts#L393-L456",
+            "https://github.com/QwenLM/qwen-code/blob/f1ed3bc31a2b618072dbd3c8d9ee3e04f48416d1/packages/core/src/core/client.ts#L2826-L2880"
+          ]
+        },
+        {
+          "path": "packages/core/src/core/contentGenerator.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              222,
+              265
+            ],
+            [
+              290,
+              333
+            ],
+            [
+              502,
+              595
+            ]
+          ],
+          "file_lines": 595,
+          "sha256": "a5d5056209b039d0daaa3386d51c073cfc493b9ed297e1520e9b2c843b63e5c3",
+          "permalinks": [
+            "https://github.com/QwenLM/qwen-code/blob/f1ed3bc31a2b618072dbd3c8d9ee3e04f48416d1/packages/core/src/core/contentGenerator.ts#L222-L265",
+            "https://github.com/QwenLM/qwen-code/blob/f1ed3bc31a2b618072dbd3c8d9ee3e04f48416d1/packages/core/src/core/contentGenerator.ts#L290-L333",
+            "https://github.com/QwenLM/qwen-code/blob/f1ed3bc31a2b618072dbd3c8d9ee3e04f48416d1/packages/core/src/core/contentGenerator.ts#L502-L595"
+          ]
+        },
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              24,
+              64
+            ],
+            [
+              84,
+              124
+            ]
+          ],
+          "file_lines": 190,
+          "sha256": "6f6a70e949f8a102aaaa0ec39ac8cb354534915a9f99f3ae6ed10b55b3477ebd",
+          "permalinks": [
+            "https://github.com/QwenLM/qwen-code/blob/f1ed3bc31a2b618072dbd3c8d9ee3e04f48416d1/README.md#L24-L64",
+            "https://github.com/QwenLM/qwen-code/blob/f1ed3bc31a2b618072dbd3c8d9ee3e04f48416d1/README.md#L84-L124"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "LlmClient; типы интеракций UserQuery, Retry, Goal, Teammate",
+        "provider_portability": "Фабрика отдельно выбирает OpenAI, Qwen OAuth, Anthropic, Gemini/Vertex",
+        "tool_plugin_boundary": "Конфигурация generator отделена от model-visible tools; полный registry не прочитан",
+        "context": "История LlmChat и prompt override; compaction call path прочитан частично",
+        "durable_recovery": "Session swap/telemetry state виден; crash recovery эффектов неизвестен",
+        "concurrency": "Teammate/Goal типы не являются доказательством независимого scheduler",
+        "security": "validateModelConfig до создания; отсутствие authType отклоняется",
+        "runtime_overhead": "Lazy imports provider реализации; величина выигрыша старта неизвестна"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Явная provider factory, происхождение конфигурации и отказ при неполной identity.",
+      "rejected_alternative": "Не копировать OAuth cache в tool-skills и не принимать ветку OAuth за право любого клиента использовать подписку.",
+      "limitations": "Фактические квоты и entitlement конкретного аккаунта не проверялись; auth code не является условиями обслуживания.",
+      "tests_executed": false
+    },
+    {
+      "id": "S03",
+      "name": "OpenCode",
+      "selection_mechanism": "Интерактивный CLI и scheduler",
+      "repository": {
+        "requested_repo": "anomalyco/opencode",
+        "repo": "anomalyco/opencode",
+        "sha": "ecbc6ccac85b3e8087b6445e584318419b9e2b34",
+        "commit_date": "2026-09-07T16:21:14Z",
+        "archived": false,
+        "default_branch": "dev",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D1",
+      "symbols": [
+        "SessionProcessor.create"
+      ],
+      "evidence": [
+        {
+          "path": "packages/core/src/session/prompt.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              1,
+              1
+            ]
+          ],
+          "file_lines": 1,
+          "sha256": "f617d889d032bd762f4c8f57f0839d81d320e223139c24c4838f7992cbe1679b",
+          "permalinks": [
+            "https://github.com/anomalyco/opencode/blob/ecbc6ccac85b3e8087b6445e584318419b9e2b34/packages/core/src/session/prompt.ts#L1-L1"
+          ]
+        },
+        {
+          "path": "packages/opencode/src/session/processor.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              77,
+              120
+            ]
+          ],
+          "file_lines": 732,
+          "sha256": "0b31e207beda56bd9a4b9b88c9e42d89a0651dd011773748c8e2938dfc3dcb74",
+          "permalinks": [
+            "https://github.com/anomalyco/opencode/blob/ecbc6ccac85b3e8087b6445e584318419b9e2b34/packages/opencode/src/session/processor.ts#L77-L120"
+          ]
+        },
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              1,
+              41
+            ]
+          ],
+          "file_lines": 129,
+          "sha256": "400890a3082e225c440561825270a911cd7df90a9f64f85166aed330201e50ba",
+          "permalinks": [
+            "https://github.com/anomalyco/opencode/blob/ecbc6ccac85b3e8087b6445e584318419b9e2b34/README.md#L1-L41"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Effect Layer SessionProcessor, внедрение service зависимостей",
+        "provider_portability": "LLM.Service; provider реализации не аудированы",
+        "tool_plugin_boundary": "Permission.Service и Plugin.Service в processor",
+        "context": "Summary и needsCompaction присутствуют в состоянии",
+        "durable_recovery": "Snapshot до stream; Database.Service; гарантия replay неизвестна",
+        "concurrency": "AI SDK может исполнять tools до start-step event",
+        "security": "Положение snapshot учитывает ранние эффекты; полный permission путь не прочитан",
+        "runtime_overhead": "TypeScript/Effect; для Go полезны границы сервисов, не прямая зависимость"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Фиксировать исходное состояние до передачи управления SDK, который может сам запускать tools.",
+      "rejected_alternative": "Не считать streaming event start-step надёжной границей авторизации; не переносить широкий frontend/backend stack в worker.",
+      "limitations": "packages/core/src/session/prompt.ts оказался только re-export; это не чтение реализации prompt loop.",
+      "tests_executed": false
+    },
+    {
+      "id": "S04",
+      "name": "OpenHands Agent Canvas",
+      "selection_mechanism": "Продуктовая оболочка",
+      "repository": {
+        "requested_repo": "OpenHands/OpenHands",
+        "repo": "OpenHands/OpenHands",
+        "sha": "f7fb0c4b21f5ed726edbba8a6309634ef434b004",
+        "commit_date": "2026-09-05T21:28:27Z",
+        "archived": false,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D0",
+      "symbols": [
+        "README: Agent Canvas"
+      ],
+      "evidence": [
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              33,
+              46
+            ],
+            [
+              63,
+              68
+            ]
+          ],
+          "file_lines": 158,
+          "sha256": "16c8207274f40f5c9bed551b7778f2e58ae03a6324ef1fe6e10386404187fedd",
+          "permalinks": [
+            "https://github.com/OpenHands/OpenHands/blob/f7fb0c4b21f5ed726edbba8a6309634ef434b004/README.md#L33-L46",
+            "https://github.com/OpenHands/OpenHands/blob/f7fb0c4b21f5ed726edbba8a6309634ef434b004/README.md#L63-L68"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Документация: control center над agent backends",
+        "provider_portability": "Документация: ACP и разные agents",
+        "tool_plugin_boundary": "Внутренние source boundaries не исследованы",
+        "context": "Не установлено",
+        "durable_recovery": "Always-on заявлен документацией; storage не проверен",
+        "concurrency": "Командная автоматизация заявлена, scheduler не прочитан",
+        "security": "README предупреждает о полном доступе при запуске без sandbox",
+        "runtime_overhead": "UI/server продукт; не минимальное ядро"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Отделять control plane от исполняющего runtime.",
+      "rejected_alternative": "Не ссылаться на старый монолит OpenHands как на текущую реализацию agent loop.",
+      "limitations": "Только README этого репозитория; исходники runtime исследованы отдельно в software-agent-sdk.",
+      "tests_executed": false
+    },
+    {
+      "id": "S05",
+      "name": "OpenHands Software Agent SDK",
+      "selection_mechanism": "События и удалённая среда",
+      "repository": {
+        "requested_repo": "OpenHands/software-agent-sdk",
+        "repo": "OpenHands/software-agent-sdk",
+        "sha": "df2ea8fa5542d5d2a543e108bc8b2d4fbbab34b1",
+        "commit_date": "2026-09-07T12:37:57Z",
+        "archived": false,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D2",
+      "symbols": [
+        "Agent.step",
+        "EventLog.append"
+      ],
+      "evidence": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              635,
+              678
+            ],
+            [
+              678,
+              750
+            ]
+          ],
+          "file_lines": 1498,
+          "sha256": "dc65fb1eabd6a3ed0ab2843bf3ef8f08b988fb7bd906588e55ab020d049fffdc",
+          "permalinks": [
+            "https://github.com/OpenHands/software-agent-sdk/blob/df2ea8fa5542d5d2a543e108bc8b2d4fbbab34b1/openhands-sdk/openhands/sdk/agent/agent.py#L635-L678",
+            "https://github.com/OpenHands/software-agent-sdk/blob/df2ea8fa5542d5d2a543e108bc8b2d4fbbab34b1/openhands-sdk/openhands/sdk/agent/agent.py#L678-L750"
+          ]
+        },
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/event_store.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              186,
+              229
+            ],
+            [
+              348,
+              374
+            ],
+            [
+              225,
+              270
+            ]
+          ],
+          "file_lines": 374,
+          "sha256": "af721391c46a1979c45e0e414c45a82dfc42d8a92d62ac2ccea0242f725450b0",
+          "permalinks": [
+            "https://github.com/OpenHands/software-agent-sdk/blob/df2ea8fa5542d5d2a543e108bc8b2d4fbbab34b1/openhands-sdk/openhands/sdk/conversation/event_store.py#L186-L229",
+            "https://github.com/OpenHands/software-agent-sdk/blob/df2ea8fa5542d5d2a543e108bc8b2d4fbbab34b1/openhands-sdk/openhands/sdk/conversation/event_store.py#L348-L374",
+            "https://github.com/OpenHands/software-agent-sdk/blob/df2ea8fa5542d5d2a543e108bc8b2d4fbbab34b1/openhands-sdk/openhands/sdk/conversation/event_store.py#L225-L270"
+          ]
+        },
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              3,
+              43
+            ]
+          ],
+          "file_lines": 203,
+          "sha256": "95094c9745c7cc58136d4eaa1688fb6038aafefec2be05344293f6df7e55dbf8",
+          "permalinks": [
+            "https://github.com/OpenHands/software-agent-sdk/blob/df2ea8fa5542d5d2a543e108bc8b2d4fbbab34b1/README.md#L3-L43"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Agent.step: unmatched actions, затем condensation и model completion",
+        "provider_portability": "LLM объект плюс per-conversation call_context",
+        "tool_plugin_boundary": "tools_map передаётся make_llm_completion; обработка malformed calls",
+        "context": "Condenser создаёт отдельное событие до новой генерации",
+        "durable_recovery": "Event log с lock, проверкой duplicate ID/parent и индексом",
+        "concurrency": "Lock на append; параллельность внешних действий не установлена",
+        "security": "Невалидные ID/parent отклоняются; policy полнота не проверена",
+        "runtime_overhead": "Python SDK; agent server позволяет отделить среду, его стоимость не измерена"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Отдельные события context condensation и строгая идентичность/parent у журналируемых записей.",
+      "rejected_alternative": "Не приравнивать unmatched action к безопасному повтору: нужен receipt или reconciliation внешнего эффекта.",
+      "limitations": "Реализация fs.write, fsync и failure injection не проверены; persisted log не доказательство exactly-once.",
+      "tests_executed": false
+    },
+    {
+      "id": "S06",
+      "name": "SWE-agent",
+      "selection_mechanism": "Последовательный action-observation",
+      "repository": {
+        "requested_repo": "SWE-agent/SWE-agent",
+        "repo": "SWE-agent/SWE-agent",
+        "sha": "3ea751c087f32b16e039a2233dd6eefecef325d5",
+        "commit_date": "2026-07-16T15:21:18Z",
+        "archived": false,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D2",
+      "symbols": [
+        "DefaultAgent.step",
+        "DefaultAgent.run",
+        "ToolConfig"
+      ],
+      "evidence": [
+        {
+          "path": "sweagent/agent/agents.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              235,
+              280
+            ],
+            [
+              1235,
+              1294
+            ]
+          ],
+          "file_lines": 1294,
+          "sha256": "d6cdf7ac66a6509ceba08e3541b856f0734acf79f9a485ed8a6e2c72f0d211a8",
+          "permalinks": [
+            "https://github.com/SWE-agent/SWE-agent/blob/3ea751c087f32b16e039a2233dd6eefecef325d5/sweagent/agent/agents.py#L235-L280",
+            "https://github.com/SWE-agent/SWE-agent/blob/3ea751c087f32b16e039a2233dd6eefecef325d5/sweagent/agent/agents.py#L1235-L1294"
+          ]
+        },
+        {
+          "path": "sweagent/tools/tools.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              27,
+              70
+            ],
+            [
+              73,
+              116
+            ]
+          ],
+          "file_lines": 430,
+          "sha256": "6a5b9ca0b4b7bbc60364fb832a478fad7c7c41a0d91cb0718c9ad523120e9a70",
+          "permalinks": [
+            "https://github.com/SWE-agent/SWE-agent/blob/3ea751c087f32b16e039a2233dd6eefecef325d5/sweagent/tools/tools.py#L27-L70",
+            "https://github.com/SWE-agent/SWE-agent/blob/3ea751c087f32b16e039a2233dd6eefecef325d5/sweagent/tools/tools.py#L73-L116"
+          ]
+        },
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              123,
+              145
+            ]
+          ],
+          "file_lines": 145,
+          "sha256": "dcd880557720efbab0f5c0e68f2bc742309efecfce83244c9e670ec1f1adf76f",
+          "permalinks": [
+            "https://github.com/SWE-agent/SWE-agent/blob/3ea751c087f32b16e039a2233dd6eefecef325d5/README.md#L123-L145"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "run → step → forward_with_handling; сохраняет trajectory после шага",
+        "provider_portability": "model объект; конкретные backend в этом проходе не читались",
+        "tool_plugin_boundary": "ToolConfig bundles, parser и bash",
+        "context": "messages и trajectory раздельны",
+        "durable_recovery": "save_trajectory после действия; crash gap остаётся неисследованным",
+        "concurrency": "Основной run последователен",
+        "security": "Blocklist предназначен для неподдерживаемых команд; не sandbox",
+        "runtime_overhead": "Python и SWEEnv; полезен как экспериментальный harness, не готовая Go библиотека"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Явные StepOutput и отдельная запись observation/trajectory.",
+      "rejected_alternative": "Blocklist shell-команд не принимать за capability enforcement; не распространять provider env в sandbox.",
+      "limitations": "ToolConfig сам предупреждает о debug-логировании propagate_env_variables; реальных секретов не читали.",
+      "tests_executed": false
+    },
+    {
+      "id": "S07",
+      "name": "mini-SWE-agent v2",
+      "selection_mechanism": "Последовательный action-observation",
+      "repository": {
+        "requested_repo": "SWE-agent/mini-swe-agent",
+        "repo": "SWE-agent/mini-swe-agent",
+        "sha": "04d809ceab9df28f9adaed044884180159172930",
+        "commit_date": "2026-09-03T05:05:59Z",
+        "archived": false,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D2",
+      "symbols": [
+        "DefaultAgent.run",
+        "DefaultAgent.step",
+        "LocalEnvironment.execute"
+      ],
+      "evidence": [
+        {
+          "path": "src/minisweagent/agents/default.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              86,
+              137
+            ]
+          ],
+          "file_lines": 190,
+          "sha256": "e8ef8aa365942d739c2ec5cb0879f60f377d2dc2de8ec670aaedf3bafb45a4c2",
+          "permalinks": [
+            "https://github.com/SWE-agent/mini-swe-agent/blob/04d809ceab9df28f9adaed044884180159172930/src/minisweagent/agents/default.py#L86-L137"
+          ]
+        },
+        {
+          "path": "src/minisweagent/environments/local.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              11,
+              60
+            ]
+          ],
+          "file_lines": 92,
+          "sha256": "01dd33ae6be897458611911cc0eee1389092ea9fc6788c7eb24773e7c6342b1c",
+          "permalinks": [
+            "https://github.com/SWE-agent/mini-swe-agent/blob/04d809ceab9df28f9adaed044884180159172930/src/minisweagent/environments/local.py#L11-L60"
+          ]
+        },
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              15,
+              55
+            ]
+          ],
+          "file_lines": 217,
+          "sha256": "9982d90b7566f2f3fa5e9811b475d5e8e2a84e2df80cf3f1e4be6e820b129835",
+          "permalinks": [
+            "https://github.com/SWE-agent/mini-swe-agent/blob/04d809ceab9df28f9adaed044884180159172930/README.md#L15-L55"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "run → step → execute_actions(query()); terminal message role exit",
+        "provider_portability": "model.format_message и query: интерфейс сменяемый",
+        "tool_plugin_boundary": "Один shell-oriented environment adapter",
+        "context": "Линейный список messages",
+        "durable_recovery": "save в finally каждого шага; транзакция эффекта не установлена",
+        "concurrency": "Показанный run синхронный последовательный",
+        "security": "LocalEnvironment запускает команду с os.environ; это не изоляция",
+        "runtime_overhead": "Небольшая композиция Python; dependency closure и скорость не измерены"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Минимальность цикла и отдельный environment adapter — ближайший структурный образец worker.",
+      "rejected_alternative": "Заменить произвольный локальный shell центральным typed tool-skill; не наследовать весь env процесса.",
+      "limitations": "Текущий README явно v2; нельзя переносить рассказы о v1 или рекламные числа на этот SHA.",
+      "tests_executed": false
+    },
+    {
+      "id": "S08",
+      "name": "Aider",
+      "selection_mechanism": "Контекст кода и редактирование",
+      "repository": {
+        "requested_repo": "Aider-AI/aider",
+        "repo": "Aider-AI/aider",
+        "sha": "5dc9490bb35f9729ef2c95d00a19ccd30c26339c",
+        "commit_date": "2026-05-22T14:02:20Z",
+        "archived": false,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D2",
+      "symbols": [
+        "Coder.run",
+        "RepoMap.get_ranked_tags"
+      ],
+      "evidence": [
+        {
+          "path": "aider/coders/base_coder.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              857,
+              917
+            ]
+          ],
+          "file_lines": 2485,
+          "sha256": "04a7b38c4f1d2b1684ac958f40bcd81a28b00139eae88afed59d2c970bef1ee1",
+          "permalinks": [
+            "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/coders/base_coder.py#L857-L917"
+          ]
+        },
+        {
+          "path": "aider/repomap.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              363,
+              406
+            ],
+            [
+              574,
+              617
+            ],
+            [
+              470,
+              530
+            ]
+          ],
+          "file_lines": 867,
+          "sha256": "a5d4befe70445114b9f62da47b0eeb2a5384f9e84a0c083c77a4b339caf61ecd",
+          "permalinks": [
+            "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/repomap.py#L363-L406",
+            "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/repomap.py#L574-L617",
+            "https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/repomap.py#L470-L530"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Coder.run/run_one в интерактивном цикле",
+        "provider_portability": "main_model; provider implementation не исследован",
+        "tool_plugin_boundary": "Coder и команды приложения, не универсальная tool-skill граница",
+        "context": "RepoMap строит weighted MultiDiGraph и PageRank по symbols/references",
+        "durable_recovery": "commit_before_message виден; внешняя effect durability неизвестна",
+        "concurrency": "Основной run последовательный; фоновые механизмы не проверены",
+        "security": "Контроль редактирования не равен OS sandbox; security не оценена",
+        "runtime_overhead": "Python, tree-sitter/graph processing; repo-map имеет вычислительную цену без измерения"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Repo-map как ограниченный, кэшируемый context artifact отдельного skill.",
+      "rejected_alternative": "Не помещать индексатор репозитория и git-операции в общий worker kernel.",
+      "limitations": "Польза PageRank для задач Apiary не измерялась; это кандидат для эксперимента, не доказанный выигрыш.",
+      "tests_executed": false
+    },
+    {
+      "id": "S09",
+      "name": "Goose (AAIF)",
+      "selection_mechanism": "Нативный runtime и расширения",
+      "repository": {
+        "requested_repo": "block/goose",
+        "repo": "aaif-goose/goose",
+        "sha": "5e90925962f05acf8e255032de44d16c4a7768a2",
+        "commit_date": "2026-09-05T02:25:17Z",
+        "archived": false,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D1",
+      "symbols": [
+        "Agent.reply",
+        "Agent.reply_with_state_machine"
+      ],
+      "evidence": [
+        {
+          "path": "crates/goose/src/agents/agent.rs",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              1744,
+              1787
+            ],
+            [
+              2018,
+              2061
+            ]
+          ],
+          "file_lines": 6378,
+          "sha256": "cf1dc22510cb0a780ec6351c6e378b4021018fe8f187d2e28a46aded370b4b99",
+          "permalinks": [
+            "https://github.com/aaif-goose/goose/blob/5e90925962f05acf8e255032de44d16c4a7768a2/crates/goose/src/agents/agent.rs#L1744-L1787",
+            "https://github.com/aaif-goose/goose/blob/5e90925962f05acf8e255032de44d16c4a7768a2/crates/goose/src/agents/agent.rs#L2018-L2061"
+          ]
+        },
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              25,
+              63
+            ]
+          ],
+          "file_lines": 63,
+          "sha256": "0f1df85a0c457caf1f3c4e1c0370f2da3887fffa588d207862cfc298c1d39755",
+          "permalinks": [
+            "https://github.com/aaif-goose/goose/blob/5e90925962f05acf8e255032de44d16c4a7768a2/README.md#L25-L63"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "reply → reply_impl; отдельный state-machine entry",
+        "provider_portability": "Provider под async lock; docs описывают API и ACP providers",
+        "tool_plugin_boundary": "Docs: MCP extensions; внутренний extension manager не прочитан",
+        "context": "Сообщение добавляется session_manager до ответа",
+        "durable_recovery": "Session manager сохраняет message; ACP docs отдельно запрещают resume/fork",
+        "concurrency": "try_start_turn и tokio task для имени сессии; tool scheduler неизвестен",
+        "security": "Turn coordination есть; sandbox enforcement не аудирован",
+        "runtime_overhead": "Rust; нативность не устраняет цену внешних MCP/ACP процессов"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Нативный runtime может иметь отдельный provider layer и session lifecycle.",
+      "rejected_alternative": "Не встраивать MCP в kernel и не считать ACP provider чистым inference adapter: он запускает другой агент.",
+      "limitations": "Канонический repo получен redirect GitHub API: aaif-goose/goose; ACP ограничения docs могут меняться.",
+      "tests_executed": false
+    },
+    {
+      "id": "S10",
+      "name": "Cline SDK и клиенты",
+      "selection_mechanism": "Разделяемое ядро продукта",
+      "repository": {
+        "requested_repo": "cline/cline",
+        "repo": "cline/cline",
+        "sha": "c21b17255b228e88a1518c18a73a473ee5876362",
+        "commit_date": "2026-09-07T01:36:42Z",
+        "archived": false,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D2",
+      "symbols": [
+        "AgentRuntime.execute",
+        "AgentRuntime.executeToolCalls",
+        "SessionRuntime"
+      ],
+      "evidence": [
+        {
+          "path": "sdk/packages/agents/src/agent-runtime.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              534,
+              577
+            ],
+            [
+              690,
+              775
+            ],
+            [
+              1630,
+              1685
+            ]
+          ],
+          "file_lines": 2188,
+          "sha256": "f3b74e7b2a121ad77d63a337a8537e4b4f6786247200b73de6c1a1010f04befc",
+          "permalinks": [
+            "https://github.com/cline/cline/blob/c21b17255b228e88a1518c18a73a473ee5876362/sdk/packages/agents/src/agent-runtime.ts#L534-L577",
+            "https://github.com/cline/cline/blob/c21b17255b228e88a1518c18a73a473ee5876362/sdk/packages/agents/src/agent-runtime.ts#L690-L775",
+            "https://github.com/cline/cline/blob/c21b17255b228e88a1518c18a73a473ee5876362/sdk/packages/agents/src/agent-runtime.ts#L1630-L1685"
+          ]
+        },
+        {
+          "path": "sdk/packages/core/src/runtime/orchestration/session-runtime-orchestrator.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              91,
+              134
+            ],
+            [
+              303,
+              346
+            ]
+          ],
+          "file_lines": 1501,
+          "sha256": "29748a635f2ba04e3ff829988bebcbc9292deb0387c0bb2c9bc6a847ebad2de4",
+          "permalinks": [
+            "https://github.com/cline/cline/blob/c21b17255b228e88a1518c18a73a473ee5876362/sdk/packages/core/src/runtime/orchestration/session-runtime-orchestrator.ts#L91-L134",
+            "https://github.com/cline/cline/blob/c21b17255b228e88a1518c18a73a473ee5876362/sdk/packages/core/src/runtime/orchestration/session-runtime-orchestrator.ts#L303-L346"
+          ]
+        },
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              107,
+              147
+            ]
+          ],
+          "file_lines": 239,
+          "sha256": "b3747628b566bd93efd43ddba63923060bc224adcdea4b86e22897e504f6452e",
+          "permalinks": [
+            "https://github.com/cline/cline/blob/c21b17255b228e88a1518c18a73a473ee5876362/README.md#L107-L147"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Общий AgentRuntime, host SessionRuntime и разные клиенты",
+        "provider_portability": "Генерация через model adapter; provider-owned activity отдельно от tool calls",
+        "tool_plugin_boundary": "ContributionRegistry расширений; prepareToolExecution перед dispatch",
+        "context": "Overflow recovery; host messageBuilder и ConversationStore",
+        "durable_recovery": "restore принимает сообщения; persistence service в host, гарантия effects неизвестна",
+        "concurrency": "Режим parallel использует Promise.all; также sequential",
+        "security": "Повторный run при running отклоняется; prepare всех вызовов не доказывает freshness на dispatch",
+        "runtime_overhead": "TypeScript SDK; текущий Cline нельзя описывать только как VS Code extension"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Один core с host-owned context и разными профилями; отдельно учитывать provider-side tools.",
+      "rejected_alternative": "Не включать provider-executed tool activity как обычный повторяемый локальный call; parallel без effect conflicts недостаточен.",
+      "limitations": "prepareToolExecution прочитан лишь начальный участок; полнота permission paths не утверждается.",
+      "tests_executed": false
+    },
+    {
+      "id": "S11",
+      "name": "Roo Code (архив)",
+      "selection_mechanism": "IDE-центричный цикл",
+      "repository": {
+        "requested_repo": "RooCodeInc/Roo-Code",
+        "repo": "RooCodeInc/Roo-Code",
+        "sha": "b867ec9145750d0ae1ff7f02d35406e9bf2a0b16",
+        "commit_date": "2026-05-15T18:04:45Z",
+        "archived": true,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D1",
+      "symbols": [
+        "Task.recursivelyMakeClineRequests",
+        "ShadowCheckpointService"
+      ],
+      "evidence": [
+        {
+          "path": "src/core/task/Task.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              2434,
+              2477
+            ],
+            [
+              2760,
+              2803
+            ]
+          ],
+          "file_lines": 4619,
+          "sha256": "d0deb99b4972f84be0d8494223d82504315ea305d9cdecba2b16e5176fe23baa",
+          "permalinks": [
+            "https://github.com/RooCodeInc/Roo-Code/blob/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/src/core/task/Task.ts#L2434-L2477",
+            "https://github.com/RooCodeInc/Roo-Code/blob/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/src/core/task/Task.ts#L2760-L2803"
+          ]
+        },
+        {
+          "path": "src/services/checkpoints/ShadowCheckpointService.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              77,
+              120
+            ]
+          ],
+          "file_lines": 517,
+          "sha256": "bb9f22c24e73dd17d61a1a4a2a4ba469997ae823c7b2e228386684ebb21595f0",
+          "permalinks": [
+            "https://github.com/RooCodeInc/Roo-Code/blob/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/src/services/checkpoints/ShadowCheckpointService.ts#L77-L120"
+          ]
+        },
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              48,
+              77
+            ]
+          ],
+          "file_lines": 77,
+          "sha256": "bcabc1221142dc7d7161d089dcd945bb50ff8d7498d7c6b8774b10a8cd5c164f",
+          "permalinks": [
+            "https://github.com/RooCodeInc/Roo-Code/blob/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/README.md#L48-L77"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Task цикл вызывает recursivelyMakeClineRequests с явным stack",
+        "provider_portability": "Anthropic-shaped content; полный список provider не проверен",
+        "tool_plugin_boundary": "Task и встроенные tools; registry здесь не прочитан",
+        "context": "nextUserContent и file details на первом запросе",
+        "durable_recovery": "Shadow git checkpoints — снимки workspace",
+        "concurrency": "Основной цикл последовательный; остальное неизвестно",
+        "security": "Защита home/Desktop/Documents/Downloads в checkpoint ctor",
+        "runtime_overhead": "TypeScript и IDE integration; архивный donor требует самостоятельного сопровождения"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Изучать UX обратимого редактирования как отдельную функцию оболочки.",
+      "rejected_alternative": "Не выбирать архивный Task монолит базой нового Go kernel.",
+      "limitations": "README сообщает закрытие 15 мая и указывает ZooCode community fork; качество/актуальность fork не проверены.",
+      "tests_executed": false
+    },
+    {
+      "id": "S12",
+      "name": "Continue (не поддерживается)",
+      "selection_mechanism": "IDE tool routing",
+      "repository": {
+        "requested_repo": "continuedev/continue",
+        "repo": "continuedev/continue",
+        "sha": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+        "commit_date": "2026-07-21T04:00:09Z",
+        "archived": false,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D1",
+      "symbols": [
+        "callToolFromUri",
+        "BuiltInToolNames"
+      ],
+      "evidence": [
+        {
+          "path": "core/tools/callTool.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              50,
+              97
+            ]
+          ],
+          "file_lines": 280,
+          "sha256": "b2c9184b466a131625b37af8f2f335cedb294fe03adf7a545294a38cfd7f3cb8",
+          "permalinks": [
+            "https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/core/tools/callTool.ts#L50-L97"
+          ]
+        },
+        {
+          "path": "core/tools/builtIn.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              1,
+              32
+            ]
+          ],
+          "file_lines": 32,
+          "sha256": "d63ba2c90c4e2e15bb080caaccd65a8dbbf2bb7a9d45808bd8e219c6c59ec8b3",
+          "permalinks": [
+            "https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/core/tools/builtIn.ts#L1-L32"
+          ]
+        },
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              1,
+              41
+            ]
+          ],
+          "file_lines": 63,
+          "sha256": "054b77f9573011fa4ebf89d960300aabd1ebecc37d8f6f261341ba7d27d885e7",
+          "permalinks": [
+            "https://github.com/continuedev/continue/blob/5522c6f44ca0ac3528b37244818fbfa39b5af470/README.md#L1-L41"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Agent loop не прочитан; исследован tool dispatch",
+        "provider_portability": "Не установлено в source pass",
+        "tool_plugin_boundary": "URI router: HTTP/HTTPS/MCP; отдельные built-ins",
+        "context": "Tool возвращает ContextItem[]",
+        "durable_recovery": "Не установлено",
+        "concurrency": "Не установлено",
+        "security": "Отсутствующее MCP connection вызывает ошибку; общая изоляция неизвестна",
+        "runtime_overhead": "TypeScript/IDE stack; README объявляет read-only и отсутствие active maintenance"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Сохранять нормализованный результат tool независимо от транспорта.",
+      "rejected_alternative": "Не смешивать mcp:// и встроенные tools в доверенном kernel; протокол принадлежит wrapper.",
+      "limitations": "GitHub archived=false не означает active maintenance: README говорит противоположное о поддержке.",
+      "tests_executed": false
+    },
+    {
+      "id": "S13",
+      "name": "DeepSeek Harness",
+      "selection_mechanism": "Plugin composition и event loop",
+      "repository": {
+        "requested_repo": "deepseek-ai/deepseek-harness",
+        "repo": "deepseek-ai/deepseek-harness",
+        "sha": "c389f96bf3a9b6807cb71ed6bdad5849be0df6d8",
+        "commit_date": "2026-09-07T16:46:19Z",
+        "archived": false,
+        "default_branch": "master",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D2",
+      "symbols": [
+        "ReactLoopAgent.turn",
+        "ReactLoopAgent.step",
+        "executeToolCalls/runGroup",
+        "ToolRuntime"
+      ],
+      "evidence": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              272,
+              315
+            ],
+            [
+              341,
+              384
+            ],
+            [
+              236,
+              312
+            ],
+            [
+              343,
+              375
+            ],
+            [
+              455,
+              477
+            ]
+          ],
+          "file_lines": 597,
+          "sha256": "22db5992a548cc65a250b5a745900b7e6a7889e2acd60c088de8a20f8ad793e3",
+          "permalinks": [
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/agent-loop/src/agent.ts#L272-L315",
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/agent-loop/src/agent.ts#L341-L384",
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/agent-loop/src/agent.ts#L236-L312",
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/agent-loop/src/agent.ts#L343-L375",
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/agent-loop/src/agent.ts#L455-L477"
+          ]
+        },
+        {
+          "path": "packages/core/agent-loop/src/tool-calls.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              58,
+              101
+            ],
+            [
+              120,
+              163
+            ],
+            [
+              122,
+              240
+            ]
+          ],
+          "file_lines": 290,
+          "sha256": "1f8984127d4245b6a08c1e4b0c8b9d8fa7ce30ffcf08184187f16dc1bf57ae6d",
+          "permalinks": [
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/agent-loop/src/tool-calls.ts#L58-L101",
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/agent-loop/src/tool-calls.ts#L120-L163",
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/agent-loop/src/tool-calls.ts#L122-L240"
+          ]
+        },
+        {
+          "path": "packages/core/tools/src/index.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              485,
+              547
+            ],
+            [
+              780,
+              805
+            ],
+            [
+              930,
+              965
+            ]
+          ],
+          "file_lines": 1936,
+          "sha256": "eb7a08e72f8fe9fa6869b85e33a1e74566b3242ff1910064b700c2562c12e6bf",
+          "permalinks": [
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/tools/src/index.ts#L485-L547",
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/tools/src/index.ts#L780-L805",
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/tools/src/index.ts#L930-L965"
+          ]
+        },
+        {
+          "path": "docs/architecture.md",
+          "inspection": "первичная документация, выборочные разделы",
+          "read_ranges": [
+            [
+              9,
+              29
+            ],
+            [
+              41,
+              47
+            ]
+          ],
+          "file_lines": 158,
+          "sha256": "f1f418ad72e639b45599265757a5e0b40ed9160a9cbd066e6ec11833608f2db8",
+          "permalinks": [
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/docs/architecture.md#L9-L29",
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/docs/architecture.md#L41-L47"
+          ]
+        },
+        {
+          "path": "docs/subsystems/core.md",
+          "inspection": "первичная документация, выборочные разделы",
+          "read_ranges": [
+            [
+              25,
+              55
+            ],
+            [
+              732,
+              745
+            ]
+          ],
+          "file_lines": 1266,
+          "sha256": "98da0d8d26ac17fca526fdc777c775f0d58be92710c73d669aa14106d6b7a562",
+          "permalinks": [
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/docs/subsystems/core.md#L25-L55",
+            "https://github.com/deepseek-ai/deepseek-harness/blob/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/docs/subsystems/core.md#L732-L745"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Loop сам plugin; turn/start, step/start, assistant/message, tool calls",
+        "provider_portability": "llm.stream/ preparedCall.stream отдельно от tools; docs: model adapters plugins",
+        "tool_plugin_boundary": "Cordis Service, scoped tool layers и prepare/dispatch/finalize",
+        "context": "systemPrompt.assemble и deriveMessages; next-step/next-turn inbox",
+        "durable_recovery": "Session append boundaries; filesystem durability и reconciliation не доказаны",
+        "concurrency": "Bounded rolling pool, exclusive barriers, model-order commit, drain при сбое",
+        "security": "Same-process context и plugin callbacks не самостоятельная граница полномочий",
+        "runtime_overhead": "Node/TypeScript+Cordis; sdk-minimal отдельный профиль; overhead не измерен"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Событийная фазовая модель, lifecycle contributions, bounded dispatch с ordered commit.",
+      "rejected_alternative": "Не переносить равноправную заменяемость security/loop plugin в недоверенную среду: authority root должен оставаться вне tools.",
+      "limitations": "Официальность проверена ссылкой с deepseek.com. Scoped lifetime — управление жизнью, не криптографическая авторизация.",
+      "tests_executed": false
+    },
+    {
+      "id": "S14",
+      "name": "LangGraph",
+      "selection_mechanism": "Durable graph execution",
+      "repository": {
+        "requested_repo": "langchain-ai/langgraph",
+        "repo": "langchain-ai/langgraph",
+        "sha": "81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1",
+        "commit_date": "2026-09-03T15:23:25Z",
+        "archived": false,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D2",
+      "symbols": [
+        "PregelLoop.put_writes",
+        "PregelRunner.tick",
+        "Checkpoint"
+      ],
+      "evidence": [
+        {
+          "path": "libs/langgraph/langgraph/pregel/_loop.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              413,
+              456
+            ],
+            [
+              1607,
+              1650
+            ]
+          ],
+          "file_lines": 1988,
+          "sha256": "33150cf70fc08fd01affeae0345aa20569d2705704e3d209733d9c7b43dd5c0a",
+          "permalinks": [
+            "https://github.com/langchain-ai/langgraph/blob/81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1/libs/langgraph/langgraph/pregel/_loop.py#L413-L456",
+            "https://github.com/langchain-ai/langgraph/blob/81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1/libs/langgraph/langgraph/pregel/_loop.py#L1607-L1650"
+          ]
+        },
+        {
+          "path": "libs/langgraph/langgraph/pregel/_runner.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              73,
+              127
+            ],
+            [
+              176,
+              225
+            ]
+          ],
+          "file_lines": 941,
+          "sha256": "316cf133c724163a18ef279322615588b3fa8b96e359289a7cadea90f0df7622",
+          "permalinks": [
+            "https://github.com/langchain-ai/langgraph/blob/81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1/libs/langgraph/langgraph/pregel/_runner.py#L73-L127",
+            "https://github.com/langchain-ai/langgraph/blob/81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1/libs/langgraph/langgraph/pregel/_runner.py#L176-L225"
+          ]
+        },
+        {
+          "path": "libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              37,
+              80
+            ],
+            [
+              91,
+              134
+            ]
+          ],
+          "file_lines": 861,
+          "sha256": "2953a9af1106ce832eda01add85013168b5cb7b316a5865cc7f1a67ad01ad73e",
+          "permalinks": [
+            "https://github.com/langchain-ai/langgraph/blob/81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1/libs/checkpoint/langgraph/checkpoint/base/__init__.py#L37-L80",
+            "https://github.com/langchain-ai/langgraph/blob/81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1/libs/checkpoint/langgraph/checkpoint/base/__init__.py#L91-L134"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Pregel tasks, tick, channels и versions_seen",
+        "provider_portability": "Graph не равен provider API; adapters не прочитаны",
+        "tool_plugin_boundary": "Node callable; tool adapters здесь не проверены",
+        "context": "Channel values в checkpoint и отдельные pending writes",
+        "durable_recovery": "Checkpoint namespace/ID, channel versions, pending writes",
+        "concurrency": "FuturesDict, task commit и retry",
+        "security": "Replay не атомарен с произвольным внешним эффектом; sandbox не исследован",
+        "runtime_overhead": "Python graph runtime; больше state model, чем нужно одному worker loop"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Версионированный checkpoint и учёт pending writes как образец восстановления оркестрации.",
+      "rejected_alternative": "Не делать общий graph engine обязательной зависимостью worker; effect idempotency не делегировать checkpoint библиотеке.",
+      "limitations": "Persistence backend и fsync/DB transaction не проверены; это чтение control flow и контрактов.",
+      "tests_executed": false
+    },
+    {
+      "id": "S15",
+      "name": "AutoGen (maintenance)",
+      "selection_mechanism": "Actor/message runtime",
+      "repository": {
+        "requested_repo": "microsoft/autogen",
+        "repo": "microsoft/autogen",
+        "sha": "027ecf0a379bcc1d09956d46d12d44a3ad9cee14",
+        "commit_date": "2026-04-06T22:35:32Z",
+        "archived": false,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D1",
+      "symbols": [
+        "RunContext._run",
+        "SingleThreadedAgentRuntime"
+      ],
+      "evidence": [
+        {
+          "path": "python/packages/autogen-core/src/autogen_core/_single_threaded_agent_runtime.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              103,
+              147
+            ]
+          ],
+          "file_lines": 1029,
+          "sha256": "b7579b335e10af51b5dcb06b76dee2e41ae2ed44c2046693c822b7ef617eac52",
+          "permalinks": [
+            "https://github.com/microsoft/autogen/blob/027ecf0a379bcc1d09956d46d12d44a3ad9cee14/python/packages/autogen-core/src/autogen_core/_single_threaded_agent_runtime.py#L103-L147"
+          ]
+        },
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              14,
+              25
+            ]
+          ],
+          "file_lines": 241,
+          "sha256": "5d300aa3304aeecf1a48f68ac76a1af255b8645d666b8aa154790cb30f1dbb94",
+          "permalinks": [
+            "https://github.com/microsoft/autogen/blob/027ecf0a379bcc1d09956d46d12d44a3ad9cee14/README.md#L14-L25"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Очередь сообщений, _process_next и stop_when_idle",
+        "provider_portability": "Model implementation за пределами прочитанного runtime",
+        "tool_plugin_boundary": "Agent messages/intervention; tool boundary не исследован",
+        "context": "Agent-owned state; полноценный context путь неизвестен",
+        "durable_recovery": "Join/drain не доказывает durable queue",
+        "concurrency": "Asyncio очередь; shutdown/join управляют остановкой",
+        "security": "Intervention warning при None; авторизация сообщений не аудирована",
+        "runtime_overhead": "Python; actor abstraction добавляет маршрутизацию и lifecycle"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Явное drain/idle для кооперативной остановки.",
+      "rejected_alternative": "Не вводить actor bus в минимальный worker и не выбирать maintenance ветку для нового framework dependency.",
+      "limitations": "README рекомендует Microsoft Agent Framework; это преемник продукта, не доказательство совместимости кода/API.",
+      "tests_executed": false
+    },
+    {
+      "id": "S16",
+      "name": "Microsoft Agent Framework",
+      "selection_mechanism": "Durable graph execution",
+      "repository": {
+        "requested_repo": "microsoft/agent-framework",
+        "repo": "microsoft/agent-framework",
+        "sha": "fdf7e80ad6c8f6dbdd9b779d5d6923c74d8b583e",
+        "commit_date": "2026-09-07T17:08:02Z",
+        "archived": false,
+        "default_branch": "main",
+        "retrieved": "2026-09-08",
+        "tree_truncated": false
+      },
+      "depth": "D2",
+      "symbols": [
+        "RunnerImpl.run_until_convergence",
+        "WorkflowCheckpoint",
+        "CheckpointStorage"
+      ],
+      "evidence": [
+        {
+          "path": "python/packages/core/agent_framework/_workflows/_runner.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              104,
+              147
+            ],
+            [
+              177,
+              220
+            ]
+          ],
+          "file_lines": 481,
+          "sha256": "13b485d21bdc32e970592a5b70e056a3141c57502fffcac050b5a336801523b2",
+          "permalinks": [
+            "https://github.com/microsoft/agent-framework/blob/fdf7e80ad6c8f6dbdd9b779d5d6923c74d8b583e/python/packages/core/agent_framework/_workflows/_runner.py#L104-L147",
+            "https://github.com/microsoft/agent-framework/blob/fdf7e80ad6c8f6dbdd9b779d5d6923c74d8b583e/python/packages/core/agent_framework/_workflows/_runner.py#L177-L220"
+          ]
+        },
+        {
+          "path": "python/packages/core/agent_framework/_workflows/_checkpoint.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              29,
+              72
+            ],
+            [
+              127,
+              170
+            ]
+          ],
+          "file_lines": 462,
+          "sha256": "9580095d159528d009273efe587fd28a9bceb16b7f004f19b11e9927c041a05e",
+          "permalinks": [
+            "https://github.com/microsoft/agent-framework/blob/fdf7e80ad6c8f6dbdd9b779d5d6923c74d8b583e/python/packages/core/agent_framework/_workflows/_checkpoint.py#L29-L72",
+            "https://github.com/microsoft/agent-framework/blob/fdf7e80ad6c8f6dbdd9b779d5d6923c74d8b583e/python/packages/core/agent_framework/_workflows/_checkpoint.py#L127-L170"
+          ]
+        },
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              12,
+              17
+            ]
+          ],
+          "file_lines": 218,
+          "sha256": "5f1783b1cbc09d64a69465091c68ab6ea8b18546987c5e0bb23ea221a0ed70d7",
+          "permalinks": [
+            "https://github.com/microsoft/agent-framework/blob/fdf7e80ad6c8f6dbdd9b779d5d6923c74d8b583e/README.md#L12-L17"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Supersteps до convergence; максимальное число итераций",
+        "provider_portability": "README: несколько provider; реализации не прочитаны",
+        "tool_plugin_boundary": "Executor edges; tools отдельного агента не исследованы",
+        "context": "Committed workflow state, pending request-info events",
+        "durable_recovery": "Checkpoint chain и graph_signature_hash в контракте",
+        "concurrency": "Параллельные edges; порядок сообщений внутри edge сохраняется",
+        "security": "Cancellation дочерней iteration task; topology hash не доказательство trust",
+        "runtime_overhead": "Python/.NET; README отдельно ссылается на Go SDK, он здесь docs-only"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Различать checkpoint lineage и iteration_count; один номер шага не уникален после HITL.",
+      "rejected_alternative": "Не переносить feature-complete workflow stack в worker. Go SDK требует самостоятельного source pass до выбора зависимости.",
+      "limitations": "Проверка graph_signature_hash при restore не прослежена; наличие поля не доказательство enforcement.",
+      "tests_executed": false
+    },
+    {
+      "id": "S17",
+      "name": "PydanticAI",
+      "selection_mechanism": "Typed agent graph и durable adapter",
+      "repository": {
+        "repo": "pydantic/pydantic-ai",
+        "sha": "377f4c2315d225ead8f58c6e4abb8277b7be9bce",
+        "commit_date": "2026-09-07T16:52:15-05:00",
+        "retrieved": "2026-09-08",
+        "archived": null,
+        "metadata_limit": "Лимит GitHub API; использован Git transport, archive flag неизвестен."
+      },
+      "depth": "D1",
+      "symbols": [
+        "UserPromptNode.run",
+        "TemporalAgent.run"
+      ],
+      "evidence": [
+        {
+          "path": "pydantic_ai_slim/pydantic_ai/_agent_graph.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              541,
+              584
+            ],
+            [
+              994,
+              1037
+            ]
+          ],
+          "file_lines": 3063,
+          "sha256": "92c172c616eab4314ccecf77a3ee78ed5a892db3f87bed7ac5f75748feebbd92",
+          "permalinks": [
+            "https://github.com/pydantic/pydantic-ai/blob/377f4c2315d225ead8f58c6e4abb8277b7be9bce/pydantic_ai_slim/pydantic_ai/_agent_graph.py#L541-L584",
+            "https://github.com/pydantic/pydantic-ai/blob/377f4c2315d225ead8f58c6e4abb8277b7be9bce/pydantic_ai_slim/pydantic_ai/_agent_graph.py#L994-L1037"
+          ]
+        },
+        {
+          "path": "pydantic_ai_slim/pydantic_ai/durable_exec/temporal/_agent.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              365,
+              434
+            ],
+            [
+              489,
+              515
+            ]
+          ],
+          "file_lines": 1381,
+          "sha256": "6fe62ff9ec2502de028d054a9b8b287204fc065524cad29b06e32657449fddc0",
+          "permalinks": [
+            "https://github.com/pydantic/pydantic-ai/blob/377f4c2315d225ead8f58c6e4abb8277b7be9bce/pydantic_ai_slim/pydantic_ai/durable_exec/temporal/_agent.py#L365-L434",
+            "https://github.com/pydantic/pydantic-ai/blob/377f4c2315d225ead8f58c6e4abb8277b7be9bce/pydantic_ai_slim/pydantic_ai/durable_exec/temporal/_agent.py#L489-L515"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "ModelRequestNode/CallToolsNode, message history cleanup",
+        "provider_portability": "model.request и отдельный temporal model override",
+        "tool_plugin_boundary": "Toolsets и DeferredToolResults в run API",
+        "context": "Repair dangling calls различает interrupted и complete",
+        "durable_recovery": "Temporal wrapper отдельно; generic cancellation_token отвергается",
+        "concurrency": "Параллелизм tools в этом проходе не прочитан",
+        "security": "Синтетическое закрытие dangling calls не attestation эффекта",
+        "runtime_overhead": "Python typing/graph; Temporal — дополнительный backend, не бесплатная durability"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Типизированные deferred результаты и backend-specific lifecycle ограничения.",
+      "rejected_alternative": "Не обещать единый cancel/replay контракт без адаптации backend; не выдавать synthesized return за receipt.",
+      "limitations": "Прочитаны узлы и wrapper entry, а не весь Temporal activity implementation.",
+      "tests_executed": false
+    },
+    {
+      "id": "S18",
+      "name": "smolagents",
+      "selection_mechanism": "Code-as-action",
+      "repository": {
+        "repo": "huggingface/smolagents",
+        "sha": "30bb1161095dbae2271e6bc3cc4c219cc3897a57",
+        "commit_date": "2026-08-22T14:10:32+02:00",
+        "retrieved": "2026-09-08",
+        "archived": null,
+        "metadata_limit": "Лимит GitHub API; использован Git transport, archive flag неизвестен."
+      },
+      "depth": "D2",
+      "symbols": [
+        "MultiStepAgent.run",
+        "CodeAgent.create_python_executor",
+        "CodeAgent._step_stream"
+      ],
+      "evidence": [
+        {
+          "path": "src/smolagents/agents.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              434,
+              477
+            ],
+            [
+              780,
+              823
+            ],
+            [
+              1598,
+              1645
+            ],
+            [
+              1700,
+              1745
+            ]
+          ],
+          "file_lines": 1813,
+          "sha256": "da0da2e258c346e28d97b3584dfe58dcd203fc20fbde6c6533e333f9b1a06352",
+          "permalinks": [
+            "https://github.com/huggingface/smolagents/blob/30bb1161095dbae2271e6bc3cc4c219cc3897a57/src/smolagents/agents.py#L434-L477",
+            "https://github.com/huggingface/smolagents/blob/30bb1161095dbae2271e6bc3cc4c219cc3897a57/src/smolagents/agents.py#L780-L823",
+            "https://github.com/huggingface/smolagents/blob/30bb1161095dbae2271e6bc3cc4c219cc3897a57/src/smolagents/agents.py#L1598-L1645",
+            "https://github.com/huggingface/smolagents/blob/30bb1161095dbae2271e6bc3cc4c219cc3897a57/src/smolagents/agents.py#L1700-L1745"
+          ]
+        },
+        {
+          "path": "src/smolagents/local_python_executor.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              242,
+              285
+            ],
+            [
+              1,
+              35
+            ]
+          ],
+          "file_lines": 1768,
+          "sha256": "41859e622bae8ad85ed861b7abef12b02f9106133a273c2f4d8a1e37a743d1ca",
+          "permalinks": [
+            "https://github.com/huggingface/smolagents/blob/30bb1161095dbae2271e6bc3cc4c219cc3897a57/src/smolagents/local_python_executor.py#L242-L285",
+            "https://github.com/huggingface/smolagents/blob/30bb1161095dbae2271e6bc3cc4c219cc3897a57/src/smolagents/local_python_executor.py#L1-L35"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "MultiStepAgent, CodeAgent извлекает code blob и вызывает executor",
+        "provider_portability": "Model abstraction; adapters не аудированы",
+        "tool_plugin_boundary": "Python code action; tools передаются executor",
+        "context": "Agent memory и state доступны коду",
+        "durable_recovery": "Восстановление внешних effects не установлено",
+        "concurrency": "Managed agents с remote executor отклоняются данным кодом",
+        "security": "LocalPythonExecutor — отдельный режим от Docker/E2B/Modal/Blaxel; security proof нет",
+        "runtime_overhead": "Python execution увеличивает выразительность и доверенную поверхность"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Code-as-action можно вынести в отдельно разрешённый sandbox skill оркестратора.",
+      "rejected_alternative": "Не давать worker произвольный локальный Python; restricted imports не заменяют OS isolation.",
+      "limitations": "Interpreter файл прочитан поверхностно; устойчивость к escape и состояние remote runtimes не проверены.",
+      "tests_executed": false
+    },
+    {
+      "id": "S19",
+      "name": "OpenAI Agents SDK (Python)",
+      "selection_mechanism": "Run loop и tool lifecycle",
+      "repository": {
+        "repo": "openai/openai-agents-python",
+        "sha": "a6115967489063447f2cb10de010a3e055254d14",
+        "commit_date": "2026-09-07T22:17:31Z",
+        "retrieved": "2026-09-08",
+        "archived": null,
+        "metadata_limit": "Лимит GitHub API; использован Git transport, archive flag неизвестен."
+      },
+      "depth": "D2",
+      "symbols": [
+        "run_loop",
+        "_FunctionToolBatchExecutor.execute",
+        "Session"
+      ],
+      "evidence": [
+        {
+          "path": "src/agents/run_internal/run_loop.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              442,
+              485
+            ],
+            [
+              1200,
+              1243
+            ]
+          ],
+          "file_lines": 2683,
+          "sha256": "e836760bc49dba0c4ff6dd9b5733a5edf0db3b9d66dcb32acf122dfa34d24b78",
+          "permalinks": [
+            "https://github.com/openai/openai-agents-python/blob/a6115967489063447f2cb10de010a3e055254d14/src/agents/run_internal/run_loop.py#L442-L485",
+            "https://github.com/openai/openai-agents-python/blob/a6115967489063447f2cb10de010a3e055254d14/src/agents/run_internal/run_loop.py#L1200-L1243"
+          ]
+        },
+        {
+          "path": "src/agents/run_internal/tool_execution.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              1594,
+              1637
+            ],
+            [
+              1783,
+              1826
+            ]
+          ],
+          "file_lines": 2785,
+          "sha256": "86b91c62df0779e896143e5bc841a962d436099d79365497377dd9a233b02946",
+          "permalinks": [
+            "https://github.com/openai/openai-agents-python/blob/a6115967489063447f2cb10de010a3e055254d14/src/agents/run_internal/tool_execution.py#L1594-L1637",
+            "https://github.com/openai/openai-agents-python/blob/a6115967489063447f2cb10de010a3e055254d14/src/agents/run_internal/tool_execution.py#L1783-L1826"
+          ]
+        },
+        {
+          "path": "src/agents/memory/session.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              41,
+              127
+            ]
+          ],
+          "file_lines": 239,
+          "sha256": "9d77da0fdd7435946cfaf1d35a9aeeb9609c54c92affcdb1e70e16974ac736bf",
+          "permalinks": [
+            "https://github.com/openai/openai-agents-python/blob/a6115967489063447f2cb10de010a3e055254d14/src/agents/memory/session.py#L41-L127"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Run loop с guardrails, turn state и resume",
+        "provider_portability": "Provider lifecycle вынесен в модуль; адаптеры не аудированы",
+        "tool_plugin_boundary": "FunctionTool с enabled-set проверкой, approval и tool context",
+        "context": "Session protocol get/add/pop/clear для истории",
+        "durable_recovery": "Session — история; durable execution эффектов не следует из этого API",
+        "concurrency": "Task slots, drain, cancellation и sibling failure",
+        "security": "Disabled configured tool отклоняется; sequential input guardrails до sandbox preparation",
+        "runtime_overhead": "Python; hosted provider tools требуют отдельной политики, Go binding не исследован"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Различать tool availability, approval, execution и output validation; не терять исходы завершившихся guardrails.",
+      "rejected_alternative": "Не считать session history универсальным crash recovery. Provider-side tools запрещены по умолчанию в строгом профиле.",
+      "limitations": "Не все run paths, session backend и SDK sandbox реализации исследованы; entitlement SDK не равен подписке Codex.",
+      "tests_executed": false
+    },
+    {
+      "id": "S20",
+      "name": "Google ADK (Python)",
+      "selection_mechanism": "Event/session и композиция агентов",
+      "repository": {
+        "repo": "google/adk-python",
+        "sha": "b0180620f4c2f4f4467a89c37a30f75bf849700b",
+        "commit_date": "2026-09-06T11:49:55-07:00",
+        "retrieved": "2026-09-08",
+        "archived": null,
+        "metadata_limit": "Лимит GitHub API; использован Git transport, archive flag неизвестен."
+      },
+      "depth": "D2",
+      "symbols": [
+        "BaseLlmFlow",
+        "ParallelAgent._run_async_impl",
+        "DatabaseSessionService.append_event"
+      ],
+      "evidence": [
+        {
+          "path": "src/google/adk/flows/llm_flows/base_llm_flow.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              339,
+              418
+            ]
+          ],
+          "file_lines": 1256,
+          "sha256": "cb5e0a16177febb2a6dca81a20f20892c8b646728ff6ba1cf3198f7382f06562",
+          "permalinks": [
+            "https://github.com/google/adk-python/blob/b0180620f4c2f4f4467a89c37a30f75bf849700b/src/google/adk/flows/llm_flows/base_llm_flow.py#L339-L418"
+          ]
+        },
+        {
+          "path": "src/google/adk/agents/parallel_agent.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              264,
+              307
+            ],
+            [
+              315,
+              321
+            ]
+          ],
+          "file_lines": 321,
+          "sha256": "760ce9887bb2552b617cc38939f4e6fe8df2fabb0042dc7951994100af0be93f",
+          "permalinks": [
+            "https://github.com/google/adk-python/blob/b0180620f4c2f4f4467a89c37a30f75bf849700b/src/google/adk/agents/parallel_agent.py#L264-L307",
+            "https://github.com/google/adk-python/blob/b0180620f4c2f4f4467a89c37a30f75bf849700b/src/google/adk/agents/parallel_agent.py#L315-L321"
+          ]
+        },
+        {
+          "path": "src/google/adk/sessions/database_session_service.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              864,
+              907
+            ]
+          ],
+          "file_lines": 1010,
+          "sha256": "d9561f4fa7a0529ac7e7e070e2f80d05824892069db4f07ac5f0f0fe314f38a1",
+          "permalinks": [
+            "https://github.com/google/adk-python/blob/b0180620f4c2f4f4467a89c37a30f75bf849700b/src/google/adk/sessions/database_session_service.py#L864-L907"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "LlmFlow generator, callbacks и events",
+        "provider_portability": "LlmRequest/LlmResponse; перечень adapters не проверен",
+        "tool_plugin_boundary": "Plugin callbacks могут вернуть response при model error",
+        "context": "InvocationContext и session state delta",
+        "durable_recovery": "DB append с session lock/row lock; partial events не сохраняются",
+        "concurrency": "ParallelAgent объединяет generators и пропускает уже завершённых детей",
+        "security": "Missing session отклоняется; callback policy не доказывает sandbox",
+        "runtime_overhead": "Python async+SQLAlchemy DB layer; Go ADK не исследован"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Отдельные partial/durable events и persisted completion детей при resume.",
+      "rejected_alternative": "Не считать recoverable callback ответ эквивалентом успешного запроса; ошибка provider должна сохранять provenance.",
+      "limitations": "Полная транзакция append_event и remote effects не проверены; live mode ParallelAgent явно не реализован.",
+      "tests_executed": false
+    },
+    {
+      "id": "S21",
+      "name": "CrewAI",
+      "selection_mechanism": "Ролевая task/flow оркестрация",
+      "repository": {
+        "repo": "crewAIInc/crewAI",
+        "sha": "1b855b4ff97d3fc8bf6dc0981fed5f0999a7cd81",
+        "commit_date": "2026-09-07T19:10:44+05:30",
+        "retrieved": "2026-09-08",
+        "archived": null,
+        "metadata_limit": "Лимит GitHub API; использован Git transport, archive flag неизвестен."
+      },
+      "depth": "D1",
+      "symbols": [
+        "CrewAgentExecutor.invoke",
+        "Flow"
+      ],
+      "evidence": [
+        {
+          "path": "lib/crewai/src/crewai/agents/crew_agent_executor.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              228,
+              271
+            ],
+            [
+              521,
+              564
+            ]
+          ],
+          "file_lines": 1670,
+          "sha256": "db772b254504e24c347e9f7833a5a39784489c43be7610ae01d90f28b7b06e48",
+          "permalinks": [
+            "https://github.com/crewAIInc/crewAI/blob/1b855b4ff97d3fc8bf6dc0981fed5f0999a7cd81/lib/crewai/src/crewai/agents/crew_agent_executor.py#L228-L271",
+            "https://github.com/crewAIInc/crewAI/blob/1b855b4ff97d3fc8bf6dc0981fed5f0999a7cd81/lib/crewai/src/crewai/agents/crew_agent_executor.py#L521-L564"
+          ]
+        },
+        {
+          "path": "lib/crewai/src/crewai/flow/flow.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              31,
+              47
+            ]
+          ],
+          "file_lines": 47,
+          "sha256": "7b586e9b8f85e65455d0b3f577b75167ff18a55bf177ff3aaeb2516a4e5c1cfb",
+          "permalinks": [
+            "https://github.com/crewAIInc/crewAI/blob/1b855b4ff97d3fc8bf6dc0981fed5f0999a7cd81/lib/crewai/src/crewai/flow/flow.py#L31-L47"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "invoke → _invoke_loop; max iterations и RPM guard",
+        "provider_portability": "BaseLLM в loop",
+        "tool_plugin_boundary": "Native tool calls передаются _handle_native_tool_calls",
+        "context": "messages, memory save и human feedback",
+        "durable_recovery": "_resuming сохраняет in-memory путь; durable Flow backend не прочитан",
+        "concurrency": "Не установлено; роль/crew не доказательство parallel scheduler",
+        "security": "ask_for_human_input — interaction, не capability grant",
+        "runtime_overhead": "Python; Flow re-export поверх RuntimeFlow, не маленькое ядро"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Task-level human feedback и memory как функции orchestrator tool-skill.",
+      "rejected_alternative": "Не встраивать crew/role организационную модель в worker.",
+      "limitations": "flow.py — тонкий wrapper, не реализация durable flow; каталогу запрещено повышать глубину по имени файла.",
+      "tests_executed": false
+    },
+    {
+      "id": "S22",
+      "name": "Strands Agents",
+      "selection_mechanism": "Event loop и swarm",
+      "repository": {
+        "repo": "strands-agents/sdk-python",
+        "sha": "e3f3ee49d4f5e1f94bc489df6f8603ce26442c31",
+        "commit_date": "2026-09-04T16:36:56-04:00",
+        "retrieved": "2026-09-08",
+        "archived": null,
+        "metadata_limit": "Лимит GitHub API; использован Git transport, archive flag неизвестен."
+      },
+      "depth": "D1",
+      "symbols": [
+        "event_loop_cycle",
+        "Swarm.stream_async"
+      ],
+      "evidence": [
+        {
+          "path": "strands-py/src/strands/event_loop/event_loop.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              187,
+              230
+            ],
+            [
+              487,
+              530
+            ]
+          ],
+          "file_lines": 1012,
+          "sha256": "fc7785464cf5e6ebfff3190855aa41826c04896b7285581f9f65463474fdc8eb",
+          "permalinks": [
+            "https://github.com/strands-agents/sdk-python/blob/e3f3ee49d4f5e1f94bc489df6f8603ce26442c31/strands-py/src/strands/event_loop/event_loop.py#L187-L230",
+            "https://github.com/strands-agents/sdk-python/blob/e3f3ee49d4f5e1f94bc489df6f8603ce26442c31/strands-py/src/strands/event_loop/event_loop.py#L487-L530"
+          ]
+        },
+        {
+          "path": "strands-py/src/strands/multiagent/swarm.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              376,
+              419
+            ],
+            [
+              785,
+              828
+            ]
+          ],
+          "file_lines": 1202,
+          "sha256": "d331242d70fd197ac4cb0b476b5570f734f67ed702995806fd030d7ff4d26043",
+          "permalinks": [
+            "https://github.com/strands-agents/sdk-python/blob/e3f3ee49d4f5e1f94bc489df6f8603ce26442c31/strands-py/src/strands/multiagent/swarm.py#L376-L419",
+            "https://github.com/strands-agents/sdk-python/blob/e3f3ee49d4f5e1f94bc489df6f8603ce26442c31/strands-py/src/strands/multiagent/swarm.py#L785-L828"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "event_loop_cycle плюс model retry hooks",
+        "provider_portability": "agent.model; реальные adapters не прочитаны",
+        "tool_plugin_boundary": "Tool execution есть в контракте цикла; dispatcher не прослежен",
+        "context": "Messages и invocation_state",
+        "durable_recovery": "Checkpoint в stop payload; storage/replay не проверены",
+        "concurrency": "Swarm проверяет handoff/iteration/timeout bounds",
+        "security": "BeforeModelCall может cancel; Swarm TODO о cancellation требует внимания",
+        "runtime_overhead": "Python async; swarm control plane отдельно от одиночного loop"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Структурированные stop reasons и ограничения handoff циклов.",
+      "rejected_alternative": "Не принимать наличие timeout/hook за доказанный interrupt запущенного child; нужен отдельный протокол cancellation.",
+      "limitations": "TODO — свидетельство открытого вопроса в прочитанном участке, не доказанный баг всех сценариев.",
+      "tests_executed": false
+    },
+    {
+      "id": "S23",
+      "name": "Mastra",
+      "selection_mechanism": "Workflow и durable agent facade",
+      "repository": {
+        "repo": "mastra-ai/mastra",
+        "sha": "9b7b80bdc3a54f0f51ea38c493c49a43a414831e",
+        "commit_date": "2026-09-07T15:18:41-07:00",
+        "retrieved": "2026-09-08",
+        "archived": null,
+        "metadata_limit": "Лимит GitHub API; использован Git transport, archive flag неизвестен."
+      },
+      "depth": "D1",
+      "symbols": [
+        "createDurableAgent",
+        "DefaultExecutionEngine"
+      ],
+      "evidence": [
+        {
+          "path": "packages/core/src/agent/durable/create-durable-agent.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              116,
+              157
+            ]
+          ],
+          "file_lines": 157,
+          "sha256": "88e724fd2b67dd356a3a77f03cb5bbefd1f02d7e8fa1c6b5efa040e3f8104828",
+          "permalinks": [
+            "https://github.com/mastra-ai/mastra/blob/9b7b80bdc3a54f0f51ea38c493c49a43a414831e/packages/core/src/agent/durable/create-durable-agent.ts#L116-L157"
+          ]
+        },
+        {
+          "path": "packages/core/src/workflows/default.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              70,
+              113
+            ]
+          ],
+          "file_lines": 1258,
+          "sha256": "7a4099308a3e6b3e866d25d5c996c9d714d6f6fff538ac3e6fe03fa5f4e8e940",
+          "permalinks": [
+            "https://github.com/mastra-ai/mastra/blob/9b7b80bdc3a54f0f51ea38c493c49a43a414831e/packages/core/src/workflows/default.ts#L70-L113"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Фабрика DurableAgent и workflow execution engine",
+        "provider_portability": "Agent объект в wrapper; provider не прочитан",
+        "tool_plugin_boundary": "TTools generic; execution implementation не прочитана",
+        "context": "Не установлено",
+        "durable_recovery": "Engine различает persisted suspended/paused/running; backend не проверен",
+        "concurrency": "Не установлено",
+        "security": "Process-local lastPersistedStatus не является durable authority",
+        "runtime_overhead": "TypeScript с cache/pubsub в durable factory; эксплуатационная цена не измерена"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Не затирать persisted suspended state поздним running update.",
+      "rejected_alternative": "Не принимать название DurableAgent за доказательство exactly-once или отсутствия инфраструктурных зависимостей.",
+      "limitations": "Фабрика не раскрывает фактический durable loop; сознательно D1, не глубокий аудит Mastra.",
+      "tests_executed": false
+    },
+    {
+      "id": "S24",
+      "name": "Pi",
+      "selection_mechanism": "Минимальный переиспользуемый loop",
+      "repository": {
+        "repo": "badlogic/pi-mono",
+        "sha": "b2602be77cb7b0de45dd616407fd210daa48aa75",
+        "commit_date": "2026-09-07T22:26:47+02:00",
+        "retrieved": "2026-09-08",
+        "archived": null,
+        "metadata_limit": "Лимит GitHub API; использован Git transport, archive flag неизвестен."
+      },
+      "depth": "D2",
+      "symbols": [
+        "runLoop",
+        "loadEntriesFromFile"
+      ],
+      "evidence": [
+        {
+          "path": "packages/agent/src/agent-loop.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              154,
+              212
+            ],
+            [
+              210,
+              285
+            ]
+          ],
+          "file_lines": 803,
+          "sha256": "1e16404a231912fbd7643d8317b15ec4cc6245ed8cedc37582a31d430a1cc6ac",
+          "permalinks": [
+            "https://github.com/badlogic/pi-mono/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/agent-loop.ts#L154-L212",
+            "https://github.com/badlogic/pi-mono/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/agent-loop.ts#L210-L285"
+          ]
+        },
+        {
+          "path": "packages/coding-agent/src/core/session-manager.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              494,
+              566
+            ]
+          ],
+          "file_lines": 1746,
+          "sha256": "57bc70a751567b96c057535766240ae52d9b76d9013ea78049d74dc3b654e915",
+          "permalinks": [
+            "https://github.com/badlogic/pi-mono/blob/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/coding-agent/src/core/session-manager.ts#L494-L566"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Общий runLoop для начального и продолжаемого запуска; follow-up/steering boundaries",
+        "provider_portability": "StreamFn и model config отделены от context",
+        "tool_plugin_boundary": "Tool calls исполняются после завершённого assistant response",
+        "context": "prepareNextTurn заменяет context/model; отдельный LLM projection",
+        "durable_recovery": "JSONL session loader; malformed lines пропускаются",
+        "concurrency": "Steering между turns; scheduler tools не исследован",
+        "security": "При stopReason length tool calls не исполняются",
+        "runtime_overhead": "TypeScript; хороший образец decomposition, не готовая Go dependency"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Безопасная граница steering и запрет исполнения усечённых tool arguments.",
+      "rejected_alternative": "Не переносить tolerant skip malformed journal в authority log Apiary; corrupted и absent должны различаться.",
+      "limitations": "JSONL loader может дописать newline при чтении; source не запускался и пользовательские сессии не открывались.",
+      "tests_executed": false
+    },
+    {
+      "id": "S25",
+      "name": "OpenClaw",
+      "selection_mechanism": "Gateway, каналы и встроенный runtime",
+      "repository": {
+        "repo": "openclaw/openclaw",
+        "sha": "f11fb86b8e8befeec175e8d9474238e07b4d57e5",
+        "commit_date": "2026-09-07T15:44:36-07:00",
+        "retrieved": "2026-09-08",
+        "archived": null,
+        "metadata_limit": "Лимит GitHub API; использован Git transport, archive flag неизвестен."
+      },
+      "depth": "D1",
+      "symbols": [
+        "runLoop",
+        "agentRunHandler"
+      ],
+      "evidence": [
+        {
+          "path": "docs/agent-runtime-architecture.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              1,
+              61
+            ]
+          ],
+          "file_lines": 61,
+          "sha256": "3e09ff21b4369a7c102db51e4458ad3ba1e86c9fe43a3a8bff72eef1713d2d51",
+          "permalinks": [
+            "https://github.com/openclaw/openclaw/blob/f11fb86b8e8befeec175e8d9474238e07b4d57e5/docs/agent-runtime-architecture.md#L1-L61"
+          ]
+        },
+        {
+          "path": "packages/agent-core/src/agent-loop.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              235,
+              285
+            ]
+          ],
+          "file_lines": 1667,
+          "sha256": "f531735ea366550bf601c8287754ebd5b32267787cae74d9b0e5c266351eb38b",
+          "permalinks": [
+            "https://github.com/openclaw/openclaw/blob/f11fb86b8e8befeec175e8d9474238e07b4d57e5/packages/agent-core/src/agent-loop.ts#L235-L285"
+          ]
+        },
+        {
+          "path": "src/agents/runtime/index.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              1,
+              56
+            ]
+          ],
+          "file_lines": 56,
+          "sha256": "0ca49e96ca1423e31d5594a19bae2faf459771e77f9da6392d158f670f077753",
+          "permalinks": [
+            "https://github.com/openclaw/openclaw/blob/f11fb86b8e8befeec175e8d9474238e07b4d57e5/src/agents/runtime/index.ts#L1-L56"
+          ]
+        },
+        {
+          "path": "src/gateway/server-methods/agent-run-handler.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              1,
+              44
+            ]
+          ],
+          "file_lines": 44,
+          "sha256": "3fe8935d205f4a3185e45583acd87cf4615f17aedc76f5eb2dabecdc7deda650",
+          "permalinks": [
+            "https://github.com/openclaw/openclaw/blob/f11fb86b8e8befeec175e8d9474238e07b4d57e5/src/gateway/server-methods/agent-run-handler.ts#L1-L44"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Gateway handler → preflight → startTurn; отдельный agent-core runLoop",
+        "provider_portability": "Docs: src/llm и plugin SDK transport; source adapters не проверены",
+        "tool_plugin_boundary": "Plugin SDK facade; tools принадлежат OpenClaw, а не внешнему Pi package",
+        "context": "Steering, turn taint и compaction helpers",
+        "durable_recovery": "Aborted outcome фиксируется в loop; session storage не проверен",
+        "concurrency": "Gateway admission guard передаётся startTurn; scheduling глубже не читался",
+        "security": "Проверка params и capture principal видны; полнота authority неизвестна",
+        "runtime_overhead": "TypeScript gateway+channels; большой host surface полезен orchestrator, избыточен worker"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Отделять channel ingress, principal capture, admission и loop. Отдельно публиковать цельное provider runtime generation.",
+      "rejected_alternative": "Не называть текущий runtime внешним Pi-based core: docs прямо говорят internalized @openclaw/agent-core и legacy alias pi. Не связывать с Claw Code leak descendants.",
+      "limitations": "Историческая code lineage не исследована; сходство символов не доказательство происхождения. Session/channel internals рассмотрены по docs, не полностью по коду.",
+      "tests_executed": false
+    },
+    {
+      "id": "S26",
+      "name": "Letta / MemGPT landing repository",
+      "selection_mechanism": "Идентичность проекта и преемник",
+      "repository": {
+        "repo": "letta-ai/letta",
+        "sha": "4511fa0bc91f68fbab32b91f694617271ea9012b",
+        "commit_date": "2026-08-23T12:00:36-07:00",
+        "retrieved": "2026-09-08",
+        "archived": null,
+        "metadata_limit": "Лимит GitHub API; использован Git transport, archive flag неизвестен."
+      },
+      "depth": "D0",
+      "symbols": [
+        "README: Historical source"
+      ],
+      "evidence": [
+        {
+          "path": "README.md",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              1,
+              41
+            ]
+          ],
+          "file_lines": 42,
+          "sha256": "00c3a2a06472974132ba5f3e4d30bb6b09f69b415cfbc8d4956eb4693532dca8",
+          "permalinks": [
+            "https://github.com/letta-ai/letta/blob/4511fa0bc91f68fbab32b91f694617271ea9012b/README.md#L1-L41"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Текущий README направляет к letta-code",
+        "provider_portability": "Не установлено",
+        "tool_plugin_boundary": "Не установлено",
+        "context": "Stateful memory заявлена",
+        "durable_recovery": "Старый V1 server оставлен в archive branch",
+        "concurrency": "Не установлено",
+        "security": "README запрещает production use неподдерживаемой archive версии",
+        "runtime_overhead": "Landing page не runnable runtime"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Сохранять различие идеи MemGPT и актуальной реализации Letta.",
+      "rejected_alternative": "Не оценивать retired Python V1 server как current Letta.",
+      "limitations": "Archive branch не инспектировалась; это current-source discovery, не аудит исторического MemGPT.",
+      "tests_executed": false
+    },
+    {
+      "id": "S27",
+      "name": "Letta Code / актуальный Letta harness",
+      "selection_mechanism": "Долгоживущая память",
+      "repository": {
+        "repo": "letta-ai/letta-code",
+        "sha": "2f0fb7c12c6973be7d52d9c7d3bf0bf4d9120cb8",
+        "commit_date": "2026-09-07T13:51:38-06:00",
+        "retrieved": "2026-09-08",
+        "archived": null,
+        "metadata_limit": "Лимит GitHub API; использован Git transport, archive flag неизвестен."
+      },
+      "depth": "D1",
+      "symbols": [
+        "getScopedMemoryFilesystemRoot",
+        "ensureLocalMemfsCheckout",
+        "isActiveMemfsEnabled"
+      ],
+      "evidence": [
+        {
+          "path": "src/agent/memory-runtime.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              1,
+              28
+            ]
+          ],
+          "file_lines": 28,
+          "sha256": "54ff0262bd947aa865f9e47cedba8c98b34bdc3d2b56aeae19749f8e9be9159b",
+          "permalinks": [
+            "https://github.com/letta-ai/letta-code/blob/2f0fb7c12c6973be7d52d9c7d3bf0bf4d9120cb8/src/agent/memory-runtime.ts#L1-L28"
+          ]
+        },
+        {
+          "path": "src/agent/memory-filesystem.ts",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              43,
+              80
+            ],
+            [
+              239,
+              275
+            ]
+          ],
+          "file_lines": 672,
+          "sha256": "532c48887a6dee937a069244cbc29a41459e44fc9866b99b421cc3655a547975",
+          "permalinks": [
+            "https://github.com/letta-ai/letta-code/blob/2f0fb7c12c6973be7d52d9c7d3bf0bf4d9120cb8/src/agent/memory-filesystem.ts#L43-L80",
+            "https://github.com/letta-ai/letta-code/blob/2f0fb7c12c6973be7d52d9c7d3bf0bf4d9120cb8/src/agent/memory-filesystem.ts#L239-L275"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "Цикл не инспектировался; исследована MemFS граница",
+        "provider_portability": "Не установлено",
+        "tool_plugin_boundary": "Memory helpers и backend capability; tool execution не инспектировался",
+        "context": "Agent-scoped memory directory; local/cloud backend различены",
+        "durable_recovery": "MemFS использует локальный git repository либо clone/pull remote",
+        "concurrency": "Memory concurrent write semantics не установлена",
+        "security": "Получение memory directory не доказательство изоляции файлов или trust",
+        "runtime_overhead": "TypeScript и git-backed memory; синхронизация — дополнительный lifecycle"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Память сделать отдельным версионированным артефактом с ownership, а не полагаться только на transcript.",
+      "rejected_alternative": "Не трактовать долговечную память как авторитетные инструкции; не включать cloud memory sync в минимальный kernel.",
+      "limitations": "Функции материализации прочитаны; криптографические и conflict-resolution гарантии memory-git не проверены.",
+      "tests_executed": false
+    },
+    {
+      "id": "S28",
+      "name": "LangChain deepagents",
+      "selection_mechanism": "Harness layering над framework",
+      "repository": {
+        "repo": "langchain-ai/deepagents",
+        "sha": "18106be837bcdd9005b2dd73280d871a0621bf99",
+        "commit_date": "2026-09-07T17:23:07-04:00",
+        "retrieved": "2026-09-08",
+        "archived": null,
+        "metadata_limit": "Лимит GitHub API; использован Git transport, archive flag неизвестен."
+      },
+      "depth": "D1",
+      "symbols": [
+        "create_deep_agent",
+        "MemoryMiddleware.before_agent"
+      ],
+      "evidence": [
+        {
+          "path": "libs/deepagents/deepagents/graph.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              900,
+              973
+            ]
+          ],
+          "file_lines": 978,
+          "sha256": "2c0c9a5fc4a836b17d31076834d884d00a705f369317eb30fd1ceddec3b12e95",
+          "permalinks": [
+            "https://github.com/langchain-ai/deepagents/blob/18106be837bcdd9005b2dd73280d871a0621bf99/libs/deepagents/deepagents/graph.py#L900-L973"
+          ]
+        },
+        {
+          "path": "libs/deepagents/deepagents/middleware/memory.py",
+          "inspection": "выборочные фрагменты, не полный файл",
+          "read_ranges": [
+            [
+              279,
+              313
+            ]
+          ],
+          "file_lines": 417,
+          "sha256": "425d9927a0874a0ea55a23182875eb1f3dc1b7452e0a74feb7ca3f994d37a1ee",
+          "permalinks": [
+            "https://github.com/langchain-ai/deepagents/blob/18106be837bcdd9005b2dd73280d871a0621bf99/libs/deepagents/deepagents/middleware/memory.py#L279-L313"
+          ]
+        }
+      ],
+      "matrix": {
+        "core_loop": "create_deep_agent собирает middleware и вызывает LangChain create_agent",
+        "provider_portability": "model передаётся underlying agent",
+        "tool_plugin_boundary": "Profile/custom middleware, HITL, tool exclusion применяется последним",
+        "context": "Memory backend.download_files; missing отличён от ошибки чтения",
+        "durable_recovery": "checkpointer и store передаются дальше; собственный effects recovery не доказан",
+        "concurrency": "Subagent middleware существует; scheduler не прослежен",
+        "security": "Memory read errors кроме file_not_found вызывают ValueError; tool exclusion order виден",
+        "runtime_overhead": "Python, слои LangChain/LangGraph; готовые features увеличивают dependency closure"
+      },
+      "observation_scope": "Только указанные прочитанные фрагменты; реализации не исполнялись.",
+      "adoption_recommendation": "Явный порядок middleware и различение отсутствия/ошибки чтения; harness policy как профиль над общим циклом.",
+      "rejected_alternative": "Не делать filesystem, memory и subagents встроенной обязательной поверхностью worker; не допускать custom layer после security enforcement.",
+      "limitations": "Проверены assembly и memory loading; полнота exclusion/HITL и LangGraph integration не испытаны.",
+      "tests_executed": false
+    }
+  ],
+  "closed_environments": [
+    {
+      "name": "Cursor",
+      "depth": "D0",
+      "source_access": "docs-only; авторитетная реализация внутреннего runtime в этом проходе не установлена",
+      "retrieved": "2026-09-08",
+      "url": "https://cursor.com/docs/agent/overview",
+      "observation": "Документация описывает instructions/tools/model, checkpoints файлов и steering между вызовами.",
+      "architecture_consequence": "Использовать как UX-counterpoint; файловый checkpoint не восстанавливает внешний эффект.",
+      "repository_commit": null,
+      "unknowns": [
+        "внутренний event loop",
+        "provider credential boundary",
+        "crash recovery внешних эффектов",
+        "полнота enforcement",
+        "время/память исполнения"
+      ]
+    },
+    {
+      "name": "Amp",
+      "depth": "D0",
+      "source_access": "docs-only; авторитетная реализация внутреннего runtime в этом проходе не установлена",
+      "retrieved": "2026-09-08",
+      "url": "https://ampcode.com/docs",
+      "observation": "Официальный manual перенаправляет на docs.",
+      "architecture_consequence": "Оценивать внешний integration contract; не выводить внутреннюю архитектуру по интерфейсу.",
+      "repository_commit": null,
+      "unknowns": [
+        "внутренний event loop",
+        "provider credential boundary",
+        "crash recovery внешних эффектов",
+        "полнота enforcement",
+        "время/память исполнения"
+      ]
+    },
+    {
+      "name": "Devin",
+      "depth": "D0",
+      "source_access": "docs-only; авторитетная реализация внутреннего runtime в этом проходе не установлена",
+      "retrieved": "2026-09-08",
+      "url": "https://docs.devin.ai/essential-guidelines/when-to-use-devin",
+      "observation": "Документация описывает сценарии делегирования задач.",
+      "architecture_consequence": "Продуктовый ориентир делегирования, не source donor ядра.",
+      "repository_commit": null,
+      "unknowns": [
+        "внутренний event loop",
+        "provider credential boundary",
+        "crash recovery внешних эффектов",
+        "полнота enforcement",
+        "время/память исполнения"
+      ]
+    },
+    {
+      "name": "GitHub Copilot cloud agent",
+      "depth": "D0",
+      "source_access": "docs-only; авторитетная реализация внутреннего runtime в этом проходе не установлена",
+      "retrieved": "2026-09-08",
+      "url": "https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent",
+      "observation": "Официальная страница coding-agent перенаправляет на cloud-agent.",
+      "architecture_consequence": "Не путать опубликованный SDK/client с доступностью source внутреннего cloud runtime.",
+      "repository_commit": null,
+      "unknowns": [
+        "внутренний event loop",
+        "provider credential boundary",
+        "crash recovery внешних эффектов",
+        "полнота enforcement",
+        "время/память исполнения"
+      ]
+    }
+  ],
+  "primary_documentation": [
+    {
+      "url": "https://www.deepseek.com/harness/en/",
+      "retrieved": "2026-09-08",
+      "claim": "Официальный сайт ссылается на deepseek-ai/deepseek-harness."
+    },
+    {
+      "url": "https://learn.chatgpt.com/docs/auth",
+      "retrieved": "2026-09-08",
+      "claim": "Subscription access Codex и API-key access разделены; general API требует Platform key."
+    },
+    {
+      "url": "https://geminicli.com/docs/get-started/authentication/",
+      "retrieved": "2026-09-08",
+      "claim": "Google account, Gemini API key и Vertex AI — разные auth paths."
+    },
+    {
+      "url": "https://goose-docs.ai/docs/guides/acp-providers/",
+      "retrieved": "2026-09-08",
+      "claim": "ACP передаёт extensions как MCP; docs отдельно исключают session resume/fork."
+    }
+  ],
+  "local_inputs": [
+    {
+      "name": "curator-agent-runtime",
+      "path": "/Users/iv/Developer/ReluxWorks/curator-agent-runtime",
+      "origin": "git@github.com:relux-works/curator-agent-runtime.git",
+      "origin_exit": 0,
+      "commit": "da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f",
+      "commit_exit": 0,
+      "dirty_exit": 0,
+      "dirty": true,
+      "dirty_scope": "board metadata"
+    },
+    {
+      "name": "apiary-docs",
+      "path": "/Users/iv/Developer/ReluxWorks/apiary-docs",
+      "origin": "git@github.com:relux-works/apiary-docs.git",
+      "origin_exit": 0,
+      "commit": "b1ad6d76d803cd3f8e46e2b9621d266d36f3a0c7",
+      "commit_exit": 0,
+      "dirty_exit": 0,
+      "dirty": false,
+      "dirty_scope": "clean"
+    },
+    {
+      "name": "curator",
+      "path": "/Users/iv/Developer/ReluxWorks/curator",
+      "origin": "https://github.com/relux-works/curator.git",
+      "origin_exit": 0,
+      "commit": "a66eec88fa4dfb8f3ca098f594f6e48af57a6835",
+      "commit_exit": 0,
+      "dirty_exit": 0,
+      "dirty": true,
+      "dirty_scope": "board metadata"
+    },
+    {
+      "name": "curator-spec",
+      "path": "/Users/iv/Developer/ReluxWorks/curator-spec",
+      "origin": "https://github.com/relux-works/curator-spec.git",
+      "origin_exit": 0,
+      "commit": "87a0d0060bad64ab883d007dcdf35df7485368bf",
+      "commit_exit": 0,
+      "dirty_exit": 0,
+      "dirty": false,
+      "dirty_scope": "clean"
+    },
+    {
+      "name": "skill-project-management",
+      "path": "/Users/iv/Developer/ReluxWorks/skill-project-management",
+      "origin": "git@github.com:relux-works/skill-project-management.git",
+      "origin_exit": 0,
+      "commit": "14e2483be64c817a76a19ac8dd5608e717e56285",
+      "commit_exit": 0,
+      "dirty_exit": 0,
+      "dirty": false,
+      "dirty_scope": "clean"
+    }
+  ],
+  "discovered_not_source_inspected": [
+    {
+      "name": "Microsoft Agent Framework Go",
+      "repository": "https://github.com/microsoft/agent-framework-go",
+      "evidence_system": "S16",
+      "depth": "D0",
+      "reason": "Отдельный Go SDK указан текущим README MAF; source parity не установлена."
+    },
+    {
+      "name": "ZooCode",
+      "repository": "https://github.com/Zoo-Code-Org/Zoo-Code",
+      "evidence_system": "S11",
+      "depth": "D0",
+      "reason": "README Roo Code указывает community fork; официальный преемник компании из этого не следует."
+    }
+  ],
+  "excluded_boundaries": [
+    "Не перепроверены все языковые SDK, форки и исторические версии.",
+    "Codex/Claude Code не входят в этот source pass; auth Codex использован только как первичная документация entitlement.",
+    "Не измерялись популярность, benchmark, RAM, startup latency, sandbox escapes, лицензии всех transitive dependencies."
+  ],
+  "retrieval_failures": [
+    "GitHub API HTTP 403 rate limit для восьми repositories основного прохода; восстановлено через git transport.",
+    "Первоначальный OpenCode prompt.ts оказался re-export; глубина не повышалась.",
+    "task-board logbook отсутствует; logbook сохраняется в task-scoped исследовательском артефакте и notes."
+  ],
+  "worktree_evidence_commit": "da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f"
+}

@@ -1,0 +1,506 @@
+[
+  {
+    "id": "S01",
+    "path": "packages/core/src/core/client.ts",
+    "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/85aca163f6c73ac6ce380b5447359146b8adcae4/packages/core/src/core/client.ts",
+    "ok": true,
+    "sha256": "6a6935054eedede5561272c9e53026ac50e604721ec9fbed95fe14d615a6676c"
+  },
+  {
+    "id": "S01",
+    "path": "packages/core/src/scheduler/scheduler.ts",
+    "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/85aca163f6c73ac6ce380b5447359146b8adcae4/packages/core/src/scheduler/scheduler.ts",
+    "ok": true,
+    "sha256": "75f39d7daed17f7a1f73a48bacf0c239214ead672110e7f8898fe2b846bc5f1c"
+  },
+  {
+    "id": "S01",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/85aca163f6c73ac6ce380b5447359146b8adcae4/README.md",
+    "ok": true,
+    "sha256": "bacf354f3f674d57679ebf7b42dd69311bb9ef14200e18ca703d82aba48bf833"
+  },
+  {
+    "id": "S02",
+    "path": "packages/core/src/core/client.ts",
+    "url": "https://raw.githubusercontent.com/QwenLM/qwen-code/f1ed3bc31a2b618072dbd3c8d9ee3e04f48416d1/packages/core/src/core/client.ts",
+    "ok": true,
+    "sha256": "4dd918068759c3af9c609bf7cda9d2c65d7d47485c2f5f5a86ea5476118b35ec"
+  },
+  {
+    "id": "S02",
+    "path": "packages/core/src/core/contentGenerator.ts",
+    "url": "https://raw.githubusercontent.com/QwenLM/qwen-code/f1ed3bc31a2b618072dbd3c8d9ee3e04f48416d1/packages/core/src/core/contentGenerator.ts",
+    "ok": true,
+    "sha256": "a5d5056209b039d0daaa3386d51c073cfc493b9ed297e1520e9b2c843b63e5c3"
+  },
+  {
+    "id": "S02",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/QwenLM/qwen-code/f1ed3bc31a2b618072dbd3c8d9ee3e04f48416d1/README.md",
+    "ok": true,
+    "sha256": "6f6a70e949f8a102aaaa0ec39ac8cb354534915a9f99f3ae6ed10b55b3477ebd"
+  },
+  {
+    "id": "S03",
+    "path": "packages/core/src/session/prompt.ts",
+    "url": "https://raw.githubusercontent.com/anomalyco/opencode/ecbc6ccac85b3e8087b6445e584318419b9e2b34/packages/core/src/session/prompt.ts",
+    "ok": true,
+    "sha256": "f617d889d032bd762f4c8f57f0839d81d320e223139c24c4838f7992cbe1679b"
+  },
+  {
+    "id": "S03",
+    "path": "packages/opencode/src/session/processor.ts",
+    "url": "https://raw.githubusercontent.com/anomalyco/opencode/ecbc6ccac85b3e8087b6445e584318419b9e2b34/packages/opencode/src/session/processor.ts",
+    "ok": true,
+    "sha256": "0b31e207beda56bd9a4b9b88c9e42d89a0651dd011773748c8e2938dfc3dcb74"
+  },
+  {
+    "id": "S03",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/anomalyco/opencode/ecbc6ccac85b3e8087b6445e584318419b9e2b34/README.md",
+    "ok": true,
+    "sha256": "400890a3082e225c440561825270a911cd7df90a9f64f85166aed330201e50ba"
+  },
+  {
+    "id": "S04",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/OpenHands/OpenHands/f7fb0c4b21f5ed726edbba8a6309634ef434b004/README.md",
+    "ok": true,
+    "sha256": "16c8207274f40f5c9bed551b7778f2e58ae03a6324ef1fe6e10386404187fedd"
+  },
+  {
+    "id": "S05",
+    "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+    "url": "https://raw.githubusercontent.com/OpenHands/software-agent-sdk/df2ea8fa5542d5d2a543e108bc8b2d4fbbab34b1/openhands-sdk/openhands/sdk/agent/agent.py",
+    "ok": true,
+    "sha256": "dc65fb1eabd6a3ed0ab2843bf3ef8f08b988fb7bd906588e55ab020d049fffdc"
+  },
+  {
+    "id": "S05",
+    "path": "openhands-sdk/openhands/sdk/conversation/event_store.py",
+    "url": "https://raw.githubusercontent.com/OpenHands/software-agent-sdk/df2ea8fa5542d5d2a543e108bc8b2d4fbbab34b1/openhands-sdk/openhands/sdk/conversation/event_store.py",
+    "ok": true,
+    "sha256": "af721391c46a1979c45e0e414c45a82dfc42d8a92d62ac2ccea0242f725450b0"
+  },
+  {
+    "id": "S05",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/OpenHands/software-agent-sdk/df2ea8fa5542d5d2a543e108bc8b2d4fbbab34b1/README.md",
+    "ok": true,
+    "sha256": "95094c9745c7cc58136d4eaa1688fb6038aafefec2be05344293f6df7e55dbf8"
+  },
+  {
+    "id": "S06",
+    "path": "sweagent/agent/agents.py",
+    "url": "https://raw.githubusercontent.com/SWE-agent/SWE-agent/3ea751c087f32b16e039a2233dd6eefecef325d5/sweagent/agent/agents.py",
+    "ok": true,
+    "sha256": "d6cdf7ac66a6509ceba08e3541b856f0734acf79f9a485ed8a6e2c72f0d211a8"
+  },
+  {
+    "id": "S06",
+    "path": "sweagent/tools/tools.py",
+    "url": "https://raw.githubusercontent.com/SWE-agent/SWE-agent/3ea751c087f32b16e039a2233dd6eefecef325d5/sweagent/tools/tools.py",
+    "ok": true,
+    "sha256": "6a5b9ca0b4b7bbc60364fb832a478fad7c7c41a0d91cb0718c9ad523120e9a70"
+  },
+  {
+    "id": "S06",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/SWE-agent/SWE-agent/3ea751c087f32b16e039a2233dd6eefecef325d5/README.md",
+    "ok": true,
+    "sha256": "dcd880557720efbab0f5c0e68f2bc742309efecfce83244c9e670ec1f1adf76f"
+  },
+  {
+    "id": "S07",
+    "path": "src/minisweagent/agents/default.py",
+    "url": "https://raw.githubusercontent.com/SWE-agent/mini-swe-agent/04d809ceab9df28f9adaed044884180159172930/src/minisweagent/agents/default.py",
+    "ok": true,
+    "sha256": "e8ef8aa365942d739c2ec5cb0879f60f377d2dc2de8ec670aaedf3bafb45a4c2"
+  },
+  {
+    "id": "S07",
+    "path": "src/minisweagent/environments/local.py",
+    "url": "https://raw.githubusercontent.com/SWE-agent/mini-swe-agent/04d809ceab9df28f9adaed044884180159172930/src/minisweagent/environments/local.py",
+    "ok": true,
+    "sha256": "01dd33ae6be897458611911cc0eee1389092ea9fc6788c7eb24773e7c6342b1c"
+  },
+  {
+    "id": "S07",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/SWE-agent/mini-swe-agent/04d809ceab9df28f9adaed044884180159172930/README.md",
+    "ok": true,
+    "sha256": "9982d90b7566f2f3fa5e9811b475d5e8e2a84e2df80cf3f1e4be6e820b129835"
+  },
+  {
+    "id": "S08",
+    "path": "aider/coders/base_coder.py",
+    "url": "https://raw.githubusercontent.com/Aider-AI/aider/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/coders/base_coder.py",
+    "ok": true,
+    "sha256": "04a7b38c4f1d2b1684ac958f40bcd81a28b00139eae88afed59d2c970bef1ee1"
+  },
+  {
+    "id": "S08",
+    "path": "aider/repomap.py",
+    "url": "https://raw.githubusercontent.com/Aider-AI/aider/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/repomap.py",
+    "ok": true,
+    "sha256": "a5d4befe70445114b9f62da47b0eeb2a5384f9e84a0c083c77a4b339caf61ecd"
+  },
+  {
+    "id": "S09",
+    "path": "crates/goose/src/agents/agent.rs",
+    "url": "https://raw.githubusercontent.com/aaif-goose/goose/5e90925962f05acf8e255032de44d16c4a7768a2/crates/goose/src/agents/agent.rs",
+    "ok": true,
+    "sha256": "cf1dc22510cb0a780ec6351c6e378b4021018fe8f187d2e28a46aded370b4b99"
+  },
+  {
+    "id": "S09",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/aaif-goose/goose/5e90925962f05acf8e255032de44d16c4a7768a2/README.md",
+    "ok": true,
+    "sha256": "0f1df85a0c457caf1f3c4e1c0370f2da3887fffa588d207862cfc298c1d39755"
+  },
+  {
+    "id": "S10",
+    "path": "sdk/packages/agents/src/agent-runtime.ts",
+    "url": "https://raw.githubusercontent.com/cline/cline/c21b17255b228e88a1518c18a73a473ee5876362/sdk/packages/agents/src/agent-runtime.ts",
+    "ok": true,
+    "sha256": "f3b74e7b2a121ad77d63a337a8537e4b4f6786247200b73de6c1a1010f04befc"
+  },
+  {
+    "id": "S10",
+    "path": "sdk/packages/core/src/runtime/orchestration/session-runtime-orchestrator.ts",
+    "url": "https://raw.githubusercontent.com/cline/cline/c21b17255b228e88a1518c18a73a473ee5876362/sdk/packages/core/src/runtime/orchestration/session-runtime-orchestrator.ts",
+    "ok": true,
+    "sha256": "29748a635f2ba04e3ff829988bebcbc9292deb0387c0bb2c9bc6a847ebad2de4"
+  },
+  {
+    "id": "S10",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/cline/cline/c21b17255b228e88a1518c18a73a473ee5876362/README.md",
+    "ok": true,
+    "sha256": "b3747628b566bd93efd43ddba63923060bc224adcdea4b86e22897e504f6452e"
+  },
+  {
+    "id": "S11",
+    "path": "src/core/task/Task.ts",
+    "url": "https://raw.githubusercontent.com/RooCodeInc/Roo-Code/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/src/core/task/Task.ts",
+    "ok": true,
+    "sha256": "d0deb99b4972f84be0d8494223d82504315ea305d9cdecba2b16e5176fe23baa"
+  },
+  {
+    "id": "S11",
+    "path": "src/services/checkpoints/ShadowCheckpointService.ts",
+    "url": "https://raw.githubusercontent.com/RooCodeInc/Roo-Code/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/src/services/checkpoints/ShadowCheckpointService.ts",
+    "ok": true,
+    "sha256": "bb9f22c24e73dd17d61a1a4a2a4ba469997ae823c7b2e228386684ebb21595f0"
+  },
+  {
+    "id": "S11",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/RooCodeInc/Roo-Code/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/README.md",
+    "ok": true,
+    "sha256": "bcabc1221142dc7d7161d089dcd945bb50ff8d7498d7c6b8774b10a8cd5c164f"
+  },
+  {
+    "id": "S12",
+    "path": "core/tools/callTool.ts",
+    "url": "https://raw.githubusercontent.com/continuedev/continue/5522c6f44ca0ac3528b37244818fbfa39b5af470/core/tools/callTool.ts",
+    "ok": true,
+    "sha256": "b2c9184b466a131625b37af8f2f335cedb294fe03adf7a545294a38cfd7f3cb8"
+  },
+  {
+    "id": "S12",
+    "path": "core/tools/builtIn.ts",
+    "url": "https://raw.githubusercontent.com/continuedev/continue/5522c6f44ca0ac3528b37244818fbfa39b5af470/core/tools/builtIn.ts",
+    "ok": true,
+    "sha256": "d63ba2c90c4e2e15bb080caaccd65a8dbbf2bb7a9d45808bd8e219c6c59ec8b3"
+  },
+  {
+    "id": "S12",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/continuedev/continue/5522c6f44ca0ac3528b37244818fbfa39b5af470/README.md",
+    "ok": true,
+    "sha256": "054b77f9573011fa4ebf89d960300aabd1ebecc37d8f6f261341ba7d27d885e7"
+  },
+  {
+    "id": "S13",
+    "path": "packages/core/agent-loop/src/agent.ts",
+    "url": "https://raw.githubusercontent.com/deepseek-ai/deepseek-harness/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/agent-loop/src/agent.ts",
+    "ok": true,
+    "sha256": "22db5992a548cc65a250b5a745900b7e6a7889e2acd60c088de8a20f8ad793e3"
+  },
+  {
+    "id": "S13",
+    "path": "packages/core/agent-loop/src/tool-calls.ts",
+    "url": "https://raw.githubusercontent.com/deepseek-ai/deepseek-harness/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/agent-loop/src/tool-calls.ts",
+    "ok": true,
+    "sha256": "1f8984127d4245b6a08c1e4b0c8b9d8fa7ce30ffcf08184187f16dc1bf57ae6d"
+  },
+  {
+    "id": "S13",
+    "path": "packages/core/tools/src/index.ts",
+    "url": "https://raw.githubusercontent.com/deepseek-ai/deepseek-harness/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/packages/core/tools/src/index.ts",
+    "ok": true,
+    "sha256": "eb7a08e72f8fe9fa6869b85e33a1e74566b3242ff1910064b700c2562c12e6bf"
+  },
+  {
+    "id": "S13",
+    "path": "docs/architecture.md",
+    "url": "https://raw.githubusercontent.com/deepseek-ai/deepseek-harness/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/docs/architecture.md",
+    "ok": true,
+    "sha256": "f1f418ad72e639b45599265757a5e0b40ed9160a9cbd066e6ec11833608f2db8"
+  },
+  {
+    "id": "S13",
+    "path": "docs/subsystems/core.md",
+    "url": "https://raw.githubusercontent.com/deepseek-ai/deepseek-harness/c389f96bf3a9b6807cb71ed6bdad5849be0df6d8/docs/subsystems/core.md",
+    "ok": true,
+    "sha256": "98da0d8d26ac17fca526fdc777c775f0d58be92710c73d669aa14106d6b7a562"
+  },
+  {
+    "id": "S14",
+    "path": "libs/langgraph/langgraph/pregel/_loop.py",
+    "url": "https://raw.githubusercontent.com/langchain-ai/langgraph/81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1/libs/langgraph/langgraph/pregel/_loop.py",
+    "ok": true,
+    "sha256": "33150cf70fc08fd01affeae0345aa20569d2705704e3d209733d9c7b43dd5c0a"
+  },
+  {
+    "id": "S14",
+    "path": "libs/langgraph/langgraph/pregel/_runner.py",
+    "url": "https://raw.githubusercontent.com/langchain-ai/langgraph/81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1/libs/langgraph/langgraph/pregel/_runner.py",
+    "ok": true,
+    "sha256": "316cf133c724163a18ef279322615588b3fa8b96e359289a7cadea90f0df7622"
+  },
+  {
+    "id": "S14",
+    "path": "libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+    "url": "https://raw.githubusercontent.com/langchain-ai/langgraph/81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+    "ok": true,
+    "sha256": "2953a9af1106ce832eda01add85013168b5cb7b316a5865cc7f1a67ad01ad73e"
+  },
+  {
+    "id": "S15",
+    "path": "python/packages/autogen-core/src/autogen_core/_single_threaded_agent_runtime.py",
+    "url": "https://raw.githubusercontent.com/microsoft/autogen/027ecf0a379bcc1d09956d46d12d44a3ad9cee14/python/packages/autogen-core/src/autogen_core/_single_threaded_agent_runtime.py",
+    "ok": true,
+    "sha256": "b7579b335e10af51b5dcb06b76dee2e41ae2ed44c2046693c822b7ef617eac52"
+  },
+  {
+    "id": "S15",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/microsoft/autogen/027ecf0a379bcc1d09956d46d12d44a3ad9cee14/README.md",
+    "ok": true,
+    "sha256": "5d300aa3304aeecf1a48f68ac76a1af255b8645d666b8aa154790cb30f1dbb94"
+  },
+  {
+    "id": "S16",
+    "path": "python/packages/core/agent_framework/_workflows/_runner.py",
+    "url": "https://raw.githubusercontent.com/microsoft/agent-framework/fdf7e80ad6c8f6dbdd9b779d5d6923c74d8b583e/python/packages/core/agent_framework/_workflows/_runner.py",
+    "ok": true,
+    "sha256": "13b485d21bdc32e970592a5b70e056a3141c57502fffcac050b5a336801523b2"
+  },
+  {
+    "id": "S16",
+    "path": "python/packages/core/agent_framework/_workflows/_checkpoint.py",
+    "url": "https://raw.githubusercontent.com/microsoft/agent-framework/fdf7e80ad6c8f6dbdd9b779d5d6923c74d8b583e/python/packages/core/agent_framework/_workflows/_checkpoint.py",
+    "ok": true,
+    "sha256": "9580095d159528d009273efe587fd28a9bceb16b7f004f19b11e9927c041a05e"
+  },
+  {
+    "id": "S16",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/microsoft/agent-framework/fdf7e80ad6c8f6dbdd9b779d5d6923c74d8b583e/README.md",
+    "ok": true,
+    "sha256": "5f1783b1cbc09d64a69465091c68ab6ea8b18546987c5e0bb23ea221a0ed70d7"
+  },
+  {
+    "id": "S17",
+    "path": "pydantic_ai_slim/pydantic_ai/_agent_graph.py",
+    "url": "https://raw.githubusercontent.com/pydantic/pydantic-ai/377f4c2315d225ead8f58c6e4abb8277b7be9bce/pydantic_ai_slim/pydantic_ai/_agent_graph.py",
+    "ok": true,
+    "sha256": "92c172c616eab4314ccecf77a3ee78ed5a892db3f87bed7ac5f75748feebbd92"
+  },
+  {
+    "id": "S17",
+    "path": "pydantic_ai_slim/pydantic_ai/durable_exec/temporal/_agent.py",
+    "url": "https://raw.githubusercontent.com/pydantic/pydantic-ai/377f4c2315d225ead8f58c6e4abb8277b7be9bce/pydantic_ai_slim/pydantic_ai/durable_exec/temporal/_agent.py",
+    "ok": true,
+    "sha256": "6fe62ff9ec2502de028d054a9b8b287204fc065524cad29b06e32657449fddc0"
+  },
+  {
+    "id": "S18",
+    "path": "src/smolagents/agents.py",
+    "url": "https://raw.githubusercontent.com/huggingface/smolagents/30bb1161095dbae2271e6bc3cc4c219cc3897a57/src/smolagents/agents.py",
+    "ok": true,
+    "sha256": "da0da2e258c346e28d97b3584dfe58dcd203fc20fbde6c6533e333f9b1a06352"
+  },
+  {
+    "id": "S18",
+    "path": "src/smolagents/local_python_executor.py",
+    "url": "https://raw.githubusercontent.com/huggingface/smolagents/30bb1161095dbae2271e6bc3cc4c219cc3897a57/src/smolagents/local_python_executor.py",
+    "ok": true,
+    "sha256": "41859e622bae8ad85ed861b7abef12b02f9106133a273c2f4d8a1e37a743d1ca"
+  },
+  {
+    "id": "S19",
+    "path": "src/agents/run_internal/run_loop.py",
+    "url": "https://raw.githubusercontent.com/openai/openai-agents-python/a6115967489063447f2cb10de010a3e055254d14/src/agents/run_internal/run_loop.py",
+    "ok": true,
+    "sha256": "e836760bc49dba0c4ff6dd9b5733a5edf0db3b9d66dcb32acf122dfa34d24b78"
+  },
+  {
+    "id": "S19",
+    "path": "src/agents/run_internal/tool_execution.py",
+    "url": "https://raw.githubusercontent.com/openai/openai-agents-python/a6115967489063447f2cb10de010a3e055254d14/src/agents/run_internal/tool_execution.py",
+    "ok": true,
+    "sha256": "86b91c62df0779e896143e5bc841a962d436099d79365497377dd9a233b02946"
+  },
+  {
+    "id": "S19",
+    "path": "src/agents/memory/session.py",
+    "url": "https://raw.githubusercontent.com/openai/openai-agents-python/a6115967489063447f2cb10de010a3e055254d14/src/agents/memory/session.py",
+    "ok": true,
+    "sha256": "9d77da0fdd7435946cfaf1d35a9aeeb9609c54c92affcdb1e70e16974ac736bf"
+  },
+  {
+    "id": "S20",
+    "path": "src/google/adk/flows/llm_flows/base_llm_flow.py",
+    "url": "https://raw.githubusercontent.com/google/adk-python/b0180620f4c2f4f4467a89c37a30f75bf849700b/src/google/adk/flows/llm_flows/base_llm_flow.py",
+    "ok": true,
+    "sha256": "cb5e0a16177febb2a6dca81a20f20892c8b646728ff6ba1cf3198f7382f06562"
+  },
+  {
+    "id": "S20",
+    "path": "src/google/adk/agents/parallel_agent.py",
+    "url": "https://raw.githubusercontent.com/google/adk-python/b0180620f4c2f4f4467a89c37a30f75bf849700b/src/google/adk/agents/parallel_agent.py",
+    "ok": true,
+    "sha256": "760ce9887bb2552b617cc38939f4e6fe8df2fabb0042dc7951994100af0be93f"
+  },
+  {
+    "id": "S20",
+    "path": "src/google/adk/sessions/database_session_service.py",
+    "url": "https://raw.githubusercontent.com/google/adk-python/b0180620f4c2f4f4467a89c37a30f75bf849700b/src/google/adk/sessions/database_session_service.py",
+    "ok": true,
+    "sha256": "d9561f4fa7a0529ac7e7e070e2f80d05824892069db4f07ac5f0f0fe314f38a1"
+  },
+  {
+    "id": "S21",
+    "path": "lib/crewai/src/crewai/agents/crew_agent_executor.py",
+    "url": "https://raw.githubusercontent.com/crewAIInc/crewAI/1b855b4ff97d3fc8bf6dc0981fed5f0999a7cd81/lib/crewai/src/crewai/agents/crew_agent_executor.py",
+    "ok": true,
+    "sha256": "db772b254504e24c347e9f7833a5a39784489c43be7610ae01d90f28b7b06e48"
+  },
+  {
+    "id": "S21",
+    "path": "lib/crewai/src/crewai/flow/flow.py",
+    "url": "https://raw.githubusercontent.com/crewAIInc/crewAI/1b855b4ff97d3fc8bf6dc0981fed5f0999a7cd81/lib/crewai/src/crewai/flow/flow.py",
+    "ok": true,
+    "sha256": "7b586e9b8f85e65455d0b3f577b75167ff18a55bf177ff3aaeb2516a4e5c1cfb"
+  },
+  {
+    "id": "S22",
+    "path": "strands-py/src/strands/event_loop/event_loop.py",
+    "url": "https://raw.githubusercontent.com/strands-agents/sdk-python/e3f3ee49d4f5e1f94bc489df6f8603ce26442c31/strands-py/src/strands/event_loop/event_loop.py",
+    "ok": true,
+    "sha256": "fc7785464cf5e6ebfff3190855aa41826c04896b7285581f9f65463474fdc8eb"
+  },
+  {
+    "id": "S22",
+    "path": "strands-py/src/strands/multiagent/swarm.py",
+    "url": "https://raw.githubusercontent.com/strands-agents/sdk-python/e3f3ee49d4f5e1f94bc489df6f8603ce26442c31/strands-py/src/strands/multiagent/swarm.py",
+    "ok": true,
+    "sha256": "d331242d70fd197ac4cb0b476b5570f734f67ed702995806fd030d7ff4d26043"
+  },
+  {
+    "id": "S23",
+    "path": "packages/core/src/agent/durable/create-durable-agent.ts",
+    "url": "https://raw.githubusercontent.com/mastra-ai/mastra/9b7b80bdc3a54f0f51ea38c493c49a43a414831e/packages/core/src/agent/durable/create-durable-agent.ts",
+    "ok": true,
+    "sha256": "88e724fd2b67dd356a3a77f03cb5bbefd1f02d7e8fa1c6b5efa040e3f8104828"
+  },
+  {
+    "id": "S23",
+    "path": "packages/core/src/workflows/default.ts",
+    "url": "https://raw.githubusercontent.com/mastra-ai/mastra/9b7b80bdc3a54f0f51ea38c493c49a43a414831e/packages/core/src/workflows/default.ts",
+    "ok": true,
+    "sha256": "7a4099308a3e6b3e866d25d5c996c9d714d6f6fff538ac3e6fe03fa5f4e8e940"
+  },
+  {
+    "id": "S24",
+    "path": "packages/agent/src/agent-loop.ts",
+    "url": "https://raw.githubusercontent.com/badlogic/pi-mono/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/agent/src/agent-loop.ts",
+    "ok": true,
+    "sha256": "1e16404a231912fbd7643d8317b15ec4cc6245ed8cedc37582a31d430a1cc6ac"
+  },
+  {
+    "id": "S24",
+    "path": "packages/coding-agent/src/core/session-manager.ts",
+    "url": "https://raw.githubusercontent.com/badlogic/pi-mono/b2602be77cb7b0de45dd616407fd210daa48aa75/packages/coding-agent/src/core/session-manager.ts",
+    "ok": true,
+    "sha256": "57bc70a751567b96c057535766240ae52d9b76d9013ea78049d74dc3b654e915"
+  },
+  {
+    "id": "S25",
+    "path": "docs/agent-runtime-architecture.md",
+    "url": "https://raw.githubusercontent.com/openclaw/openclaw/f11fb86b8e8befeec175e8d9474238e07b4d57e5/docs/agent-runtime-architecture.md",
+    "ok": true,
+    "sha256": "3e09ff21b4369a7c102db51e4458ad3ba1e86c9fe43a3a8bff72eef1713d2d51"
+  },
+  {
+    "id": "S25",
+    "path": "packages/agent-core/src/agent-loop.ts",
+    "url": "https://raw.githubusercontent.com/openclaw/openclaw/f11fb86b8e8befeec175e8d9474238e07b4d57e5/packages/agent-core/src/agent-loop.ts",
+    "ok": true,
+    "sha256": "f531735ea366550bf601c8287754ebd5b32267787cae74d9b0e5c266351eb38b"
+  },
+  {
+    "id": "S25",
+    "path": "src/agents/runtime/index.ts",
+    "url": "https://raw.githubusercontent.com/openclaw/openclaw/f11fb86b8e8befeec175e8d9474238e07b4d57e5/src/agents/runtime/index.ts",
+    "ok": true,
+    "sha256": "0ca49e96ca1423e31d5594a19bae2faf459771e77f9da6392d158f670f077753"
+  },
+  {
+    "id": "S25",
+    "path": "src/gateway/server-methods/agent-run-handler.ts",
+    "url": "https://raw.githubusercontent.com/openclaw/openclaw/f11fb86b8e8befeec175e8d9474238e07b4d57e5/src/gateway/server-methods/agent-run-handler.ts",
+    "ok": true,
+    "sha256": "3fe8935d205f4a3185e45583acd87cf4615f17aedc76f5eb2dabecdc7deda650"
+  },
+  {
+    "id": "S26",
+    "path": "README.md",
+    "url": "https://raw.githubusercontent.com/letta-ai/letta/4511fa0bc91f68fbab32b91f694617271ea9012b/README.md",
+    "ok": true,
+    "sha256": "00c3a2a06472974132ba5f3e4d30bb6b09f69b415cfbc8d4956eb4693532dca8"
+  },
+  {
+    "id": "S27",
+    "path": "src/agent/memory-runtime.ts",
+    "url": "https://raw.githubusercontent.com/letta-ai/letta-code/2f0fb7c12c6973be7d52d9c7d3bf0bf4d9120cb8/src/agent/memory-runtime.ts",
+    "ok": true,
+    "sha256": "54ff0262bd947aa865f9e47cedba8c98b34bdc3d2b56aeae19749f8e9be9159b"
+  },
+  {
+    "id": "S27",
+    "path": "src/agent/memory-filesystem.ts",
+    "url": "https://raw.githubusercontent.com/letta-ai/letta-code/2f0fb7c12c6973be7d52d9c7d3bf0bf4d9120cb8/src/agent/memory-filesystem.ts",
+    "ok": true,
+    "sha256": "532c48887a6dee937a069244cbc29a41459e44fc9866b99b421cc3655a547975"
+  },
+  {
+    "id": "S28",
+    "path": "libs/deepagents/deepagents/graph.py",
+    "url": "https://raw.githubusercontent.com/langchain-ai/deepagents/18106be837bcdd9005b2dd73280d871a0621bf99/libs/deepagents/deepagents/graph.py",
+    "ok": true,
+    "sha256": "2c0c9a5fc4a836b17d31076834d884d00a705f369317eb30fd1ceddec3b12e95"
+  },
+  {
+    "id": "S28",
+    "path": "libs/deepagents/deepagents/middleware/memory.py",
+    "url": "https://raw.githubusercontent.com/langchain-ai/deepagents/18106be837bcdd9005b2dd73280d871a0621bf99/libs/deepagents/deepagents/middleware/memory.py",
+    "ok": true,
+    "sha256": "425d9927a0874a0ea55a23182875eb1f3dc1b7452e0a74feb7ca3f994d37a1ee"
+  }
+]

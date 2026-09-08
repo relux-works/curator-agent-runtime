@@ -1,0 +1,7 @@
+{
+  "source_permalink_occurrences": 38,
+  "repository_snapshots": 11,
+  "used_document_entries_with_verified_hash": 36,
+  "result": "pass",
+  "scope": "Document/catalog consistency only; no runtime, security, fault-injection or live transport verification"
+}

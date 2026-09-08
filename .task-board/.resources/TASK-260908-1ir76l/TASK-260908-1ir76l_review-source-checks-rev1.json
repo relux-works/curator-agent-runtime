@@ -1,0 +1,197 @@
+{
+  "candidate_files_equal": 5,
+  "prior_accepted_files_equal": 2,
+  "checked": 27,
+  "passed": 27,
+  "results": [
+    {
+      "repo": "charmbracelet/crush",
+      "sha": "7f9a8e4ca8c0365ac981d082470999900a5d10ce",
+      "path": "internal/agent/agent.go",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/charmbracelet/crush/7f9a8e4ca8c0365ac981d082470999900a5d10ce/internal/agent/agent.go"
+    },
+    {
+      "repo": "charmbracelet/crush",
+      "sha": "7f9a8e4ca8c0365ac981d082470999900a5d10ce",
+      "path": "internal/agent/coordinator.go",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/charmbracelet/crush/7f9a8e4ca8c0365ac981d082470999900a5d10ce/internal/agent/coordinator.go"
+    },
+    {
+      "repo": "charmbracelet/crush",
+      "sha": "7f9a8e4ca8c0365ac981d082470999900a5d10ce",
+      "path": "internal/agent/hooked_tool.go",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/charmbracelet/crush/7f9a8e4ca8c0365ac981d082470999900a5d10ce/internal/agent/hooked_tool.go"
+    },
+    {
+      "repo": "google/adk-go",
+      "sha": "53a0bc0ceb2e4437a075631f33a76f039445745f",
+      "path": "agent/agent.go",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/google/adk-go/53a0bc0ceb2e4437a075631f33a76f039445745f/agent/agent.go"
+    },
+    {
+      "repo": "google/adk-go",
+      "sha": "53a0bc0ceb2e4437a075631f33a76f039445745f",
+      "path": "agent/llmagent/llmagent.go",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/google/adk-go/53a0bc0ceb2e4437a075631f33a76f039445745f/agent/llmagent/llmagent.go"
+    },
+    {
+      "repo": "google/adk-go",
+      "sha": "53a0bc0ceb2e4437a075631f33a76f039445745f",
+      "path": "model/llm.go",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/google/adk-go/53a0bc0ceb2e4437a075631f33a76f039445745f/model/llm.go"
+    },
+    {
+      "repo": "google/adk-go",
+      "sha": "53a0bc0ceb2e4437a075631f33a76f039445745f",
+      "path": "tool/tool.go",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/google/adk-go/53a0bc0ceb2e4437a075631f33a76f039445745f/tool/tool.go"
+    },
+    {
+      "repo": "google/adk-go",
+      "sha": "53a0bc0ceb2e4437a075631f33a76f039445745f",
+      "path": "internal/llminternal/base_flow.go",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/google/adk-go/53a0bc0ceb2e4437a075631f33a76f039445745f/internal/llminternal/base_flow.go"
+    },
+    {
+      "repo": "cloudwego/eino",
+      "sha": "9d983b36a5112a1c233056b1a099825298fafb8f",
+      "path": "flow/agent/react/react.go",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/cloudwego/eino/9d983b36a5112a1c233056b1a099825298fafb8f/flow/agent/react/react.go"
+    },
+    {
+      "repo": "cloudwego/eino",
+      "sha": "9d983b36a5112a1c233056b1a099825298fafb8f",
+      "path": "components/model/interface.go",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/cloudwego/eino/9d983b36a5112a1c233056b1a099825298fafb8f/components/model/interface.go"
+    },
+    {
+      "repo": "cloudwego/eino",
+      "sha": "9d983b36a5112a1c233056b1a099825298fafb8f",
+      "path": "components/tool/interface.go",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/cloudwego/eino/9d983b36a5112a1c233056b1a099825298fafb8f/components/tool/interface.go"
+    },
+    {
+      "repo": "cloudwego/eino",
+      "sha": "9d983b36a5112a1c233056b1a099825298fafb8f",
+      "path": "schema/stream.go",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/cloudwego/eino/9d983b36a5112a1c233056b1a099825298fafb8f/schema/stream.go"
+    },
+    {
+      "repo": "MoonshotAI/kimi-cli",
+      "sha": "86f136422a0aae6b217ea49e7ea1d2e8a1defcd2",
+      "path": "README.md",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/MoonshotAI/kimi-cli/86f136422a0aae6b217ea49e7ea1d2e8a1defcd2/README.md"
+    },
+    {
+      "repo": "MoonshotAI/kimi-cli",
+      "sha": "86f136422a0aae6b217ea49e7ea1d2e8a1defcd2",
+      "path": "src/kimi_cli/soul/kimisoul.py",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/MoonshotAI/kimi-cli/86f136422a0aae6b217ea49e7ea1d2e8a1defcd2/src/kimi_cli/soul/kimisoul.py"
+    },
+    {
+      "repo": "NousResearch/hermes-agent",
+      "sha": "2237be355906fbe6065ce1815711eee52b2d646e",
+      "path": "run_agent.py",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/NousResearch/hermes-agent/2237be355906fbe6065ce1815711eee52b2d646e/run_agent.py"
+    },
+    {
+      "repo": "NousResearch/hermes-agent",
+      "sha": "2237be355906fbe6065ce1815711eee52b2d646e",
+      "path": "providers/base.py",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/NousResearch/hermes-agent/2237be355906fbe6065ce1815711eee52b2d646e/providers/base.py"
+    },
+    {
+      "repo": "NousResearch/hermes-agent",
+      "sha": "2237be355906fbe6065ce1815711eee52b2d646e",
+      "path": "agent/context_engine.py",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/NousResearch/hermes-agent/2237be355906fbe6065ce1815711eee52b2d646e/agent/context_engine.py"
+    },
+    {
+      "repo": "NousResearch/hermes-agent",
+      "sha": "2237be355906fbe6065ce1815711eee52b2d646e",
+      "path": "agent/turn_facade.py",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/NousResearch/hermes-agent/2237be355906fbe6065ce1815711eee52b2d646e/agent/turn_facade.py"
+    },
+    {
+      "repo": "NousResearch/hermes-agent",
+      "sha": "2237be355906fbe6065ce1815711eee52b2d646e",
+      "path": "agent/conversation_loop.py",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/NousResearch/hermes-agent/2237be355906fbe6065ce1815711eee52b2d646e/agent/conversation_loop.py"
+    },
+    {
+      "repo": "MoonshotAI/kimi-code",
+      "sha": "fa87d040c3086cdceb3bee24762451cf47af0336",
+      "path": "README.md",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/MoonshotAI/kimi-code/fa87d040c3086cdceb3bee24762451cf47af0336/README.md"
+    },
+    {
+      "repo": "cometbft/cometbft",
+      "sha": "3bd679a20b154bcba63aae7edb13faa673103e38",
+      "path": "spec/consensus/consensus.md",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/cometbft/cometbft/3bd679a20b154bcba63aae7edb13faa673103e38/spec/consensus/consensus.md"
+    },
+    {
+      "repo": "opencontainers/image-spec",
+      "sha": "af26a05fba5ee648512f4ea3c9fda1fcc1b6d6dc",
+      "path": "descriptor.md",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/opencontainers/image-spec/af26a05fba5ee648512f4ea3c9fda1fcc1b6d6dc/descriptor.md"
+    },
+    {
+      "repo": "SWE-agent/mini-swe-agent",
+      "sha": "04d809ceab9df28f9adaed044884180159172930",
+      "path": "src/minisweagent/agents/default.py",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/SWE-agent/mini-swe-agent/04d809ceab9df28f9adaed044884180159172930/src/minisweagent/agents/default.py"
+    },
+    {
+      "repo": "SWE-agent/mini-swe-agent",
+      "sha": "04d809ceab9df28f9adaed044884180159172930",
+      "path": "src/minisweagent/environments/local.py",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/SWE-agent/mini-swe-agent/04d809ceab9df28f9adaed044884180159172930/src/minisweagent/environments/local.py"
+    },
+    {
+      "repo": "langchain-ai/langgraph",
+      "sha": "81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1",
+      "path": "libs/langgraph/langgraph/pregel/_loop.py",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/langchain-ai/langgraph/81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1/libs/langgraph/langgraph/pregel/_loop.py"
+    },
+    {
+      "repo": "langchain-ai/langgraph",
+      "sha": "81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1",
+      "path": "libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+      "ok": true,
+      "route": "https://raw.githubusercontent.com/langchain-ai/langgraph/81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1/libs/checkpoint/langgraph/checkpoint/base/__init__.py"
+    },
+    {
+      "repo": "relux-works/apiary-docs",
+      "sha": "e4249a6193c0f2730e7cffaea6b4907c0a7e80a9",
+      "path": "paper/paper.tex",
+      "ok": true,
+      "route": "local pinned git object"
+    }
+  ]
+}

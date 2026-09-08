@@ -1,0 +1,1252 @@
+{
+  "schema_version": 1,
+  "task": "TASK-260908-1ir76l",
+  "retrieval_date": "2026-09-08",
+  "language": "ru",
+  "method": "Первичные документы и выборочное статическое чтение exact-commit source. Скачанные программы не исполнялись. Список не исчерпывающий. read ranges означают цитируемые фрагменты, не полный аудит файла.",
+  "repositories": [
+    {
+      "repo": "charmbracelet/crush",
+      "clone_exit": 0,
+      "retrieved": "2026-09-08",
+      "sha": "7f9a8e4ca8c0365ac981d082470999900a5d10ce",
+      "files": [
+        {
+          "path": "README.md",
+          "exit": 0,
+          "sha256": "b2f598770e019c9a10858618de99597512863316eade6537422c8091eb88569a",
+          "lines": 998,
+          "url": "https://github.com/charmbracelet/crush/blob/7f9a8e4ca8c0365ac981d082470999900a5d10ce/README.md",
+          "cited_read_ranges": [],
+          "inspection": "Скачан; не используется как содержательное доказательство в отчётах"
+        },
+        {
+          "path": "go.mod",
+          "exit": 0,
+          "sha256": "51b04b8d7bed8cafe9f6e0f0eb1d625946355e0aff3126ead963389b36484df0",
+          "lines": 218,
+          "url": "https://github.com/charmbracelet/crush/blob/7f9a8e4ca8c0365ac981d082470999900a5d10ce/go.mod",
+          "cited_read_ranges": [],
+          "inspection": "Скачан; не используется как содержательное доказательство в отчётах"
+        },
+        {
+          "path": "internal/agent/agent.go",
+          "exit": 0,
+          "sha256": "c451173506ba6d8f0f7a607d8036bc6f411671d8aced8e5579a27e129c98a4af",
+          "lines": 2339,
+          "url": "https://github.com/charmbracelet/crush/blob/7f9a8e4ca8c0365ac981d082470999900a5d10ce/internal/agent/agent.go",
+          "cited_read_ranges": [
+            [
+              566,
+              612
+            ],
+            [
+              677,
+              716
+            ],
+            [
+              796,
+              845
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "internal/agent/coordinator.go",
+          "exit": 0,
+          "sha256": "aaf0c5c6cd2d9c202803de4fdcdc1e373dbc89cd285f9e3205b1314a9a49fdee",
+          "lines": 1672,
+          "url": "https://github.com/charmbracelet/crush/blob/7f9a8e4ca8c0365ac981d082470999900a5d10ce/internal/agent/coordinator.go",
+          "cited_read_ranges": [
+            [
+              789,
+              830
+            ],
+            [
+              1151,
+              1215
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "internal/agent/hooked_tool.go",
+          "exit": 0,
+          "sha256": "c45e4fab2ea95c83dc61354104f27a03db980024e2db51c032c5843e0ecef881",
+          "lines": 142,
+          "url": "https://github.com/charmbracelet/crush/blob/7f9a8e4ca8c0365ac981d082470999900a5d10ce/internal/agent/hooked_tool.go",
+          "cited_read_ranges": [
+            [
+              54,
+              101
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        }
+      ],
+      "metadata": {
+        "requested": "charmbracelet/crush",
+        "full_name": "charmbracelet/crush",
+        "html_url": "https://github.com/charmbracelet/crush",
+        "default_branch": "main",
+        "archived": false,
+        "pushed_at": "2026-09-07T18:09:17Z"
+      },
+      "commit_date": "2026-09-07T15:09:16-03:00",
+      "runtime_tests_executed": false
+    },
+    {
+      "repo": "google/adk-go",
+      "clone_exit": 0,
+      "retrieved": "2026-09-08",
+      "sha": "53a0bc0ceb2e4437a075631f33a76f039445745f",
+      "files": [
+        {
+          "path": "README.md",
+          "exit": 0,
+          "sha256": "ab4fa889002e320bb5a6aa1ec7931b8e8ca0d7d313eea4c2bed8d77e60347832",
+          "lines": 65,
+          "url": "https://github.com/google/adk-go/blob/53a0bc0ceb2e4437a075631f33a76f039445745f/README.md",
+          "cited_read_ranges": [],
+          "inspection": "Скачан; не используется как содержательное доказательство в отчётах"
+        },
+        {
+          "path": "go.mod",
+          "exit": 0,
+          "sha256": "0b40823c8e0acebba2966d15f20129ae32a5f616ef099b0a51e4cc51e0638f40",
+          "lines": 113,
+          "url": "https://github.com/google/adk-go/blob/53a0bc0ceb2e4437a075631f33a76f039445745f/go.mod",
+          "cited_read_ranges": [],
+          "inspection": "Скачан; не используется как содержательное доказательство в отчётах"
+        },
+        {
+          "path": "agent/agent.go",
+          "exit": 0,
+          "sha256": "1e0103f84c3c836e34cfc678f52e586c63a968c06f1c6382802479e247a638c1",
+          "lines": 485,
+          "url": "https://github.com/google/adk-go/blob/53a0bc0ceb2e4437a075631f33a76f039445745f/agent/agent.go",
+          "cited_read_ranges": [
+            [
+              33,
+              71
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "agent/llmagent/llmagent.go",
+          "exit": 0,
+          "sha256": "07d53cba0a117c9c57d7086c4c018f38dc21de3308dbe48bc039c49b4a076ac1",
+          "lines": 580,
+          "url": "https://github.com/google/adk-go/blob/53a0bc0ceb2e4437a075631f33a76f039445745f/agent/llmagent/llmagent.go",
+          "cited_read_ranges": [
+            [
+              450,
+              474
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "model/llm.go",
+          "exit": 0,
+          "sha256": "c3a353b7db23cb02b977828fc6cf099c63660e9e1daf172f41f88f4c9888bf2a",
+          "lines": 68,
+          "url": "https://github.com/google/adk-go/blob/53a0bc0ceb2e4437a075631f33a76f039445745f/model/llm.go",
+          "cited_read_ranges": [
+            [
+              25,
+              68
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "tool/tool.go",
+          "exit": 0,
+          "sha256": "f5d8c3704ab883f39f130f4a5e5da407755274ee22558d7a9f11244e99702a72",
+          "lines": 237,
+          "url": "https://github.com/google/adk-go/blob/53a0bc0ceb2e4437a075631f33a76f039445745f/tool/tool.go",
+          "cited_read_ranges": [
+            [
+              44,
+              64
+            ],
+            [
+              125,
+              237
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "internal/llminternal/agent.go",
+          "exit": 0,
+          "sha256": "995b779b8efefc390a2d11c727f7b1ab0f326c5c3c2d625f34ba3c802020adef",
+          "lines": 69,
+          "url": "https://github.com/google/adk-go/blob/53a0bc0ceb2e4437a075631f33a76f039445745f/internal/llminternal/agent.go",
+          "cited_read_ranges": [],
+          "inspection": "Скачан; не используется как содержательное доказательство в отчётах"
+        },
+        {
+          "path": "internal/llminternal/base_flow.go",
+          "exit": 0,
+          "sha256": "353b8084b14b677b4bd5326bc6eeb6e0fee57bd344bd0b9896f9ababf0824e74",
+          "lines": 1581,
+          "url": "https://github.com/google/adk-go/blob/53a0bc0ceb2e4437a075631f33a76f039445745f/internal/llminternal/base_flow.go",
+          "cited_read_ranges": [
+            [
+              122,
+              168
+            ],
+            [
+              612,
+              690
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "internal/llminternal/functions.go",
+          "exit": 0,
+          "sha256": "1048a55fdf79aa113b966ff545c1891556ef4d557113a3d7c4a5a62277013073",
+          "lines": 95,
+          "url": "https://github.com/google/adk-go/blob/53a0bc0ceb2e4437a075631f33a76f039445745f/internal/llminternal/functions.go",
+          "cited_read_ranges": [],
+          "inspection": "Скачан; не используется как содержательное доказательство в отчётах"
+        }
+      ],
+      "metadata": {
+        "requested": "google/adk-go",
+        "full_name": "google/adk-go",
+        "html_url": "https://github.com/google/adk-go",
+        "default_branch": "main",
+        "archived": false,
+        "pushed_at": "2026-09-07T21:01:09Z"
+      },
+      "commit_date": "2026-09-07T22:46:18+02:00",
+      "runtime_tests_executed": false
+    },
+    {
+      "repo": "cloudwego/eino",
+      "clone_exit": 0,
+      "retrieved": "2026-09-08",
+      "sha": "9d983b36a5112a1c233056b1a099825298fafb8f",
+      "files": [
+        {
+          "path": "README.md",
+          "exit": 0,
+          "sha256": "9f357f5737206307ebd7c11b74945ad61b2cde9b9a5eb45955b05b232315f8eb",
+          "lines": 209,
+          "url": "https://github.com/cloudwego/eino/blob/9d983b36a5112a1c233056b1a099825298fafb8f/README.md",
+          "cited_read_ranges": [],
+          "inspection": "Скачан; не используется как содержательное доказательство в отчётах"
+        },
+        {
+          "path": "go.mod",
+          "exit": 0,
+          "sha256": "a6e1e96e23bf59487449afcfd5df57cb8cdbc9674c702a7c149c86339268d6e4",
+          "lines": 47,
+          "url": "https://github.com/cloudwego/eino/blob/9d983b36a5112a1c233056b1a099825298fafb8f/go.mod",
+          "cited_read_ranges": [],
+          "inspection": "Скачан; не используется как содержательное доказательство в отчётах"
+        },
+        {
+          "path": "flow/agent/react/react.go",
+          "exit": 0,
+          "sha256": "8f431073739dd54194509ed033d85f5f6258635c45fd3c8234f47b68091e79aa",
+          "lines": 492,
+          "url": "https://github.com/cloudwego/eino/blob/9d983b36a5112a1c233056b1a099825298fafb8f/flow/agent/react/react.go",
+          "cited_read_ranges": [
+            [
+              65,
+              93
+            ],
+            [
+              278,
+              325
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "components/model/interface.go",
+          "exit": 0,
+          "sha256": "be5e5d4d28ab7548775d4165830dc9792fe095898063cea912bdd5b3b1af87e8",
+          "lines": 109,
+          "url": "https://github.com/cloudwego/eino/blob/9d983b36a5112a1c233056b1a099825298fafb8f/components/model/interface.go",
+          "cited_read_ranges": [
+            [
+              35,
+              109
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "components/tool/interface.go",
+          "exit": 0,
+          "sha256": "d10e710bb80923427b68fb58b90737299e7aa98b75819f4d1c46df1bde1b712e",
+          "lines": 79,
+          "url": "https://github.com/cloudwego/eino/blob/9d983b36a5112a1c233056b1a099825298fafb8f/components/tool/interface.go",
+          "cited_read_ranges": [
+            [
+              25,
+              79
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "schema/stream.go",
+          "exit": 0,
+          "sha256": "b7b154c587960d9db504dfc83bf95929dfc7aa4bf8ebd2a4ba3203b0c77a15a4",
+          "lines": 1024,
+          "url": "https://github.com/cloudwego/eino/blob/9d983b36a5112a1c233056b1a099825298fafb8f/schema/stream.go",
+          "cited_read_ranges": [
+            [
+              246,
+              275
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        }
+      ],
+      "metadata": {
+        "requested": "cloudwego/eino",
+        "full_name": "cloudwego/eino",
+        "html_url": "https://github.com/cloudwego/eino",
+        "default_branch": "main",
+        "archived": false,
+        "pushed_at": "2026-09-07T13:50:34Z"
+      },
+      "commit_date": "2026-09-01T20:38:54+08:00",
+      "runtime_tests_executed": false
+    },
+    {
+      "repo": "MoonshotAI/kimi-cli",
+      "clone_exit": 0,
+      "retrieved": "2026-09-08",
+      "sha": "86f136422a0aae6b217ea49e7ea1d2e8a1defcd2",
+      "files": [
+        {
+          "path": "README.md",
+          "exit": 0,
+          "sha256": "dc8992517be50091b4119410bd31bc53c1cb93e2b905868698ce98ec613b36a7",
+          "lines": 177,
+          "url": "https://github.com/MoonshotAI/kimi-cli/blob/86f136422a0aae6b217ea49e7ea1d2e8a1defcd2/README.md",
+          "cited_read_ranges": [
+            [
+              1,
+              16
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "src/kimi_cli/soul/kimisoul.py",
+          "exit": 0,
+          "sha256": "779e722966727741df2994dae7036aff877431cdfe6d27ce075816a12ae3240f",
+          "lines": 1963,
+          "url": "https://github.com/MoonshotAI/kimi-cli/blob/86f136422a0aae6b217ea49e7ea1d2e8a1defcd2/src/kimi_cli/soul/kimisoul.py",
+          "cited_read_ranges": [
+            [
+              1199,
+              1245
+            ],
+            [
+              1573,
+              1604
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "src/kimi_cli/soul/context.py",
+          "exit": 0,
+          "sha256": "e4a66fcf0ea4b5fd463210d059d7cd5e67a813c47d2c6a40cb2dc5da7480733f",
+          "lines": 339,
+          "url": "https://github.com/MoonshotAI/kimi-cli/blob/86f136422a0aae6b217ea49e7ea1d2e8a1defcd2/src/kimi_cli/soul/context.py",
+          "cited_read_ranges": [],
+          "inspection": "Скачан; не используется как содержательное доказательство в отчётах"
+        },
+        {
+          "path": "src/kimi_cli/soul/toolset.py",
+          "exit": 0,
+          "sha256": "98de589911934f2786a64ecb22eee4b56c8044d714fc3244948d668cfc91bf11",
+          "lines": 1104,
+          "url": "https://github.com/MoonshotAI/kimi-cli/blob/86f136422a0aae6b217ea49e7ea1d2e8a1defcd2/src/kimi_cli/soul/toolset.py",
+          "cited_read_ranges": [],
+          "inspection": "Скачан; не используется как содержательное доказательство в отчётах"
+        }
+      ],
+      "metadata": {
+        "requested": "MoonshotAI/kimi-cli",
+        "full_name": "MoonshotAI/kimi-cli",
+        "html_url": "https://github.com/MoonshotAI/kimi-cli",
+        "default_branch": "main",
+        "archived": false,
+        "pushed_at": "2026-09-01T16:37:12Z"
+      },
+      "commit_date": "2026-09-01T16:36:21Z",
+      "runtime_tests_executed": false
+    },
+    {
+      "repo": "NousResearch/hermes-agent",
+      "clone_exit": 0,
+      "retrieved": "2026-09-08",
+      "sha": "2237be355906fbe6065ce1815711eee52b2d646e",
+      "files": [
+        {
+          "path": "README.md",
+          "exit": 0,
+          "sha256": "1d733df90c2836c1b9cd8d7307d2d222023456b7b55b5036c2fbb54fd8bcfdf4",
+          "lines": 264,
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2237be355906fbe6065ce1815711eee52b2d646e/README.md",
+          "cited_read_ranges": [],
+          "inspection": "Скачан; не используется как содержательное доказательство в отчётах"
+        },
+        {
+          "path": "run_agent.py",
+          "exit": 0,
+          "sha256": "51e28e8905ebe1c9442e0c67a7eca0d53e6315414cf8c6927501b130d7650872",
+          "lines": 1544,
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2237be355906fbe6065ce1815711eee52b2d646e/run_agent.py",
+          "cited_read_ranges": [
+            [
+              211,
+              216
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "providers/base.py",
+          "exit": 0,
+          "sha256": "0e05d2f2ebedc32acb683dadbdc4c0713cc53996af7429414644f7aae40c4211",
+          "lines": 332,
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2237be355906fbe6065ce1815711eee52b2d646e/providers/base.py",
+          "cited_read_ranges": [
+            [
+              144,
+              180
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "agent/context_engine.py",
+          "exit": 0,
+          "sha256": "45ca98bbeaab3dbbcb8b9b009275d287b5c2d552d96a4a2fc56ec8616b290cbe",
+          "lines": 242,
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2237be355906fbe6065ce1815711eee52b2d646e/agent/context_engine.py",
+          "cited_read_ranges": [
+            [
+              120,
+              153
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "agent/turn_facade.py",
+          "exit": 0,
+          "sha256": "8e531b85579896da8253d79a9f502b9f2211d0c4e0be20933a8f067a8b183707",
+          "lines": 195,
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2237be355906fbe6065ce1815711eee52b2d646e/agent/turn_facade.py",
+          "cited_read_ranges": [
+            [
+              20,
+              74
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "agent/conversation_loop.py",
+          "exit": 0,
+          "sha256": "3b38f451d912f5c7d3aae1a90ef5996d16a615f1df8dc0a0494f4a82ef7f90a7",
+          "lines": 1605,
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2237be355906fbe6065ce1815711eee52b2d646e/agent/conversation_loop.py",
+          "cited_read_ranges": [
+            [
+              1153,
+              1198
+            ],
+            [
+              1455,
+              1541
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        },
+        {
+          "path": "agent/api_request_hooks.py",
+          "exit": 0,
+          "sha256": "c7c248e71714afa0047885fa0a1414efbc6f8288cea3ec21470bc9353b4b1a43",
+          "lines": 196,
+          "url": "https://github.com/NousResearch/hermes-agent/blob/2237be355906fbe6065ce1815711eee52b2d646e/agent/api_request_hooks.py",
+          "cited_read_ranges": [],
+          "inspection": "Скачан; не используется как содержательное доказательство в отчётах"
+        }
+      ],
+      "metadata": {
+        "requested": "NousResearch/hermes-agent",
+        "full_name": "NousResearch/hermes-agent",
+        "html_url": "https://github.com/NousResearch/hermes-agent",
+        "default_branch": "main",
+        "archived": false,
+        "pushed_at": "2026-09-07T23:07:30Z"
+      },
+      "commit_date": "2026-09-07T15:16:44-07:00",
+      "runtime_tests_executed": false
+    },
+    {
+      "repo": "MoonshotAI/kimi-code",
+      "sha": "fa87d040c3086cdceb3bee24762451cf47af0336",
+      "retrieved": "2026-09-08",
+      "files": [
+        {
+          "path": "README.md",
+          "exit": 0,
+          "sha256": "50ea102c7003c746244c69cb78cbd5b1e9158311e5e4e028aee8a2afee698c4c",
+          "lines": 126,
+          "url": "https://github.com/MoonshotAI/kimi-code/blob/fa87d040c3086cdceb3bee24762451cf47af0336/README.md",
+          "cited_read_ranges": [
+            [
+              1,
+              11
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        }
+      ],
+      "metadata": {
+        "requested": "MoonshotAI/kimi-code",
+        "full_name": "MoonshotAI/kimi-code",
+        "html_url": "https://github.com/MoonshotAI/kimi-code",
+        "default_branch": "main",
+        "archived": false,
+        "pushed_at": "2026-09-07T23:09:11Z"
+      },
+      "commit_date": "2026-09-08T03:00:40+08:00",
+      "runtime_tests_executed": false
+    },
+    {
+      "repo": "cometbft/cometbft",
+      "sha": "3bd679a20b154bcba63aae7edb13faa673103e38",
+      "retrieved": "2026-09-08",
+      "files": [
+        {
+          "path": "spec/consensus/consensus.md",
+          "exit": 0,
+          "sha256": "d0c92013ec522c2cab1e6d874b65a394ab40f1b502bf38f714ebdaa1fb62bcad",
+          "lines": 350,
+          "url": "https://github.com/cometbft/cometbft/blob/3bd679a20b154bcba63aae7edb13faa673103e38/spec/consensus/consensus.md",
+          "cited_read_ranges": [
+            [
+              1,
+              63
+            ],
+            [
+              211,
+              230
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        }
+      ],
+      "metadata": {
+        "note": "Git transport; GitHub archive status не запрашивался для вспомогательной спецификации"
+      },
+      "commit_date": "2026-09-07T07:33:05Z",
+      "runtime_tests_executed": false
+    },
+    {
+      "repo": "opencontainers/image-spec",
+      "sha": "af26a05fba5ee648512f4ea3c9fda1fcc1b6d6dc",
+      "retrieved": "2026-09-08",
+      "files": [
+        {
+          "path": "descriptor.md",
+          "exit": 0,
+          "sha256": "90d5fa13d43a8f4ebbf50341d6c131f97e894f36190779f2a05ef2c76b31a041",
+          "lines": 236,
+          "url": "https://github.com/opencontainers/image-spec/blob/af26a05fba5ee648512f4ea3c9fda1fcc1b6d6dc/descriptor.md",
+          "cited_read_ranges": [
+            [
+              1,
+              55
+            ]
+          ],
+          "inspection": "Выборочно прочитанные и цитируемые диапазоны; не весь файл"
+        }
+      ],
+      "metadata": {
+        "note": "Git transport; GitHub archive status не запрашивался для вспомогательной спецификации"
+      },
+      "commit_date": "2026-07-09T13:22:16-04:00",
+      "runtime_tests_executed": false
+    },
+    {
+      "repo": "SWE-agent/mini-swe-agent",
+      "sha": "04d809ceab9df28f9adaed044884180159172930",
+      "retrieved": "2026-09-08",
+      "method": "Повторный raw fetch по SHA из предыдущего каталога, hash сверен",
+      "runtime_tests_executed": false,
+      "files": [
+        {
+          "path": "src/minisweagent/agents/default.py",
+          "sha256": "e8ef8aa365942d739c2ec5cb0879f60f377d2dc2de8ec670aaedf3bafb45a4c2",
+          "lines": 190,
+          "cited_read_ranges": [
+            [
+              88,
+              137
+            ]
+          ],
+          "url": "https://github.com/SWE-agent/mini-swe-agent/blob/04d809ceab9df28f9adaed044884180159172930/src/minisweagent/agents/default.py",
+          "inspection": "Выборочные повторно прочитанные фрагменты"
+        },
+        {
+          "path": "src/minisweagent/environments/local.py",
+          "sha256": "01dd33ae6be897458611911cc0eee1389092ea9fc6788c7eb24773e7c6342b1c",
+          "lines": 92,
+          "cited_read_ranges": [
+            [
+              19,
+              59
+            ]
+          ],
+          "url": "https://github.com/SWE-agent/mini-swe-agent/blob/04d809ceab9df28f9adaed044884180159172930/src/minisweagent/environments/local.py",
+          "inspection": "Выборочные повторно прочитанные фрагменты"
+        }
+      ]
+    },
+    {
+      "repo": "langchain-ai/langgraph",
+      "sha": "81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1",
+      "retrieved": "2026-09-08",
+      "method": "Повторный raw fetch по SHA из предыдущего каталога, hash сверен",
+      "runtime_tests_executed": false,
+      "files": [
+        {
+          "path": "libs/langgraph/langgraph/pregel/_loop.py",
+          "sha256": "33150cf70fc08fd01affeae0345aa20569d2705704e3d209733d9c7b43dd5c0a",
+          "lines": 1988,
+          "cited_read_ranges": [
+            [
+              415,
+              456
+            ]
+          ],
+          "url": "https://github.com/langchain-ai/langgraph/blob/81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1/libs/langgraph/langgraph/pregel/_loop.py",
+          "inspection": "Выборочные повторно прочитанные фрагменты"
+        },
+        {
+          "path": "libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+          "sha256": "2953a9af1106ce832eda01add85013168b5cb7b316a5865cc7f1a67ad01ad73e",
+          "lines": 861,
+          "cited_read_ranges": [
+            [
+              39,
+              80
+            ]
+          ],
+          "url": "https://github.com/langchain-ai/langgraph/blob/81bf17b23123e4ef8b9d5f49fa09a0122fc2edd1/libs/checkpoint/langgraph/checkpoint/base/__init__.py",
+          "inspection": "Выборочные повторно прочитанные фрагменты"
+        }
+      ]
+    },
+    {
+      "repo": "relux-works/apiary-docs",
+      "sha": "e4249a6193c0f2730e7cffaea6b4907c0a7e80a9",
+      "retrieved": "2026-09-08",
+      "method": "Чистый локальный HEAD; git show exact SHA, без исполнения",
+      "files": [
+        {
+          "path": "paper/paper.tex",
+          "sha256": "3a2669fc4d1e9df6478546b64cd3b0fe28ed8996ed6da6d061da0809cb45a9c4",
+          "lines": 398,
+          "cited_read_ranges": [
+            [
+              99,
+              115
+            ],
+            [
+              99,
+              150
+            ],
+            [
+              159,
+              185
+            ]
+          ],
+          "url": "https://github.com/relux-works/apiary-docs/blob/e4249a6193c0f2730e7cffaea6b4907c0a7e80a9/paper/paper.tex",
+          "inspection": "Уровни, инварианты, environment, журнал, digest плана и контракт"
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "id": "rfc6120",
+      "url": "https://www.rfc-editor.org/rfc/rfc6120.txt",
+      "retrieved": "2026-09-08",
+      "resolved": "https://www.rfc-editor.org/rfc/rfc6120.txt",
+      "status": 200,
+      "sha256": "a64e922cba1b4b69bfc96192e59692efdb296c828800870ffb35c1fb7aad2ee8",
+      "read_scope": "§§4–8: структура; §10.1 in-order processing, §11.1 XML restrictions",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "rfc6121",
+      "url": "https://www.rfc-editor.org/rfc/rfc6121.txt",
+      "retrieved": "2026-09-08",
+      "resolved": "https://www.rfc-editor.org/rfc/rfc6121.txt",
+      "status": 200,
+      "sha256": "f3eda13791fe2f1f1f7c9b3993aaf6e0082dff30037c225080ca8da34d74c414",
+      "read_scope": "Abstract, roster/presence overview; не весь RFC",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "react",
+      "url": "https://arxiv.org/html/2210.03629v3",
+      "retrieved": "2026-09-08",
+      "resolved": "https://arxiv.org/html/2210.03629v3",
+      "status": 200,
+      "sha256": "196e152afc40784aac059e66a7ceb06d5e1dcef21fe15ae33d9be5a85474d391",
+      "read_scope": "Abstract, §1 и §2; не приложения",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "opendev",
+      "url": "https://arxiv.org/html/2603.05344v1",
+      "retrieved": "2026-09-08",
+      "resolved": "https://arxiv.org/html/2603.05344v1",
+      "status": 200,
+      "sha256": "f3be403dee4f03db0b428f2dd49e7f5a287e62ca9487f8ed4eec8a4097c7bb33",
+      "read_scope": "Выборочно §2.1, §2.2.1, начало §2.3.6 и conclusion §5; не полный текст и не source implementation",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "codeact",
+      "url": "https://arxiv.org/html/2402.01030v4",
+      "retrieved": "2026-09-08",
+      "resolved": "https://arxiv.org/html/2402.01030v4",
+      "status": 200,
+      "sha256": "e8d21350750576001545a33bc6642ed27db4b366b82c502a554803505631a834",
+      "read_scope": "Abstract, §1 и начало §2 (2.1–2.2); не весь empirical раздел",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "anthropic-tools",
+      "url": "https://www.anthropic.com/engineering/advanced-tool-use",
+      "retrieved": "2026-09-08",
+      "resolved": "https://www.anthropic.com/engineering/advanced-tool-use",
+      "status": 200,
+      "sha256": "e6626d6b6fdf8b5307185a17f06ee010e33531b8bc07faef447861d783285a7f",
+      "read_scope": "Tool Search, вводные programmatic tool use; численные результаты не воспроизводились",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "anthropic-code-mcp",
+      "url": "https://www.anthropic.com/engineering/code-execution-with-mcp",
+      "retrieved": "2026-09-08",
+      "resolved": "https://www.anthropic.com/engineering/code-execution-with-mcp",
+      "status": 200,
+      "sha256": "a71386f5ad89439157fad7c659be0e2e0b2ab92db35dbf49b196d323429b05be",
+      "read_scope": "Progressive disclosure, intermediate outputs, state и ограничения sandbox",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "anthropic-entitlement",
+      "url": "https://code.claude.com/docs/en/legal-and-compliance",
+      "retrieved": "2026-09-08",
+      "resolved": "https://code.claude.com/docs/en/legal-and-compliance",
+      "status": 200,
+      "sha256": "146b22b9a264bf289939275549f232a73181ad8da9fbddffa474bd6d6b6ae3e7",
+      "read_scope": "Authentication and credential use; hosting unmodified Claude Code",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "langgraph",
+      "url": "https://docs.langchain.com/oss/python/langgraph/durable-execution",
+      "retrieved": "2026-09-08",
+      "resolved": "https://docs.langchain.com/oss/python/langgraph/persistence",
+      "status": 200,
+      "sha256": "5c7e7904e22cde6483768390a48dc0d53778cbab589a9e74445f0bde1a4ef17f",
+      "read_scope": "Persistence/checkpointer, RAM loss при restart; исходный durable-execution URL перенаправлен",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "temporal",
+      "url": "https://docs.temporal.io/activity-execution",
+      "retrieved": "2026-09-08",
+      "resolved": "https://docs.temporal.io/activity-execution",
+      "status": 200,
+      "sha256": "eef50fb75716fefbb0b2adfe8cf992e5e0173179c0130b0f594e515e4526bfae",
+      "read_scope": "Activity Execution и Cancellation",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "temporal-go",
+      "url": "https://docs.temporal.io/develop/go/side-effects",
+      "retrieved": "2026-09-08",
+      "resolved": "https://docs.temporal.io/develop/go/workflows/side-effects",
+      "status": 200,
+      "sha256": "e0c3341fe8edebabd6c5dbca163510e88cadf5716fb23f1a9352f70aa1b771d6",
+      "read_scope": "SideEffect, nondeterminism warning и Mutable Side Effects",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "capabilities",
+      "url": "https://www.usenix.org/legacy/events/hotos03/tech/full_papers/miller/miller_html/",
+      "retrieved": "2026-09-08",
+      "error": "HTTP Error 404: Not Found",
+      "read_scope": null,
+      "used_as_evidence": false,
+      "limitation": "Не используется как доказательство: ошибка, нерелевантный redirect либо скачивание без содержательного чтения"
+    },
+    {
+      "id": "raft",
+      "url": "https://raft.github.io/raft.pdf",
+      "retrieved": "2026-09-08",
+      "resolved": "https://raft.github.io/raft.pdf",
+      "status": 200,
+      "sha256": "5a5c679b6a7c88007faeff8c3eef19a77e9e5caa8bd7390922584fe8ecf0ce1f",
+      "pdf": true,
+      "read_scope": "§2 non-Byzantine assumptions; introduсtion о leader/log replication; не proof audit",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "chubby",
+      "url": "https://research.google/pubs/the-chubby-lock-service-for-loosely-coupled-distributed-systems/",
+      "retrieved": "2026-09-08",
+      "resolved": "https://research.google/pubs/the-chubby-lock-service-for-loosely-coupled-distributed-systems/",
+      "status": 200,
+      "sha256": "053b6313b2ac2c5680f586e0cbdc09ed0f6703cc60374a11ff760d469fe120a3",
+      "read_scope": null,
+      "used_as_evidence": false,
+      "limitation": "Не используется как доказательство: ошибка, нерелевантный redirect либо скачивание без содержательного чтения"
+    },
+    {
+      "id": "firecracker",
+      "url": "https://github.com/firecracker-microvm/firecracker/blob/main/docs/design.md",
+      "retrieved": "2026-09-08",
+      "resolved": "https://github.com/firecracker-microvm/firecracker/blob/main/docs/design.md",
+      "status": 200,
+      "sha256": "ccb364e644920537340056ef81e0369e756d38a4079bbb383124eb105373a2c7",
+      "read_scope": null,
+      "used_as_evidence": false,
+      "limitation": "Не используется как доказательство: ошибка, нерелевантный redirect либо скачивание без содержательного чтения"
+    },
+    {
+      "id": "gvisor",
+      "url": "https://gvisor.dev/docs/architecture_guide/intro/",
+      "retrieved": "2026-09-08",
+      "resolved": "https://gvisor.dev/docs/architecture_guide/intro/",
+      "status": 200,
+      "sha256": "ccf67065a9a43fcc00b86c9e307b5400d804363355a4b4c4c6c020b5889b8cd2",
+      "read_scope": "What is gVisor; Linux primitives; Sentry/Gofer, syscall compatibility",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "wasi",
+      "url": "https://wasi.dev/",
+      "retrieved": "2026-09-08",
+      "resolved": "https://wasi.dev/",
+      "status": 200,
+      "sha256": "e811ab1a9ce57ee4dcef1a6007f82bf4f3ad2c7b5b97b88529145e267afefe24",
+      "read_scope": null,
+      "used_as_evidence": false,
+      "limitation": "Не используется как доказательство: ошибка, нерелевантный redirect либо скачивание без содержательного чтения"
+    },
+    {
+      "id": "oci",
+      "url": "https://specs.opencontainers.org/image-spec/descriptor/",
+      "retrieved": "2026-09-08",
+      "resolved": "https://specs.opencontainers.org/image-spec/descriptor/",
+      "status": 200,
+      "sha256": "854236264024841aed0aa7d6717e0dc734fb258864ff664b2ce30db0ae3dccb4",
+      "read_scope": null,
+      "used_as_evidence": false,
+      "limitation": "Не используется как доказательство: ошибка, нерелевантный redirect либо скачивание без содержательного чтения"
+    },
+    {
+      "id": "mcp",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/architecture",
+      "retrieved": "2026-09-08",
+      "resolved": "https://modelcontextprotocol.io/specification/2025-11-25/architecture",
+      "status": 200,
+      "sha256": "a9b895a534f1f763a298c06aeee68a45a027c8ef10af4edc5f8321c1331d17fd",
+      "read_scope": "Host/client/server architecture и security responsibilities",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "mcp-auth",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization",
+      "retrieved": "2026-09-08",
+      "resolved": "https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization",
+      "status": 200,
+      "sha256": "79ab27287bbf1ee71f44645e5cb75e4aa83cfabca64a32a21dd4f7effc951ecf",
+      "read_scope": "Resource binding и token audience/passthrough restrictions",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "a2a",
+      "url": "https://a2a-protocol.org/latest/specification/",
+      "retrieved": "2026-09-08",
+      "resolved": "https://a2a-protocol.org/latest/specification/",
+      "status": 200,
+      "sha256": "4805254c10d8cbde59a82f6767598c37b051d7c3cdf9d5ce636dba287cd6ab2b",
+      "read_scope": "§§3.1.1–3.1.6, 3.3.1, bindings outline, версия 1.0 migration appendix/0.3 examples",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "acp",
+      "url": "https://agentclientprotocol.com/protocol/overview",
+      "retrieved": "2026-09-08",
+      "resolved": "https://agentclientprotocol.com/protocol/v1/overview",
+      "status": 200,
+      "sha256": "1e2f5552d9ba1e9225c45b12af2b41a87bfd263062a6b644d06367c85f687d13",
+      "read_scope": "v1 overview: JSON-RPC, prompt/session/update/cancel",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "agentcommunication",
+      "url": "https://agentcommunicationprotocol.dev/introduction/welcome",
+      "retrieved": "2026-09-08",
+      "resolved": "https://agentcommunicationprotocol.dev/introduction/welcome",
+      "status": 200,
+      "sha256": "135870491bbedf7b2222c6572843f897f2ce1257bc5aa70bb7914feeb4023ac7",
+      "read_scope": "Welcome: уведомление о включении в A2A",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "nats",
+      "url": "https://docs.nats.io/nats-concepts/jetstream/consumers",
+      "retrieved": "2026-09-08",
+      "resolved": "https://docs.nats.io/learn/jetstream/pull-consumers",
+      "status": 200,
+      "sha256": "8632d1f43fb1604f8c6a817cf823124380d9cda4f8672f64ad147592dc545e66",
+      "read_scope": "Pull consumer batching, byte/count/expiry limits, MaxAckPending",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "nats-dedup",
+      "url": "https://docs.nats.io/using-nats/developer/develop_jetstream/model_deep_dive",
+      "retrieved": "2026-09-08",
+      "resolved": "https://docs.nats.io/learn/",
+      "status": 200,
+      "sha256": "8f75a4c43160feb41acefc98e8ccb515110dd43e0c68ef3025bf8d3b2d9609e6",
+      "read_scope": null,
+      "used_as_evidence": false,
+      "limitation": "Не используется как доказательство: ошибка, нерелевантный redirect либо скачивание без содержательного чтения"
+    },
+    {
+      "id": "grpc",
+      "url": "https://grpc.io/docs/guides/retry/",
+      "retrieved": "2026-09-08",
+      "resolved": "https://grpc.io/docs/guides/retry/",
+      "status": 200,
+      "sha256": "0d81dd4aa348adc366b4e72508bcb27680bdc3d651d605246a442ba7acce8cd4",
+      "read_scope": "How retry works, transparent retry, committed headers",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "cometbft",
+      "url": "https://docs.cometbft.com/v0.38/spec/consensus/consensus",
+      "retrieved": "2026-09-08",
+      "resolved": "https://docs.cosmos.network/cometbft/latest/docs/README",
+      "status": 200,
+      "sha256": "747853dfb948b5efe592cbecd2270ac9c38a1a737cdf66a79371c84bbd9fc2a6",
+      "read_scope": null,
+      "used_as_evidence": false,
+      "limitation": "Не используется как доказательство: ошибка, нерелевантный redirect либо скачивание без содержательного чтения"
+    },
+    {
+      "id": "rfc8785",
+      "url": "https://www.rfc-editor.org/rfc/rfc8785.txt",
+      "retrieved": "2026-09-08",
+      "resolved": "https://www.rfc-editor.org/rfc/rfc8785.txt",
+      "status": 200,
+      "sha256": "63d52294eb0e3f0014174288186d388b4ddbf2c67d1ce8af1d9726eb0c3ab240",
+      "read_scope": "Abstract, I-JSON requirements, numeric serialization overview",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "rfc8705",
+      "url": "https://www.rfc-editor.org/rfc/rfc8705.txt",
+      "retrieved": "2026-09-08",
+      "resolved": "https://www.rfc-editor.org/rfc/rfc8705.txt",
+      "status": 200,
+      "sha256": "6e45a1ee94c6a6a177a4cb077fe67d74bd70c1218c9362f2db2f153239612414",
+      "read_scope": "§1 и §3 certificate-bound tokens / holder-of-key",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "xep0198",
+      "url": "https://xmpp.org/extensions/xep-0198.html",
+      "retrieved": "2026-09-08",
+      "resolved": "https://xmpp.org/extensions/xep-0198.html",
+      "status": 200,
+      "sha256": "b3218192af2650bb8f560223e0f1f6ad1954c9d4fd2735677f2d5dd3c5379f00",
+      "read_scope": "§§4–5 acknowledgement, resumption, status/version",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "xep0184",
+      "url": "https://xmpp.org/extensions/xep-0184.html",
+      "retrieved": "2026-09-08",
+      "resolved": "https://xmpp.org/extensions/xep-0184.html",
+      "status": 200,
+      "sha256": "563d671059dc9cc086b87a9ef064b91b247ce9906793f5a6118a6694da8ed5e1",
+      "read_scope": "§§1–3 receipt limitations, bot processing не подтверждается",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "xep0359",
+      "url": "https://xmpp.org/extensions/xep-0359.html",
+      "retrieved": "2026-09-08",
+      "resolved": "https://xmpp.org/extensions/xep-0359.html",
+      "status": 200,
+      "sha256": "d8645023b5a92de3e10815e26b27b92f515a36ae0516f1eb90869e2c6878e305",
+      "read_scope": "§§2–3 ID scope и security, origin-id spoofing; status/version",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "xep0060",
+      "url": "https://xmpp.org/extensions/xep-0060.html",
+      "retrieved": "2026-09-08",
+      "resolved": "https://xmpp.org/extensions/xep-0060.html",
+      "status": 200,
+      "sha256": "e7e9dc83d30c49f87f8dc323720c68ffd0462fdfd454e4d5261d4200c0912d1d",
+      "read_scope": "§§4.3–4.5 persistence, node types/access models, max_items configuration",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "xep0030",
+      "url": "https://xmpp.org/extensions/xep-0030.html",
+      "retrieved": "2026-09-08",
+      "resolved": "https://xmpp.org/extensions/xep-0030.html",
+      "status": 200,
+      "sha256": "97adac6ddc924a32d295902ee2ef79e6f885c7664650aa2bb65c1e280ce42650",
+      "read_scope": "disco info/items, identity/features и error response examples",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "xep0363",
+      "url": "https://xmpp.org/extensions/xep-0363.html",
+      "retrieved": "2026-09-08",
+      "resolved": "https://xmpp.org/extensions/xep-0363.html",
+      "status": 200,
+      "sha256": "0dc47cea2199a8f26248beabc7170338fef081e6f0b0450505c48d888bf0e173",
+      "read_scope": "§§3–4 slots/upload, §9 security",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "xep0313",
+      "url": "https://xmpp.org/extensions/xep-0313.html",
+      "retrieved": "2026-09-08",
+      "resolved": "https://xmpp.org/extensions/xep-0313.html",
+      "status": 200,
+      "sha256": "b3d742eba90137ee59d94ef59bfe6780724a000251544c5258411b78118c8547",
+      "read_scope": "Introduction и outline retention/deletion; archival purpose",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "capabilities",
+      "url": "https://www.erights.org/elib/capability/duals/myths.html",
+      "retrieved": "2026-09-08",
+      "error": "<urlopen error [Errno 51] Network is unreachable>",
+      "read_scope": null,
+      "used_as_evidence": false,
+      "limitation": "Не используется как доказательство: ошибка, нерелевантный redirect либо скачивание без содержательного чтения"
+    },
+    {
+      "id": "deadman",
+      "url": "https://erights.org/elib/capability/deadman.html",
+      "retrieved": "2026-09-08",
+      "error": "<urlopen error [Errno 51] Network is unreachable>",
+      "read_scope": null,
+      "used_as_evidence": false,
+      "limitation": "Не используется как доказательство: ошибка, нерелевантный redirect либо скачивание без содержательного чтения"
+    },
+    {
+      "id": "chubby-paper",
+      "url": "https://static.googleusercontent.com/media/research.google.com/en//archive/chubby-osdi06.pdf",
+      "retrieved": "2026-09-08",
+      "resolved": "https://static.googleusercontent.com/media/research.google.com/en//archive/chubby-osdi06.pdf",
+      "status": 200,
+      "sha256": "0747c84a49d32744a2744e2f2951b05fb7a0829ce44afb0b700833eb2bb3ecdd",
+      "pdf": true,
+      "read_scope": "§2.4 Locks and sequencers, generation/stale request, session lease фрагменты",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "firecracker-paper",
+      "url": "https://www.usenix.org/system/files/nsdi20-paper-agache.pdf",
+      "retrieved": "2026-09-08",
+      "resolved": "https://www.usenix.org/system/files/nsdi20-paper-agache.pdf",
+      "status": 200,
+      "sha256": "05eb1dc65d9f17409ec9a293f420125c4350bf953271c9d20590b3a21900c820",
+      "pdf": true,
+      "read_scope": "§§2–3: containers/KVM, threat boundary, jailer; performance не исследовалась",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "nats-exactly",
+      "url": "https://docs.nats.io/learn/jetstream/exactly_once",
+      "retrieved": "2026-09-08",
+      "error": "HTTP Error 404: Not Found",
+      "read_scope": null,
+      "used_as_evidence": false,
+      "limitation": "Не используется как доказательство: ошибка, нерелевантный redirect либо скачивание без содержательного чтения"
+    },
+    {
+      "id": "wasi-security",
+      "url": "https://docs.wasmtime.dev/security.html",
+      "retrieved": "2026-09-08",
+      "resolved": "https://docs.wasmtime.dev/security.html",
+      "status": 200,
+      "sha256": "06eb1dc1903cdc40c13473f5d3947e20ca71c36a8bbfe27016f7dd2900dd8526",
+      "read_scope": "Filesystem Access; границы runtime/host implementation",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "tuf",
+      "url": "https://theupdateframework.github.io/specification/latest/",
+      "retrieved": "2026-09-08",
+      "resolved": "https://theupdateframework.github.io/specification/latest/",
+      "status": 200,
+      "sha256": "df63310e70e76aff548b062eb0b6b5b18e2f59844312bffe70d3c97253a8eb6a",
+      "read_scope": "§§1–3 threats/roles; metadata roles и update version/expiry фрагменты",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "openai-auth",
+      "url": "https://learn.chatgpt.com/docs/auth.md",
+      "resolved": "https://learn.chatgpt.com/docs/auth.md",
+      "retrieved": "2026-09-08",
+      "sha256": "7e60e75b7efffc50de8ba9488029d8be235cd9a423520fb5f269215616d7914d",
+      "read_scope": "OpenAI authentication и trusted automation; account access не выполнялся",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "openai-app-server",
+      "url": "https://learn.chatgpt.com/docs/app-server.md",
+      "resolved": "https://learn.chatgpt.com/docs/app-server.md",
+      "retrieved": "2026-09-08",
+      "sha256": "a72a5c88ab05ab9737ec28b432708f2776f696be48eae09ee39c02dd2f9480e0",
+      "read_scope": "Authentication modes; не все API и не external token lifecycle",
+      "used_as_evidence": true,
+      "limitation": "Изменяемая документация фиксируется датой и hash; не runtime conformance"
+    },
+    {
+      "id": "capabilities-paper",
+      "url": "https://papers.agoric.com/assets/pdf/papers/capability-myths-demolished.pdf",
+      "retrieved": "2026-09-08",
+      "sha256": "b6a3e04e60d7ef08d32900143f8e93acbdcb62e2b63160b604591d7a021f7f42",
+      "used_as_evidence": true,
+      "read_scope": "Revocable Access in Object-Capability Systems: forwarding/revoking facets",
+      "limitation": "Структурный аргумент; не измеренная распределённая revocation latency"
+    }
+  ],
+  "local_inputs": {
+    "curator-agent-runtime": {
+      "origin": "git@github.com:relux-works/curator-agent-runtime.git",
+      "sha": "da759b8f3d366f31e5bd42934f6b5ecd1d01ac3f",
+      "dirty_entries": 1,
+      "inspection_exit_codes": {
+        "origin": 0,
+        "sha": 0,
+        "dirty": 0
+      }
+    },
+    "apiary-docs": {
+      "origin": "git@github.com:relux-works/apiary-docs.git",
+      "sha": "e4249a6193c0f2730e7cffaea6b4907c0a7e80a9",
+      "dirty_entries": 0,
+      "inspection_exit_codes": {
+        "origin": 0,
+        "sha": 0,
+        "dirty": 0
+      }
+    },
+    "curator": {
+      "origin": "https://github.com/relux-works/curator.git",
+      "sha": "a66eec88fa4dfb8f3ca098f594f6e48af57a6835",
+      "dirty_entries": 49,
+      "inspection_exit_codes": {
+        "origin": 0,
+        "sha": 0,
+        "dirty": 0
+      }
+    },
+    "curator-spec": {
+      "origin": "https://github.com/relux-works/curator-spec.git",
+      "sha": "87a0d0060bad64ab883d007dcdf35df7485368bf",
+      "dirty_entries": 0,
+      "inspection_exit_codes": {
+        "origin": 0,
+        "sha": 0,
+        "dirty": 0
+      }
+    },
+    "skill-project-management": {
+      "origin": "git@github.com:relux-works/skill-project-management.git",
+      "sha": "faa6ff96b6885c6db309b927b047ab600b19f423",
+      "dirty_entries": 10,
+      "inspection_exit_codes": {
+        "origin": 0,
+        "sha": 0,
+        "dirty": 0
+      }
+    }
+  },
+  "runtime_fault_tests": {
+    "executed": 0,
+    "conclusion": "Гарантии Apiary не доказаны запуском; validation проверяет только исследовательские артефакты"
+  },
+  "source_limitations": [
+    "Широкий provider survey принадлежит TASK-260908-39n05p.",
+    "Kimi Code successor прочитан только по README; код Kimi CLI ему не приписывается.",
+    "Temporal service, Fantasy loop, Eino copyStreamReaders и Hermes lease internals не аудированы.",
+    "A2A latest имеет смешанные version примеры; pin wire версии остаётся отдельным решением."
+  ]
+}
