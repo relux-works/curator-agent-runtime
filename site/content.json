@@ -1,0 +1,703 @@
+{
+  "title": "Apiary — архитектура улья",
+  "source_ref": "642f6cd6d96bac5a83c4dc53014f4f300f29d966",
+  "repository_url": "https://github.com/relux-works/curator-agent-runtime",
+  "nav": [
+    [
+      "overview",
+      "Общая картина"
+    ],
+    [
+      "profiles",
+      "Два профиля нод"
+    ],
+    [
+      "skills",
+      "Tool-skills и Curator"
+    ],
+    [
+      "models",
+      "Модели и контекст"
+    ],
+    [
+      "protocol",
+      "Протокол и доверие"
+    ],
+    [
+      "scenarios",
+      "Сценарии работы"
+    ],
+    [
+      "assurance",
+      "Гарантии и границы"
+    ],
+    [
+      "roadmap",
+      "Путь реализации"
+    ],
+    [
+      "diagrams",
+      "Атлас диаграмм"
+    ],
+    [
+      "library",
+      "Исследования и документы"
+    ]
+  ],
+  "profiles": {
+    "worker": {
+      "name": "Worker",
+      "tag": "01 model-visible tool",
+      "lead": "Участник предоставляет модельное решение и работает в назначенном удалённом окружении.",
+      "exports": "central: exec / poll / cancel",
+      "authority": "Только ограниченный task-local execution grant. Scope, срок, бюджет, sandbox и sinks заданы заранее.",
+      "completion": "После terminal proposal host закрывает запись, получает SnapshotReceipt и формирует Submission.",
+      "local": "Локальный checkout не требуется. Credentials модели и личный ключ остаются у владельца.",
+      "source": "docs/apiary/kernel.md"
+    },
+    "orchestrator": {
+      "name": "Orchestrator",
+      "tag": "Несколько выбранных exports",
+      "lead": "Та же модельная петля предлагает декомпозицию, назначения и действия по управлению проектом.",
+      "exports": "tasks / communications / sandboxes",
+      "authority": "Executable и delegable authority различаются. Delegation сужает разрешённый потолок и резервирует бюджет родителя.",
+      "completion": "Защищённая команда сначала проходит deterministic authority; только затем допускается соответствующий эффект.",
+      "local": "CLI/UI task-board читает проекцию ledger. Изменение локального board-файла не создаёт полномочий.",
+      "source": "docs/apiary/kernel.md"
+    }
+  },
+  "lifecycle": [
+    [
+      "installed",
+      "Установлен",
+      "Curator разрешил и установил закреплённую closure. Наличие пакета ещё не означает, что ему разрешено исполняться."
+    ],
+    [
+      "verified",
+      "Проверен",
+      "Проверяются content identity, build provenance, audit policy, interface vectors и требуемая platform assurance."
+    ],
+    [
+      "staged",
+      "Подготовлен",
+      "Compiler выбирает конкретный binding, фиксирует schemas и вычисляет пересечение capability envelope, policy, contract и assignment."
+    ],
+    [
+      "active",
+      "Активен",
+      "Broker принимает неизменяемый SessionPlan. Модель видит только выбранные exports, а каждый вызов проходит допуск."
+    ],
+    [
+      "draining",
+      "Завершает работу",
+      "Новые mutations остановлены. Открытые операции завершаются, отменяются или проходят reconciliation."
+    ],
+    [
+      "stopped",
+      "Остановлен",
+      "Binding больше не исполняет новые вызовы. Обновление или rollback пакета активируется только через новую epoch."
+    ]
+  ],
+  "tool_ops": {
+    "exec": {
+      "description": "Запускает команду внутри назначенного sandbox. Shell — широкий, но явно ограниченный task-local grant.",
+      "json": {
+        "op": "exec",
+        "exec": {
+          "argv": [
+            "go",
+            "test",
+            "./internal/parser"
+          ],
+          "cwd": "repo",
+          "env": {
+            "GOMAXPROCS": "2"
+          },
+          "timeout_ms": 120000
+        },
+        "poll": null,
+        "cancel": null
+      }
+    },
+    "poll": {
+      "description": "Читает ограниченную порцию вывода и состояние только собственного process handle. Это новый tool call к прежней durable operation.",
+      "json": {
+        "op": "poll",
+        "exec": null,
+        "poll": {
+          "process_handle": "proc-17",
+          "cursor": "cursor-4"
+        },
+        "cancel": null
+      }
+    },
+    "cancel": {
+      "description": "Запрашивает отмену конкретной операции. Запрос отмены не доказывает остановку процесса и не отменяет уже совершённый эффект.",
+      "json": {
+        "op": "cancel",
+        "exec": null,
+        "poll": null,
+        "cancel": {
+          "process_handle": "proc-17"
+        }
+      }
+    }
+  },
+  "providers": [
+    [
+      "OpenAI Responses",
+      "Прямой ModelPort",
+      "Отдельные API account и billing; ChatGPT login не является API key.",
+      "direct"
+    ],
+    [
+      "Anthropic Messages",
+      "Прямой ModelPort",
+      "Credential binding привязан к workspace и разрешённой audience.",
+      "direct"
+    ],
+    [
+      "Gemini API / Vertex",
+      "Прямой ModelPort",
+      "Project, region и IAM являются частью маршрута.",
+      "direct"
+    ],
+    [
+      "Bedrock / Azure",
+      "Cloud ModelPort",
+      "Отдельная cloud identity и выбранный deployment.",
+      "direct"
+    ],
+    [
+      "DeepSeek / DashScope PAYG / Kimi API",
+      "Совместимые codecs",
+      "OpenAI-compatible wire не отменяет negotiation и условий конкретного продукта.",
+      "direct"
+    ],
+    [
+      "Kimi Code membership key",
+      "Условный маршрут",
+      "Кандидат для разрешённого coding client; pooling не установлен.",
+      "conditional"
+    ],
+    [
+      "OpenRouter",
+      "Явный gateway",
+      "Upstream allowlist и sinks фиксируются; скрытый fallback запрещён.",
+      "conditional"
+    ],
+    [
+      "Ollama / собственная модель",
+      "Локальный endpoint",
+      "Нужны подтверждённое local execution и допустимая лицензия weights.",
+      "conditional"
+    ],
+    [
+      "Codex app-server + ChatGPT",
+      "AgentBridge",
+      "Целый агент со своим loop и auth. Strict-worker по умолчанию не допускается.",
+      "bridge"
+    ],
+    [
+      "Claude Code / Agent SDK",
+      "AgentBridge",
+      "Поддерживаемый целый агент и отдельная квалификация условий размещения и effects.",
+      "bridge"
+    ],
+    [
+      "Gemini CLI OAuth backend",
+      "Вне direct baseline",
+      "Не принимается как универсальный сторонний inference API.",
+      "limited"
+    ],
+    [
+      "Alibaba Coding / Token Plan",
+      "Условия требуют проверки",
+      "Coding Plan не baseline для headless swarm; редакции Token Plan расходятся.",
+      "limited"
+    ]
+  ],
+  "identities": [
+    [
+      "call_id",
+      "Один вызов модели",
+      "Broker связывает provider call ID с canonical call. У poll собственный call_id."
+    ],
+    [
+      "operation_id",
+      "Один durable intent",
+      "Сохраняется при retry и reconciliation; новая доставка не создаёт новый effect."
+    ],
+    [
+      "message_id",
+      "Одна domain-доставка",
+      "Outbox повторяет те же bytes с тем же ID; изменённый body означает conflict."
+    ],
+    [
+      "process_handle",
+      "Один supervised process",
+      "Привязан к executor и sandbox generation. Это не PID и не переносимое полномочие."
+    ],
+    [
+      "contract_revision",
+      "Версия задачи",
+      "Фиксирует scope и acceptance criteria. Не равна CR revision."
+    ],
+    [
+      "epoch_id",
+      "Версия SessionPlan",
+      "Закрепляет tools, schemas, контекст, grants и model sink."
+    ],
+    [
+      "orchestrator_term",
+      "Поколение управления",
+      "Новый holder получает больший term и отдельный token; stale management writes отклоняются."
+    ],
+    [
+      "sandbox_generation",
+      "Инкарнация окружения",
+      "После restart старые handles получают session_lost; shell memory не восстанавливается."
+    ],
+    [
+      "stop_generation",
+      "Граница stop / resume",
+      "Останавливает выдачу новых permissions; уже допущенный эффект имеет отдельную историю."
+    ],
+    [
+      "provider_session_id",
+      "Оптимизация провайдера",
+      "Continuation/cache внутри admitted account route. Не является grant или sandbox ID."
+    ]
+  ],
+  "acks": [
+    [
+      "XEP-0198 ack",
+      "Stream peer",
+      "Stanza принята транспортным соседом."
+    ],
+    [
+      "received_durable",
+      "Владелец inbox",
+      "Envelope и dedup metadata записаны устойчиво; authorization ещё может отказать."
+    ],
+    [
+      "admitted / refused",
+      "Executor или authority",
+      "Зафиксирован исход допуска и соответствующая reservation."
+    ],
+    [
+      "execution_finished",
+      "Executor",
+      "Есть terminal observation; исход эффекта может оставаться unknown."
+    ],
+    [
+      "revision_accepted",
+      "Authority",
+      "Принят точный candidate по указанной review policy."
+    ],
+    [
+      "integrated",
+      "Publication gateway",
+      "Локальный Git CAS и receipt устойчивы. Remote mirror success — отдельное событие."
+    ]
+  ],
+  "scenarios": [
+    {
+      "id": "task",
+      "name": "От задачи до main",
+      "intro": "Полезная работа заканчивается приёмкой точных bytes, а не последним сообщением модели.",
+      "source": "docs/apiary/execution.md",
+      "diagram": "diagrams/apiary/task-integration.svg",
+      "steps": [
+        [
+          "Контракт задачи",
+          "Authority",
+          "TaskContract → Assignment → Grant",
+          "Задача получает scope, acceptance criteria, baseline и ограничения окружения. Выделяются исполнитель и ресурсы.",
+          "Модель может предложить декомпозицию. Само предложение ещё не создаёт права."
+        ],
+        [
+          "Цикл worker",
+          "Core и broker",
+          "Successful terminal response → validated central.exec",
+          "Модель видит immutable plan и контекст. Broker ждёт успешного terminal response, проверяет вызов и передаёт ограниченный intent.",
+          "Синтаксически корректный JSON в оборванном ответе не разрешает dispatch."
+        ],
+        [
+          "Исполнение",
+          "Executor",
+          "OperationIntent → DispatchPermit → ExecutionReceipt",
+          "Executor закрепляет ownership, резервирует ресурсы и пишет intent до запуска процесса в sandbox.",
+          "Транспортный timeout не разрешает повторять mutating command."
+        ],
+        [
+          "Seal и Submission",
+          "Host coordinator + node-signer",
+          "SealRequest → SnapshotReceipt → Submission",
+          "Host прекращает новые mutations, ждёт разрешения outstanding effects и получает sealed R / C(R). Типизированный signer формирует Submission.",
+          "Модель не подписывает произвольные bytes и не принимает собственную задачу."
+        ],
+        [
+          "Замороженный кандидат",
+          "Runner",
+          "M / R / I + C(M) / C(R) / C(I)",
+          "Runner строит точный интеграционный кандидат и проверяет сильную identity его содержимого.",
+          "Изменение target требует нового кандидата и нового review; непересечение файлов недостаточно."
+        ],
+        [
+          "Проверки и приёмка",
+          "Runner, reviewers, authority",
+          "TestAttestation + ReviewAttestation → Acceptance",
+          "Evidence связано с exact candidate tuple, environment и policy. Authority детерминированно проверяет достаточность evidence.",
+          "Подпись reviewer подтверждает его verdict, но сама не доказывает корректность кода."
+        ],
+        [
+          "Публикация",
+          "Publication gateway",
+          "PublicationIntent → Git CAS → IntegrationReceipt",
+          "Единственный writer получает committed permission, выполняет CAS и устойчиво фиксирует результат.",
+          "Внешний Git host зеркалирует результат отдельно; нет вымышленной cross-store transaction."
+        ]
+      ]
+    },
+    {
+      "id": "duplicate",
+      "name": "Повторная доставка",
+      "intro": "Повтор сообщения не должен превращаться в повтор эффекта.",
+      "source": "docs/apiary/authority-wire.md",
+      "diagram": "diagrams/apiary/xmpp-reconnect.svg",
+      "steps": [
+        [
+          "Связать intent",
+          "Broker",
+          "operation_id + body_digest",
+          "До передачи operation получает устойчивую identity, scope и точный body digest.",
+          "call_id, message_id и operation_id решают разные задачи."
+        ],
+        [
+          "Принять первый экземпляр",
+          "Executor",
+          "Durable ownership + reservation",
+          "Executor записывает допущенный intent и владельца операции до dispatch.",
+          "Одновременный запрос к другому executor не должен создавать вторую ownership."
+        ],
+        [
+          "Получить дубликат",
+          "Inbox / operation ledger",
+          "Same ID + same body → stored status",
+          "Повтор тех же bytes возвращает прежний ack или сохранённое состояние операции.",
+          "Повторный message_id с другим body отклоняется как conflicting_duplicate."
+        ],
+        [
+          "Восстановить наблюдение",
+          "Client",
+          "Observe(operation_id, cursor)",
+          "Клиент продолжает читать результат по прежней identity и cursor.",
+          "Новый transport stream или call ID не возрождает уже закрытую или неизвестную операцию."
+        ]
+      ]
+    },
+    {
+      "id": "crash",
+      "name": "Сбой после dispatch",
+      "intro": "Журнал управления не может откатить внешний мир.",
+      "source": "docs/apiary/execution.md",
+      "diagram": "diagrams/apiary/operation-recovery.svg",
+      "steps": [
+        [
+          "Intent записан",
+          "Executor",
+          "prepared / admitted",
+          "Перед dispatch ownership и intent устойчивы. Ресурсная reservation уже учитывается.",
+          "Без durable ownership эффект не запускается."
+        ],
+        [
+          "Эффект мог произойти",
+          "Sandbox / внешний sink",
+          "dispatch started",
+          "Процесс мог изменить файлы или обратиться к разрешённому sink. Executor теряет подтверждение из-за сбоя.",
+          "Отсутствие receipt не доказывает отсутствие эффекта."
+        ],
+        [
+          "Остановить слепой retry",
+          "Recovery owner",
+          "outcome_unknown",
+          "Recovery сохраняет неопределённость и reservation. Новые mutations, зависящие от результата, не допускаются.",
+          "Нельзя повторить тот же mutating intent на другом executor только из-за timeout."
+        ],
+        [
+          "Reconcile",
+          "Executor / sink",
+          "Query status or explicit reconciliation",
+          "Проверяется наблюдаемый результат и поддержка idempotency конкретного sink. Доказанный исход становится receipt.",
+          "Если надёжно установить исход нельзя, unknown остаётся видимым; recovery не выдумывает успех."
+        ]
+      ]
+    },
+    {
+      "id": "stale",
+      "name": "Stop или устаревший contract",
+      "intro": "Разрешение проверяется в момент допуска, а не только при открытии сессии.",
+      "source": "docs/apiary/authority-wire.md",
+      "diagram": "diagrams/apiary/failover-fencing.svg",
+      "steps": [
+        [
+          "Старое назначение",
+          "Worker / orchestrator",
+          "contract r2 · term 14",
+          "Участник ещё хранит прежний plan и grant, но authority уже может знать более новое состояние.",
+          "Локальная история и provider session не являются authority."
+        ],
+        [
+          "Новая версия committed",
+          "Authority",
+          "contract r3 / stop / new term",
+          "Stop и изменения полномочий сериализуются с выдачей новых DispatchPermit и PublicationIntent.",
+          "Новый orchestrator term не означает автоматическое расширение worker grant."
+        ],
+        [
+          "Поздний запрос",
+          "Executor / publication gateway",
+          "stale_contract / stale_term",
+          "Запрос на новый permission со старой привязкой отклоняется, даже если Git baseline ещё тот же.",
+          "Git CAS по старому M не проверяет contract, stop и term."
+        ],
+        [
+          "Учесть допущенное ранее",
+          "Authority / recovery",
+          "historical in-flight permission",
+          "Уже committed permission сохраняет собственную историю. Outcome и drain учитываются отдельно.",
+          "Instant global halt не обещается: stop прекращает новые допуски, а не переписывает совершённое."
+        ]
+      ]
+    },
+    {
+      "id": "xmpp",
+      "name": "Reconnect XMPP",
+      "intro": "Сначала восстанавливается доставка, затем согласуется domain state.",
+      "source": "docs/apiary/authority-wire.md",
+      "diagram": "diagrams/apiary/xmpp-reconnect.svg",
+      "steps": [
+        [
+          "Сохранить outbox",
+          "Sender",
+          "Domain event + outbox transaction",
+          "Исходящий envelope получает ID и digest. Его нельзя терять после временного разрыва связи.",
+          "SM ack ещё не позволяет считать execution завершённым."
+        ],
+        [
+          "Попытаться resume",
+          "XMPP adapter",
+          "XEP-0198 resume",
+          "Адаптер возобновляет stream. При невозможности открывает новый и повторяет unacked outbox.",
+          "Повторяются прежние bytes; операция не создаётся заново."
+        ],
+        [
+          "Dedup и application ack",
+          "Receiver",
+          "received_durable → admitted / refused",
+          "Получатель сначала устойчиво сохраняет envelope, затем проверяет domain authority.",
+          "JID маршрутизирует, но не заменяет issuer, audience и certificate checks."
+        ],
+        [
+          "Сверить cursor и artifacts",
+          "Host",
+          "Ledger cursor + operation status + digest",
+          "Клиент согласует domain ledger и operation status. Artifact используется только после проверки размера и digest.",
+          "Архив XMPP или upload HTTP 201 не становятся evidence выполнения."
+        ]
+      ]
+    },
+    {
+      "id": "publication",
+      "name": "Сбой при публикации",
+      "intro": "Permission, Git и receipt имеют отдельные границы устойчивости.",
+      "source": "docs/apiary/execution.md",
+      "diagram": "diagrams/apiary/task-integration.svg",
+      "steps": [
+        [
+          "Зафиксировать permission",
+          "Authority / gateway",
+          "PublicationIntent committed",
+          "Intent связывает exact candidate tuple, stop/term/writer generations, target и deadline.",
+          "Запрос после committed stop не должен получить новый permission."
+        ],
+        [
+          "Выполнить единственный CAS",
+          "Publication gateway",
+          "M → I",
+          "Gateway — sole local ref writer. Он проверяет сильную content identity и выполняет допустимый переход.",
+          "Runner не имеет raw main credentials; случайный Git writer разрушает recovery assumption."
+        ],
+        [
+          "Crash до receipt",
+          "Gateway storage",
+          "Outcome not yet recorded",
+          "Git мог уже измениться, а receipt ещё отсутствует. Startup ставит recovery barrier перед новыми публикациями.",
+          "Blind CAS replay запрещён."
+        ],
+        [
+          "Установить реальный исход",
+          "Recovery owner",
+          "M / C(M): not_applied; I / C(I): applied",
+          "В рамках sole-writer, lock и durable-storage assumptions проверяется target. Другой результат или ошибка чтения означает unknown.",
+          "Нарушенный no-rewind/sole-writer TCB нельзя исправить догадкой по одному текущему ref."
+        ],
+        [
+          "Записать receipt",
+          "Authority / gateway",
+          "IntegrationReceipt",
+          "Установленный устойчивый результат связывается с исходным intent. Затем возможно отдельное remote mirroring.",
+          "Это восстановление локального протокола, не атомарная транзакция с внешним Git hosting."
+        ]
+      ]
+    }
+  ],
+  "roadmap": [
+    [
+      "R1",
+      "Зафиксировать generic runtime contract",
+      "curator-agent-runtime",
+      "WorkspaceRef, immutable plans, invocation, schema projection, versions и executable vectors.",
+      "Новая схема должна явно отклонять несовместимый старый или неполный input."
+    ],
+    [
+      "R2",
+      "Зафиксировать domain protocol",
+      "Будущий apiary-spec",
+      "Identity, подписи, leases, WAL, candidate manifest, publication intent и crash tables.",
+      "Закрытая grammar, ограничения размеров и отрицательные wire-векторы."
+    ],
+    [
+      "R3",
+      "Расширить Curator tool contracts",
+      "curator-spec + Curator",
+      "Executable descriptors, binding selection, compiler/admission и lifecycle providers.",
+      "Package integrity, build identity и runtime enforcement проверяются отдельно."
+    ],
+    [
+      "I1",
+      "Собрать полезный worker L0",
+      "Runtime + executor",
+      "Один central, remote workspace, direct API route, реальный sandbox и WAL.",
+      "Полная coding task проходит через production entry points."
+    ],
+    [
+      "I2",
+      "Закрыть task → integration",
+      "Authority + runner + board adapter",
+      "Exact-candidate review/test и sole-writer publication gateway.",
+      "Нет переноса acceptance на новый candidate; crash/stop recovery проверен."
+    ],
+    [
+      "I3",
+      "Квалифицировать XMPP binding",
+      "Transport implementation",
+      "Два server/client стека, reconnect, bounded queues и artifact transfer.",
+      "Дубликаты, reorder и разрывы не теряют intent и не повторяют effect."
+    ],
+    [
+      "I4",
+      "Расширить профили",
+      "Provider и platform owners",
+      "Другие API/bridge routes, VM/microVM, macOS/iOS/device runners.",
+      "Assurance и entitlement подтверждаются для конкретного deployment."
+    ],
+    [
+      "I5",
+      "Добавить distributed trust",
+      "Apiary protocol owner",
+      "Membership, fault model и выбранный проверенный consensus substrate.",
+      "L1 не объявляется Byzantine-safe, L2 не добавляется в минимальное ядро."
+    ]
+  ],
+  "experiments": [
+    [
+      "E1",
+      "Достаточен ли central?",
+      "Фиксированные coding tasks, completion ratio, потребность в shell или typed operations, tokens и latency."
+    ],
+    [
+      "E2",
+      "Сколько стоит разделение процессов?",
+      "Измерить RSS, startup и turn latency всей системы, затем решить вопрос session-worker оптимизации."
+    ],
+    [
+      "E3",
+      "Корректно ли восстановление?",
+      "Fault injection каждой границы intent/effect/receipt/CAS; unknown не подменяется отсутствием."
+    ],
+    [
+      "E4",
+      "Сохраняется ли контекст?",
+      "Проверить schemas, terminal streams, opaque blocks, causal pairs, compaction и bridge effects."
+    ],
+    [
+      "E5",
+      "Совместим ли XMPP binding?",
+      "Проверить два стека, reconnect, ordering, overload и interrupted artifact transfer."
+    ],
+    [
+      "E6",
+      "Реальна ли изоляция?",
+      "Escape, egress, path/race, quota и durability probes по каждой capability на реальном backend."
+    ],
+    [
+      "E7",
+      "Допущен ли provider route?",
+      "Account-specific entitlement, auth/refresh/revoke/budget и независимая проверка strict bridge parity."
+    ],
+    [
+      "E8",
+      "Доказана ли распределённая модель?",
+      "Membership, fork, light-client и adversarial tests для выбранного L1/L2 substrate."
+    ]
+  ],
+  "diagram_meta": [
+    [
+      "context",
+      "Контекст системы",
+      "Участники, модельная ёмкость и проектная инфраструктура."
+    ],
+    [
+      "process-trust",
+      "Процессы и доверие",
+      "Отдельные principals, key domains и право публикации."
+    ],
+    [
+      "core-components",
+      "Компоненты ядра",
+      "Общий reducer и порты к внешним системам."
+    ],
+    [
+      "worker-turn",
+      "Один turn worker",
+      "Успешный terminal response перед dispatch."
+    ],
+    [
+      "tool-skill-activation",
+      "Активация tool-skill",
+      "Пакет, compiler, допуск и смена epoch."
+    ],
+    [
+      "task-integration",
+      "Задача → main",
+      "Seal, exact candidate, review и publication intent."
+    ],
+    [
+      "operation-recovery",
+      "Восстановление операции",
+      "WAL, ownership и честный unknown outcome."
+    ],
+    [
+      "failover-fencing",
+      "Failover и fencing",
+      "Новый term и отказ устаревшему владельцу."
+    ],
+    [
+      "xmpp-reconnect",
+      "Reconnect и artifacts",
+      "Transport resume отдельно от domain recovery."
+    ]
+  ]
+}

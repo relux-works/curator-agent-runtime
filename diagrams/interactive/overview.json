@@ -1,0 +1,238 @@
+{
+  "title": "Apiary — функциональная карта",
+  "viewbox": [
+    1200,
+    450
+  ],
+  "source": "docs/apiary/kernel.md",
+  "nodes": [
+    {
+      "id": "core",
+      "title": "agent-core",
+      "label": "Общий Go-цикл",
+      "x": 32,
+      "y": 92,
+      "kind": "core",
+      "owner": "Хост участника",
+      "summary": "Собирает проекцию контекста, запрашивает модель и передаёт предложенные вызовы broker. Один и тот же цикл работает в обоих профилях.",
+      "state": "Состояние turn и проекция истории. Один writer сессии.",
+      "boundary": "Нет shell, provider SDK, ключей, прямой сети и права принимать задачу.",
+      "ports": "Engine.Step · BrokerPort · ModelPort",
+      "source": "docs/apiary/kernel.md"
+    },
+    {
+      "id": "model",
+      "title": "model-host",
+      "label": "Модели и credentials",
+      "x": 32,
+      "y": 250,
+      "kind": "host",
+      "owner": "Домен credentials владельца",
+      "summary": "Адаптирует события выбранного API к ModelPort, применяет допущенный маршрут и прикрепляет credentials только к разрешённому endpoint.",
+      "state": "CredentialBinding, поколение credentials, попытки inference и учёт usage.",
+      "boundary": "Ключ не попадает в модель, tool environment или сообщения XMPP. Смена провайдера — новое решение о маршруте.",
+      "ports": "Describe · Generate · Cancel",
+      "source": "docs/apiary/models-context.md"
+    },
+    {
+      "id": "broker",
+      "title": "local-broker",
+      "label": "План и допуск вызова",
+      "x": 250,
+      "y": 92,
+      "kind": "host",
+      "owner": "Оператор хоста",
+      "summary": "Проверяет неизменяемый SessionPlan, аргументы и ограничения. Диспетчеризует только выбранные Curator bindings и сохраняет наблюдения.",
+      "state": "Session WAL, context store, budget reservations и plan epoch.",
+      "boundary": "Один tool name не означает одно полномочие. Проверка выполняется для конкретной операции и её scope.",
+      "ports": "Open · Invoke · Cancel · Close",
+      "source": "docs/apiary/kernel.md"
+    },
+    {
+      "id": "signer",
+      "title": "node-signer",
+      "label": "Типизированные подписи",
+      "x": 250,
+      "y": 250,
+      "kind": "host",
+      "owner": "Отдельный key domain участника",
+      "summary": "Формирует допустимые подписываемые объекты из проверенного host state. Submission связывается с sealed revision и назначением.",
+      "state": "Локальные ключи и policy подписи; отдельные роли ключей.",
+      "boundary": "Модель не получает Sign(bytes). Подпись подтверждает происхождение заявления, а не правильность кода.",
+      "ports": "SignSubmission · SignReview · host-only domains",
+      "source": "docs/apiary/authority-wire.md"
+    },
+    {
+      "id": "tool",
+      "title": "central",
+      "label": "exec · poll · cancel",
+      "x": 493,
+      "y": 92,
+      "kind": "skill",
+      "owner": "Установленный Curator tool-skill",
+      "summary": "В worker это единственный model-visible export: команды в назначенном sandbox и управление выданными process handles. Orchestrator устанавливает свои ограниченные exports.",
+      "state": "Binding и schema digests фиксируются в epoch. Клиент может быть one-shot.",
+      "boundary": "Здесь нет универсального доступа к административным RPC, ключам проекта или main.",
+      "ports": "Worker: central / Orchestrator: tasks, communications, sandboxes",
+      "source": "docs/apiary/tool-skills.md"
+    },
+    {
+      "id": "transport",
+      "title": "XMPP adapter",
+      "label": "Inbox · outbox · receipts",
+      "x": 493,
+      "y": 250,
+      "kind": "skill",
+      "owner": "Host extension",
+      "summary": "Переносит подписанные domain envelopes. XMPP — конкретный подключаемый transport; тот же протокол может работать поверх локального IPC или HTTPS.",
+      "state": "Durable inbox/outbox, message IDs, retry и bounded queues.",
+      "boundary": "Stream ack означает транспортную доставку. Он не доказывает допуск, завершение команды или принятие ревизии.",
+      "ports": "Signed envelope · application ack · artifact transfer",
+      "source": "docs/apiary/authority-wire.md"
+    },
+    {
+      "id": "authority",
+      "title": "authority",
+      "label": "Контракты и полномочия",
+      "x": 750,
+      "y": 59,
+      "kind": "authority",
+      "owner": "Проект, одна логическая authority L0",
+      "summary": "Детерминированно фиксирует TaskContract, Assignment, Grant, допуск операции и приёмку evidence. Модель предлагает переход; authority проверяет его допустимость.",
+      "state": "Ledger, sequencer, revisions, scope reservations, budgets, terms и stop state.",
+      "boundary": "Не вызывает LLM для consensus и не исполняет произвольный код. Stop сериализуется с выдачей новых permissions.",
+      "ports": "Propose · Observe · DispatchPermit",
+      "source": "docs/apiary/authority-wire.md"
+    },
+    {
+      "id": "executor",
+      "title": "executor",
+      "label": "Допуск и журнал эффекта",
+      "x": 750,
+      "y": 190,
+      "kind": "execution",
+      "owner": "Проектный executor-supervisor",
+      "summary": "Закрепляет единственного владельца операции, проверяет fence и ограничения, пишет intent до dispatch и наблюдает реальное выполнение.",
+      "state": "Operation WAL, reservations, sandbox generations, output и execution receipts.",
+      "boundary": "Timeout не означает, что эффект отсутствовал. Неизвестный исход требует reconciliation.",
+      "ports": "Admit · Observe · RequestCancel",
+      "source": "docs/apiary/execution.md"
+    },
+    {
+      "id": "sandbox",
+      "title": "sandbox",
+      "label": "Изолированная работа",
+      "x": 970,
+      "y": 190,
+      "kind": "untrusted",
+      "owner": "Среда, выданная под задачу",
+      "summary": "Здесь исполняется код и меняются файлы. Worker адресует RemoteWorkspaceRef и mount alias; физическими путями владеет executor.",
+      "state": "Постоянная файловая система, явные cwd/env и supervised process handles.",
+      "boundary": "Worktree не равен sandbox. Изоляция подтверждается для конкретного backend и capability.",
+      "ports": "exec · ограниченные FS/network/process resources",
+      "source": "docs/apiary/execution.md"
+    },
+    {
+      "id": "runner",
+      "title": "runner",
+      "label": "Точный кандидат и проверки",
+      "x": 750,
+      "y": 326,
+      "kind": "execution",
+      "owner": "Отдельный проектный principal",
+      "summary": "Строит и замораживает интеграционный кандидат I, проверяет его content manifest, запускает тесты и выпускает attestation для точного набора bytes.",
+      "state": "M / R / I, C(M) / C(R) / C(I), test environment и evidence.",
+      "boundary": "Отдельный сервис может подписывать candidate commit. Raw write authority к main runner не получает.",
+      "ports": "Candidate · TestAttestation · ReviewAttestation",
+      "source": "docs/apiary/execution.md"
+    },
+    {
+      "id": "gateway",
+      "title": "publication gateway",
+      "label": "Единственный writer main",
+      "x": 970,
+      "y": 326,
+      "kind": "authority",
+      "owner": "Узкий модуль authority host",
+      "summary": "Публикует только допущенный точный кандидат: durable PublicationIntent, затем Git CAS, затем IntegrationReceipt. Обрабатывает crash windows через recovery barrier.",
+      "state": "Publication intent, target reservation, результат CAS и receipt.",
+      "boundary": "Git CAS сам не проверяет Apiary term или contract. Внешний Git hosting — отдельное зеркалирование.",
+      "ports": "PublicationIntent → Git CAS → IntegrationReceipt",
+      "source": "docs/apiary/execution.md"
+    }
+  ],
+  "edges": [
+    [
+      "model",
+      "broker",
+      "M 204 284 L 227 284 L 227 146 L 250 146",
+      "flow"
+    ],
+    [
+      "core",
+      "broker",
+      "M 205 126 L 250 126",
+      "flow"
+    ],
+    [
+      "broker",
+      "signer",
+      "M 337 250 L 337 160",
+      "flow"
+    ],
+    [
+      "broker",
+      "tool",
+      "M 423 126 L 493 126",
+      "flow"
+    ],
+    [
+      "tool",
+      "transport",
+      "M 580 160 L 580 250",
+      "flow"
+    ],
+    [
+      "transport",
+      "executor",
+      "M 666 285 L 711 285 L 711 224 L 750 224",
+      "flow"
+    ],
+    [
+      "transport",
+      "authority",
+      "M 666 283 L 695 283 L 695 94 L 750 94",
+      "authority"
+    ],
+    [
+      "authority",
+      "executor",
+      "M 837 126 L 837 190",
+      "authority"
+    ],
+    [
+      "executor",
+      "sandbox",
+      "M 923 224 L 970 224",
+      "flow"
+    ],
+    [
+      "sandbox",
+      "runner",
+      "M 1057 258 L 1057 290 L 837 290 L 837 326",
+      "flow"
+    ],
+    [
+      "runner",
+      "gateway",
+      "M 923 360 L 970 360",
+      "flow"
+    ],
+    [
+      "authority",
+      "gateway",
+      "M 923 94 L 1170 94 L 1170 360 L 1143 360",
+      "authority"
+    ]
+  ]
+}

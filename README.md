@@ -4,6 +4,14 @@
 
 **Два уровня документации:** существующий нормативный draft **v0.1.0** от 2026-08-23 и предлагаемая информативная архитектура **Apiary `apiary-design-2026-09-08`**. В репозитории нет реализации runtime. Новые главы и примеры не заменяют `protocol/` и `schemas/v1/`, не обещают совместимость API и не доказывают runtime conformance. Автор: Ivan Oparin; лицензия: [Apache-2.0](LICENSE).
 
+## Интерактивный атлас
+
+[Открыть интерактивный гид](https://apiary-architecture.oparin-ig.chatgpt.site) · [Скачать самодостаточный HTML](docs/interactive/apiary.html)
+
+Карта компонентов с переключением Worker/Orchestrator, lifecycle tool-skills, матрица провайдеров, шесть пошаговых сценариев, 11 увеличиваемых диаграмм и встроенный reader. В HTML включены 70 исходных файлов принятого снимка: 37 Markdown-документов, девять JSON-документов, 11 пар PlantUML/SVG, LICENSE и NOTICE. Поиск работает по полному тексту; внутренние ссылки открывают документы и нужные разделы внутри гида.
+
+Снимок источников закреплён в `site/content.json` на commit `642f6cd6d96bac5a83c4dc53014f4f300f29d966`. Исходные исследования и нормативные файлы не изменяются при сборке. Гид работает без внешних библиотек, шрифтов и API; внешние публикации открываются только по ссылкам читателя. Сценарии объясняют предложенный протокол и не исполняют команды.
+
 ## Видение и порядок чтения
 
 Apiary использует распределённые модели для работы над одним проектом. Worker предлагает изменения через ограниченный удалённый sandbox; authority фиксирует допустимые переходы, executor исполняет команды, runner строит и проверяет точный кандидат. Единственный publication-gateway получает право менять локальный authoritative main. Подпись участника подтверждает происхождение заявления, но не истинность вывода или корректность кода.
@@ -63,6 +71,9 @@ v0.1 пока резервирует wire framing, provider identity verificatio
 | task-board plan | `task-board plan EPIC-260908-230hv2 --save` | Снимок канонического плана в `.planning/` |
 | task-board resources | `task-board resource add TASK-260908-q8pkiz .temp/TASK-260908-q8pkiz/TASK-260908-q8pkiz_evidence.zip --type outcome --name TASK-260908-q8pkiz_evidence.zip` | Evidence в authoritative board; handoff через `task-board handoff TASK-260908-q8pkiz --role doc-writer` |
 | Git | `git diff-tree --check HEAD` и `git diff --check HEAD` | Два whitespace gate; ошибки и exit code в stdout/stderr |
+| Python3, HTML build | `python3 .scripts/build-architecture-guide.py` | `dist/index.html`, `dist/apiary.html`, `docs/interactive/apiary.html`; input/output hashes в `.temp/interactive-guide/build-manifest.json` |
+| Node.js, guide logic | `node --check site/app.js` и `node .scripts/test-architecture-guide.cjs` | Синтаксис, navigation/step/search logic, source identities, diagrams и CSP hash; stdout |
+| Python3, guide boundary | `python3 .scripts/test-architecture-guide.py` | Проверки встроенного HTML, безопасного document markup, ссылок и неизменности принятых источников; `.temp/interactive-guide/static-checks.json` |
 | Python3 | `python3 -m json.tool docs/apiary/current-inputs.json` | Синтаксическая проверка JSON; печатает документ |
 | Python3, combined QA | `python3 .temp/TASK-260908-q8pkiz/validate.py` | Одноразовый checker из task evidence: локальные ссылки/anchors, JSON files/examples, provenance, SVG; команда доступна после извлечения evidence |
 | Pandoc | `pandoc -f gfm -t html README.md -o .temp/TASK-260908-q8pkiz/README.html` | GFM rendering для проверки навигации и таблиц; AST/link check: `python3 .temp/TASK-260908-q8pkiz/pandoc-check.py` из task evidence |
