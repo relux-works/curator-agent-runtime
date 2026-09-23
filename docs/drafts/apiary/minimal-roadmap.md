@@ -91,8 +91,8 @@ Existing products are kept; two operational roles and two libraries are added.
 | curator-engine | Engine profiles, broker, `ensure/release/stop/status`, host arbitration (LP-D7) |
 | AgentHost | Represents a machine in the pool, starts and resumes local sessions, delivers messages, reports state |
 | EnvironmentHost | Prepares workspaces, executes tools, limits resources, seals results |
-| launch-network | Network profiles: resolve → validate → probe → patch; no processes, no daemon; applied by every process owner (NP-N2) |
-| model-routing (Routing) | Evaluates and chooses among already admitted options; grants no rights; a library with adapters in task-board and `curator-run`, later in the coordinator (MR-R1) |
+| curator-network | Network profiles: resolve → validate → probe → patch; no processes, no daemon; applied by every process owner (NP-N2) |
+| curator-model-router (Routing) | Evaluates and chooses among already admitted options; grants no rights; a library with adapters in task-board and `curator-run`, later in the coordinator (MR-R1) |
 
 `AgentHost` and `EnvironmentHost` are roles and modules first, not necessarily new repositories or large daemons. The first `AgentHost` is an adapter over task-board `internal/spawn` and `sessionmanager`, which already consume the Curator fragment (LP-D5), not over `curator-run`; when it becomes the fourth composer, composition is extracted from the launcher into `pkg/compose`. The AgentHost is not a fourth process owner: it wraps the exec path of task-board and tb-sessiond, so the NP-N2 owner list does not grow. If it ever composes a launch itself, it is added to NP-N2 and to the effective-configuration proof of MR-R9. The first `EnvironmentHost` is built over the existing worktree and lifecycle modules plus a small execution gateway.
 
@@ -364,7 +364,7 @@ Task environment → internet
     project policy, egress gateway, VPN when needed
 ```
 
-Mapping to the network-profiles specification: the first route is `launch-network` with `assurance = cooperative`, HTTP CONNECT as the common surface and `--network-profile` as the fifth independent launch setting (NP-N1, N6); the second route is the AgentHost's own transport outside the harness profile, like the SSH channel of engines (NP-N12); the third route is the enforced sandbox of a separate epic that reuses the same profile as its egress description (NP-N14) and arrives at stage 3. The original task "two local agents with different proxies" is solved by the first route; isolating `curl`, package managers and build scripts belongs to the third.
+Mapping to the network-profiles specification: the first route is `curator-network` with `assurance = cooperative`, HTTP CONNECT as the common surface and `--network-profile` as the fifth independent launch setting (NP-N1, N6); the second route is the AgentHost's own transport outside the harness profile, like the SSH channel of engines (NP-N12); the third route is the enforced sandbox of a separate epic that reuses the same profile as its egress description (NP-N14) and arrives at stage 3. The original task "two local agents with different proxies" is solved by the first route; isolating `curl`, package managers and build scripts belongs to the third.
 
 `NO_PROXY=localhost` is not applied automatically to every future sandbox: in a strict profile access to local services is also limited, and a loopback engine or bridge is a local service allowed explicitly, never "the internet" (NP-N12). A tool sandbox never receives provider credentials merely because the agent loop is on the same machine. The credential boundary already exists in Curator: a profile's managed home is a separate login (Claude on macOS isolated by construction, Codex and Pi through `isolated`); the AgentHost selects the Curator profile per assignment and thereby the account; in trusted-native mode the harness's access to its provider home is allowed explicitly; in hardened mode the credential-bearing part and the task shell are separated and the shell does not receive that home.
 
@@ -532,6 +532,6 @@ Local spawn becomes the first backend; the remote worker the second; the sandbox
 ## Basis
 
 - Proposal "Apiary minimal vision and roadmap" and its enriched copy (the operator's Russian working notes (kept outside repositories); two waves of annotated insertions, 2026-09-22).
-- `skill-project-management/.specs/drafts/launch-profiles.md` (D1–D16, Phases 0–5, closed decisions §6), `launch-network/spec/network-profiles.md` (N1–N14, slices A–D), `model-routing/spec/model-routing.md` (R1–R13, slices A0–E), and the independent review of 2026-09-22 folded into them.
+- `skill-project-management/.specs/drafts/launch-profiles.md` (D1–D16, Phases 0–5, closed decisions §6), `curator-network/spec/network-profiles.md` (N1–N14, slices A–D), `curator-model-router/spec/model-routing.md` (R1–R13, slices A0–E), and the independent review of 2026-09-22 folded into them.
 - The task-board migration-readiness and Apiary naming notes (the operator's Russian working notes (kept outside repositories)).
 - Checkout verification 2026-09-22: `skill-project-management/tools/board-cli/internal/sessionmanager/{host.go, session_notice.go, manager_notice.go, builder_tool_isolation.go}`, board epic `EPIC-260907-jj9f23`.
