@@ -30,6 +30,16 @@ Apiary использует распределённые модели для р�
 
 [Атлас диаграмм](diagrams/README.md) ведёт ко всем 11 схемам с исходниками и SVG: девять видов Apiary и две исследовательские схемы Codex/Pi. Для краткого первого прохода достаточно контекста, границ процессов и task integration; остальные раскрывают отдельные сценарии.
 
+## Drafts after the accepted snapshot
+
+Proposals written after `apiary-design-2026-09-08`. They change nothing in the accepted chapters above or in the interactive guide until a reviewed adoption moves them in.
+
+| Draft | Purpose |
+|---|---|
+| [Minimal roadmap](docs/drafts/apiary/minimal-roadmap.md) | Staged plan (stages 0–6) from an AgentHost adapter over the task-board spawn path to a trusted pool of local and remote agent loops |
+| [Track](docs/drafts/apiary/track.md) | Where Apiary sits in the ecosystem roadmap and what each stage needs |
+| [Authority-wire amendment](docs/drafts/apiary/authority-wire-amendment.md) | Proposal to carry authority records in waggle SSHSIG envelopes with role-bound multi-signatures, a committed signer roster and key-assurance levels |
+
 ## Исследовательская база
 
 Это целевая выборка, а не полный аудит всех agent frameworks. Широкий каталог фиксирует 28 репозиториев: 26 с выборочным чтением исходников, два на уровне документации; исполненных runtime-проверок D3 нет. [Карта глубины и evidence → decision](docs/apiary/evidence.md) объясняет границы каждого вывода.
