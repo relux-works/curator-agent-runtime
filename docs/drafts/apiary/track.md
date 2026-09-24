@@ -1,6 +1,6 @@
 # Track: Apiary
 
-Status: **DRAFT**, 2026-09-23. Roadmap document: `docs/drafts/apiary/minimal-roadmap.md` (draft, stages 0–6, two independent reviews folded in). Design home: `curator-agent-runtime` (Apiary design 2026-09-08). Roadmap: after milestones M4 and M7.
+Status: **DRAFT**, 2026-09-23. Roadmap document: `docs/drafts/apiary/minimal-roadmap.md` (draft, stages 0–6, two independent reviews folded in). Design home: `curator-agent-runtime` (Apiary design 2026-09-08). Roadmap: after milestones M4 and M7. A Russian translation is in [track.ru.md](track.ru.md).
 
 ## Why
 

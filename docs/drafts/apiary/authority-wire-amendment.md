@@ -1,6 +1,6 @@
 # Apiary authority wire: amendment proposal for waggle signatures
 
-Status: **DRAFT, pending review**, 2026-09-24. Not normative. This proposal changes nothing in the accepted informative design `apiary-design-2026-09-08`: [`docs/apiary/authority-wire.md`](../../apiary/authority-wire.md) and the interactive guide built from the accepted snapshot stay byte-identical until a reviewed adoption rewrites that chapter and rebuilds the guide with a new accepted source reference. Source of the replacement design: `waggle/spec/waggle.md` (draft v4; the operator decided name, SSHSIG, multi-signature and signer providers on 2026-09-24). Related drafts: [minimal roadmap](minimal-roadmap.md), [track](track.md).
+Status: **DRAFT, pending review**, 2026-09-24. Not normative. This proposal changes nothing in the accepted informative design `apiary-design-2026-09-08`: [`docs/apiary/authority-wire.md`](../../apiary/authority-wire.md) and the interactive guide built from the accepted snapshot stay byte-identical until a reviewed adoption rewrites that chapter and rebuilds the guide with a new accepted source reference. Source of the replacement design: `waggle/spec/waggle.md` (draft v4; the operator decided name, SSHSIG, multi-signature and signer providers on 2026-09-24). Related drafts: [minimal roadmap](minimal-roadmap.md), [track](track.md). A Russian translation is in [authority-wire-amendment.ru.md](authority-wire-amendment.ru.md).
 
 ## Why
 

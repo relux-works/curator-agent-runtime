@@ -36,9 +36,9 @@ Proposals written after `apiary-design-2026-09-08`. They change nothing in the a
 
 | Draft | Purpose |
 |---|---|
-| [Minimal roadmap](docs/drafts/apiary/minimal-roadmap.md) | Staged plan (stages 0–6) from an AgentHost adapter over the task-board spawn path to a trusted pool of local and remote agent loops |
-| [Track](docs/drafts/apiary/track.md) | Where Apiary sits in the ecosystem roadmap and what each stage needs |
-| [Authority-wire amendment](docs/drafts/apiary/authority-wire-amendment.md) | Proposal to carry authority records in waggle SSHSIG envelopes with role-bound multi-signatures, a committed signer roster and key-assurance levels |
+| [Minimal roadmap](docs/drafts/apiary/minimal-roadmap.md) ([RU](docs/drafts/apiary/minimal-roadmap.ru.md)) | Staged plan (stages 0–6) from an AgentHost adapter over the task-board spawn path to a trusted pool of local and remote agent loops |
+| [Track](docs/drafts/apiary/track.md) ([RU](docs/drafts/apiary/track.ru.md)) | Where Apiary sits in the ecosystem roadmap and what each stage needs |
+| [Authority-wire amendment](docs/drafts/apiary/authority-wire-amendment.md) ([RU](docs/drafts/apiary/authority-wire-amendment.ru.md)) | Proposal to carry authority records in waggle SSHSIG envelopes with role-bound multi-signatures, a committed signer roster and key-assurance levels |
 
 ## Исследовательская база
 

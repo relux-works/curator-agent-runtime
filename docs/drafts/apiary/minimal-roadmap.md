@@ -1,6 +1,6 @@
 # Apiary: minimal vision and roadmap
 
-Status: **DRAFT** (proposed architecture and staged plan, pre-implementation). Rewritten 2026-09-22 as a technical document from the proposal "Apiary minimal vision and roadmap" and its enriched copy (the operator's Russian working notes (kept outside repositories)), with the launch-profiles (*LP*, D1–D16), network-profiles (*NP*, N1–N14) and model-routing (*MR*, R1–R13) specifications folded into the text. The substance and section order of the proposal are preserved. Interface, field and command names are proposed unless a file path marks them as existing. Product naming is decided separately (the operator's Russian working notes (kept outside repositories)); wire names (`task-board`, `.task-board/`, `TASK-…`, `RUN-…`) do not change.
+Status: **DRAFT** (proposed architecture and staged plan, pre-implementation). Rewritten 2026-09-22 as a technical document from the proposal "Apiary minimal vision and roadmap" and its enriched copy (the operator's Russian working notes, kept outside repositories), with the launch-profiles (*LP*, D1–D16), network-profiles (*NP*, N1–N14) and model-routing (*MR*, R1–R13) specifications folded into the text. The substance and section order of the proposal are preserved. Interface, field and command names are proposed unless a file path marks them as existing. Product naming is decided separately (the operator's Russian working notes, kept outside repositories); wire names (`task-board`, `.task-board/`, `TASK-…`, `RUN-…`) do not change. A Russian translation is in [minimal-roadmap.ru.md](minimal-roadmap.ru.md).
 
 > **Notes 2026-09-23.** Design home: `curator-agent-runtime` (the accepted design `apiary-design-2026-09-08` in `.spec/apiary-runtime-design.md` and `docs/apiary/`; this draft, its track document and the authority-wire amendment in `docs/drafts/apiary/`). Track document: `docs/drafts/apiary/track.md`. Stage 0 needs roadmap milestones M3 and M4, stage 1 needs M7, stage 2 executes playbook routes (`skill-project-management/.specs/drafts/playbooks.md`) as the coordinator's program. AgentOffer admission and preferences follow the agent-selection layers (`skill-project-management/.specs/drafts/agent-selection.md`).
 
@@ -154,7 +154,12 @@ AgentOffer
     expires_at
 ```
 
-Field sources: `supported_runtime_bindings` are the runtime bindings with `bound_on_this_machine` from `runtimes.toml` (stable ids, no private endpoints; the word "runtime profile" is retired by LP-D12 and NP-N1); engine profiles from `engines.toml` appear as capacity; `allowed_network_profiles` is the machine's allowed set (NP-N4), ids only; `quota_domain` is the providerlimits identity `(runtime, managed home)`; `billing` is the catalog class; `availability` is the same preflight block as local spawn (auth, quota, reactive limits, engine status). Engine status is two facts, `ready` and `ensurable` (LP-D9): a host whose engine is stopped but can be started stays a candidate with a start cost, otherwise it would never receive an assignment and never call `ensure`.
+Field sources:
+- `supported_runtime_bindings` are the runtime bindings with `bound_on_this_machine` from `runtimes.toml` (stable ids, no private endpoints; the word "runtime profile" is retired by LP-D12 and NP-N1); engine profiles from `engines.toml` appear as capacity;
+- `allowed_network_profiles` is the machine's allowed set (NP-N4), ids only;
+- `quota_domain` is the providerlimits identity `(runtime, managed home)`;
+- `billing` is the catalog class;
+- `availability` is the same preflight block as local spawn (auth, quota, reactive limits, engine status). Engine status is two facts, `ready` and `ensurable` (LP-D9): a host whose engine is stopped but can be started stays a candidate with a start cost, otherwise it would never receive an assignment and never call `ensure`.
 
 The offer never contains secrets, provider-home contents or arbitrary local paths; it publishes public provenance only. `quota_domain` exists so that two processes on one account do not look like two independent quota sources; an unknown remaining quota is recorded as unknown, never as unlimited; a different network route is never a new quota domain (NP-N1). Heartbeats are sent by the `AgentHost`, not by the model, and cost no tokens.
 
@@ -364,7 +369,12 @@ Task environment → internet
     project policy, egress gateway, VPN when needed
 ```
 
-Mapping to the network-profiles specification: the first route is `curator-network` with `assurance = cooperative`, HTTP CONNECT as the common surface and `--network-profile` as the fifth independent launch setting (NP-N1, N6); the second route is the AgentHost's own transport outside the harness profile, like the SSH channel of engines (NP-N12); the third route is the enforced sandbox of a separate epic that reuses the same profile as its egress description (NP-N14) and arrives at stage 3. The original task "two local agents with different proxies" is solved by the first route; isolating `curl`, package managers and build scripts belongs to the third.
+Mapping to the network-profiles specification:
+- the first route is `curator-network` with `assurance = cooperative`, HTTP CONNECT as the common surface and `--network-profile` as the fifth independent launch setting (NP-N1, N6);
+- the second route is the AgentHost's own transport outside the harness profile, like the SSH channel of engines (NP-N12);
+- the third route is the enforced sandbox of a separate epic that reuses the same profile as its egress description (NP-N14) and arrives at stage 3.
+
+The original task "two local agents with different proxies" is solved by the first route; isolating `curl`, package managers and build scripts belongs to the third.
 
 `NO_PROXY=localhost` is not applied automatically to every future sandbox: in a strict profile access to local services is also limited, and a loopback engine or bridge is a local service allowed explicitly, never "the internet" (NP-N12). A tool sandbox never receives provider credentials merely because the agent loop is on the same machine. The credential boundary already exists in Curator: a profile's managed home is a separate login (Claude on macOS isolated by construction, Codex and Pi through `isolated`); the AgentHost selects the Curator profile per assignment and thereby the account; in trusted-native mode the harness's access to its provider home is allowed explicitly; in hardened mode the credential-bearing part and the task shell are separated and the shell does not receive that home.
 
@@ -409,7 +419,13 @@ reservation and availability re-check
 Assignment
 ```
 
-Dependent settings (network profile, context profile) are resolved by the CandidateResolver before scoring and fixed unless the policy's free-field mask frees them (MR-R7); choosing an offer with another egress is a permitted choice of a whole variant, never a route switch by the router (NP-N13). The four questions and their owners (MR-R2): allowed, by policy and the allowed set; compatible, by the registry and the catalog; fit, by the estimator; available now, by the offer's availability block with the `ready`/`ensurable` engine facts. The coordinator reserves, not the router.
+Dependent settings (network profile, context profile) are resolved by the CandidateResolver before scoring and fixed unless the policy's free-field mask frees them (MR-R7); choosing an offer with another egress is a permitted choice of a whole variant, never a route switch by the router (NP-N13). The four questions and their owners (MR-R2):
+- allowed: policy and the allowed set;
+- compatible: the registry and the catalog;
+- fit: the estimator;
+- available now: the offer's availability block with the `ready`/`ensurable` engine facts.
+
+The coordinator reserves, not the router.
 
 The first implementation uses explicit choice and today's config-order recommendations (MR slice A0, which starts before LP Phase 1; A1 adds the machine half after it). The router never blocks the distributed MVP. Then evidence snapshots, benchmarks, a rule-based assessor and Jev/LLM assessors are connected (MR slices B, C in shadow mode, D opt-in, E measured gain); their answers are stored separately and spawn validates a ready decision instead of re-running the assessment.
 
@@ -503,7 +519,12 @@ Environment / Tools
     prepare, bind, invoke, seal, release
 ```
 
-They may live in several Go packages inside one process; external CLI, MCP and RPC surfaces are thin adapters over the same application services. Common rules: machine-readable result on stdout, diagnostics on stderr; explicit deadlines and cancellation; no hidden network call in a local query; no automatic fallback from remote to local; an unsupported operation returns `unsupported`. The existing plugin graph is reused where different implementations are really needed; no interface per helper function and no stable SDK for every future extension yet. `agents-management` already has the basis for new kinds without rewriting the registry.
+They may live in several Go packages inside one process; external CLI, MCP and RPC surfaces are thin adapters over the same application services. Common rules:
+- machine-readable result on stdout, diagnostics on stderr;
+- explicit deadlines and cancellation;
+- no hidden network call in a local query;
+- no automatic fallback from remote to local;
+- an unsupported operation returns `unsupported`. The existing plugin graph is reused where different implementations are really needed; no interface per helper function and no stable SDK for every future extension yet. `agents-management` already has the basis for new kinds without rewriting the registry.
 
 ### 11.1 First changes to implement
 
@@ -531,7 +552,7 @@ Local spawn becomes the first backend; the remote worker the second; the sandbox
 
 ## Basis
 
-- Proposal "Apiary minimal vision and roadmap" and its enriched copy (the operator's Russian working notes (kept outside repositories); two waves of annotated insertions, 2026-09-22).
+- Proposal "Apiary minimal vision and roadmap" and its enriched copy (the operator's Russian working notes, kept outside repositories; two waves of annotated insertions, 2026-09-22).
 - `skill-project-management/.specs/drafts/launch-profiles.md` (D1–D16, Phases 0–5, closed decisions §6), `curator-network/spec/network-profiles.md` (N1–N14, slices A–D), `curator-model-router/spec/model-routing.md` (R1–R13, slices A0–E), and the independent review of 2026-09-22 folded into them.
-- The task-board migration-readiness and Apiary naming notes (the operator's Russian working notes (kept outside repositories)).
+- The task-board migration-readiness and Apiary naming notes (the operator's Russian working notes, kept outside repositories).
 - Checkout verification 2026-09-22: `skill-project-management/tools/board-cli/internal/sessionmanager/{host.go, session_notice.go, manager_notice.go, builder_tool_isolation.go}`, board epic `EPIC-260907-jj9f23`.
