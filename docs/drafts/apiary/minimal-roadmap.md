@@ -45,7 +45,7 @@ Four independent questions:
 | Where do its tools run? | The project workspace: worktree, shell sessions, processes, toolchain, allowed services |
 | Who assigns work and accepts the result? | The existing project orchestration workflow: tasks, roles, review, integration |
 
-Engines are owned by the fifth plane, the umbrella provider `curator-engine` (LP-D7); the AgentHost calls `curator engine ensure` before a launch and the EnvironmentHost owns no engines. The questions are never coupled by the assumption "if the agent runs on machine X, the shell runs on X".
+Engines are owned by the fifth plane, the umbrella provider `curator-inference-manager` (LP-D7); the AgentHost calls `curator-inference-manager ensure` before a launch and the EnvironmentHost owns no engines. The questions are never coupled by the assumption "if the agent runs on machine X, the shell runs on X".
 
 Unit of execution:
 
@@ -88,10 +88,10 @@ Existing products are kept; two operational roles and two libraries are added.
 | Project orchestration / task-board | Decomposition, tasks, roles, dependencies, assignment, review, integration |
 | agents-management | Runtime/model/engine identities, compatibility, admission, launch plans; the machine catalog `runtimes.toml` (LP-D2) |
 | Curator + launcher | Profile preparation, context and tool delivery, composition of interactive launches |
-| curator-engine | Engine profiles, broker, `ensure/release/stop/status`, host arbitration (LP-D7) |
+| curator-inference-manager | Engine profiles, broker, `ensure/release/stop/status`, host arbitration (LP-D7) |
 | AgentHost | Represents a machine in the pool, starts and resumes local sessions, delivers messages, reports state |
 | EnvironmentHost | Prepares workspaces, executes tools, limits resources, seals results |
-| curator-network | Network profiles: resolve → validate → probe → patch; no processes, no daemon; applied by every process owner (NP-N2) |
+| curator-network-profiles | Network profiles: resolve → validate → probe → patch; no processes, no daemon; applied by every process owner (NP-N2) |
 | curator-model-router (Routing) | Evaluates and chooses among already admitted options; grants no rights; a library with adapters in task-board and `curator-run`, later in the coordinator (MR-R1) |
 
 `AgentHost` and `EnvironmentHost` are roles and modules first, not necessarily new repositories or large daemons. The first `AgentHost` is an adapter over task-board `internal/spawn` and `sessionmanager`, which already consume the Curator fragment (LP-D5), not over `curator-run`; when it becomes the fourth composer, composition is extracted from the launcher into `pkg/compose`. The AgentHost is not a fourth process owner: it wraps the exec path of task-board and tb-sessiond, so the NP-N2 owner list does not grow. If it ever composes a launch itself, it is added to NP-N2 and to the effective-configuration proof of MR-R9. The first `EnvironmentHost` is built over the existing worktree and lifecycle modules plus a small execution gateway.
@@ -370,7 +370,7 @@ Task environment → internet
 ```
 
 Mapping to the network-profiles specification:
-- the first route is `curator-network` with `assurance = cooperative`, HTTP CONNECT as the common surface and `--network-profile` as the fifth independent launch setting (NP-N1, N6);
+- the first route is `curator-network-profiles` with `assurance = cooperative`, HTTP CONNECT as the common surface and `--network-profile` as the fifth independent launch setting (NP-N1, N6);
 - the second route is the AgentHost's own transport outside the harness profile, like the SSH channel of engines (NP-N12);
 - the third route is the enforced sandbox of a separate epic that reuses the same profile as its egress description (NP-N14) and arrives at stage 3.
 
@@ -479,8 +479,8 @@ Mapping to the specifications:
 | Stage | Depends on |
 | --- | --- |
 | 0 | LP Phase 0 (task-board on the Curator fragment, composer in tb-sessiond); LP Phases 1–2 (catalog, transports) for the runtime binding; NP slice A (mechanism) and C1 (explicit `--network-profile` on every task-board and tb-sessiond path); MR A0 alongside |
-| 1 | The AgentHost inherits NP C1 through the same exec path; NP C2 (catalog and `spawn.network.default` defaults) after LP Phase 1; LP Phase 3 (availability) feeds the offer's `availability`; LP Phase 4 (`curator-engine` `ensure/release`) only when the first remote binding uses a managed engine, a cloud-provider participant does not wait for the engine plane |
-| 2 | Reconnect and resume rest on the NP-N9 tracked contract (reference + digest, the host resolves); until it exists, tracked mode with a mandatory network profile refuses; LP Phase 4 (`curator-engine`) brings engine-bound bindings into the pool at the latest here; MR shadow (C) not before this stage |
+| 1 | The AgentHost inherits NP C1 through the same exec path; NP C2 (catalog and `spawn.network.default` defaults) after LP Phase 1; LP Phase 3 (availability) feeds the offer's `availability`; LP Phase 4 (`curator-inference-manager` `ensure/release`) only when the first remote binding uses a managed engine, a cloud-provider participant does not wait for the engine plane |
+| 2 | Reconnect and resume rest on the NP-N9 tracked contract (reference + digest, the host resolves); until it exists, tracked mode with a mandatory network profile refuses; LP Phase 4 (`curator-inference-manager`) brings engine-bound bindings into the pool at the latest here; MR shadow (C) not before this stage |
 | 3 | NP-N14 enforced sandbox, `assurance = enforced` |
 | later | LP Phase 5 (KV snapshots) = warm sessions with restoration; MR opt-in `select` (D) once the run manifest proves the effective configuration (MR-R9) |
 
@@ -536,7 +536,7 @@ One vertical chain of small PRs:
 4. One verified remote harness profile; the generalized Claude MCP profile first, Pi as the next adapter. The bridge is a stdio or Unix-socket process, or its endpoint is in the network profile's bypass list, and its outgoing transport is configured independently of the harness's network binding: inherited proxy variables can never change it implicitly (§5.3).
 5. The result closed back into the existing CR/review/integration path, not a separate "remote acceptance branch".
 6. Notices generalized into a role-aware mailbox with autonomous delivery without an attached terminal and connection-loss scenarios.
-7. `curator engine ensure/release` as the AgentHost's engine primitive, required before the first assignment to a binding that uses a managed engine, so local models enter the pool by the same path (LP-D7); a remote participant with a cloud provider does not wait for it.
+7. `curator-inference-manager ensure/release` as the AgentHost's engine primitive, required before the first assignment to a binding that uses a managed engine, so local models enter the pool by the same path (LP-D7); a remote participant with a cloud provider does not wait for it.
 
 Component names (proposed): `apiary` (CLI and board, the task-board format inside), `apiaryd` (coordinator), `apiary-host` (AgentHost), `apiary-env` (EnvironmentHost); wire names are not renamed.
 
@@ -553,6 +553,6 @@ Local spawn becomes the first backend; the remote worker the second; the sandbox
 ## Basis
 
 - Proposal "Apiary minimal vision and roadmap" and its enriched copy (the operator's Russian working notes, kept outside repositories; two waves of annotated insertions, 2026-09-22).
-- `skill-project-management/.specs/drafts/launch-profiles.md` (D1–D16, Phases 0–5, closed decisions §6), `curator-network/spec/network-profiles.md` (N1–N14, slices A–D), `curator-model-router/spec/model-routing.md` (R1–R13, slices A0–E), and the independent review of 2026-09-22 folded into them.
+- `skill-project-management/.specs/drafts/launch-profiles.md` (D1–D16, Phases 0–5, closed decisions §6), `curator-network-profiles/spec/network-profiles.md` (N1–N14, slices A–D), `curator-model-router/spec/model-routing.md` (R1–R13, slices A0–E), and the independent review of 2026-09-22 folded into them.
 - The task-board migration-readiness and Apiary naming notes (the operator's Russian working notes, kept outside repositories).
 - Checkout verification 2026-09-22: `skill-project-management/tools/board-cli/internal/sessionmanager/{host.go, session_notice.go, manager_notice.go, builder_tool_isolation.go}`, board epic `EPIC-260907-jj9f23`.
