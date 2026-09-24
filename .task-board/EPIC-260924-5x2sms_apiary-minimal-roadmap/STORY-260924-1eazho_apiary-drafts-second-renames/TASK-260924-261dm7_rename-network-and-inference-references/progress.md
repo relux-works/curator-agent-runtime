@@ -1,5 +1,5 @@
 ## Status
-development
+done
 
 ## Review
 light
@@ -20,6 +20,7 @@ estimated(fibonacci(1))
 (empty)
 
 ## Notes
+Renamed in docs/drafts/apiary/minimal-roadmap.md and .ru.md; architecture-guide checks 16/16 pass.
 
 ## Precondition Resources
 (none)
@@ -31,7 +32,7 @@ estimated(fibonacci(1))
 2026-09-24T04:13:22Z
 
 ## Last Update
-2026-09-24T04:13:30Z
+2026-09-24T04:13:47Z
 
 ## Assigned To
 claude-orchestrator
